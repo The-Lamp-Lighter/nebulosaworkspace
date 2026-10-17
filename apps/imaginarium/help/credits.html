@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Créditos — Imaginarium</title>
+<style>
+  :root { --text: #d6d9de; --dim: #9da2ab; --faint: #6f747d; --spectrum: linear-gradient(90deg, #19c6f5, #4f6bff 28%, #a244f5 52%, #f23fb0 76%, #ff8a2b); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font: 13px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Ubuntu, Roboto, sans-serif; color: var(--text); background: radial-gradient(520px 380px at 50% 28%, #15151f 0%, #0d0d13 60%, #0b0b10 100%); -webkit-font-smoothing: antialiased; }
+  main { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 22px 30px 26px; text-align: center; }
+  img { display: block; width: 136px; height: 136px; margin-bottom: 18px; filter: drop-shadow(0 10px 30px rgba(90, 70, 255, 0.35)); }
+  h1 { margin: 0; font-size: 25px; font-weight: 600; letter-spacing: 0.2em; padding-left: 0.2em; color: #f5f6f8; }
+  .rule { width: 180px; height: 2px; margin: 12px 0 10px; background: var(--spectrum); border-radius: 2px; }
+  .version { margin: 0; color: var(--dim); }
+  dl { margin: 20px 0 0; }
+  dt { color: var(--faint); font-size: 12px; }
+  dd { margin: 2px 0 0; font-size: 16px; font-weight: 600; color: #f0f1f4; }
+  .notes { margin: 20px 0 0; max-width: 40ch; color: var(--dim); font-size: 12px; }
+  .notes p { margin: 0 0 6px; }
+</style>
+</head>
+<body>
+<main>
+  <img src="../assets/icons/icon-512.png" alt="Logotipo do Imaginarium" width="136" height="136">
+  <h1>IMAGINARIUM</h1>
+  <div class="rule" role="presentation"></div>
+  <p class="version">Versão 2.0 — Editor Gráfico Offline</p>
+  <dl>
+    <dt>Autor</dt>
+    <dd>Márcio Willians Barreto de Andrade</dd>
+  </dl>
+  <div class="notes">
+    <p>Projeto desenvolvido para uso pessoal e educacional.</p>
+    <p>Todos os direitos dos respectivos formatos pertencem aos seus proprietários.</p>
+    <p>Interface criada exclusivamente para o Imaginarium.</p>
+  </div>
+</main>
+<script>
+  // Esc fecha a janela de créditos (avisa o aplicativo)
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && window.parent !== window) window.parent.postMessage('imaginarium:close', '*'); });
+</script>
+</body>
+</html>

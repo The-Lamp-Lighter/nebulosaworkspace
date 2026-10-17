@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Manual do Imaginarium</title>
+<style>
+  :root {
+    --bg: #1b1c1f; --side: #232528; --card: #27292d; --line: #34373c; --text: #d6d9de; --dim: #9da2ab; --faint: #6f747d;
+    --accent: #4d8fd6; --spectrum: linear-gradient(90deg, #19c6f5, #4f6bff 28%, #a244f5 52%, #f23fb0 76%, #ff8a2b);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { display: grid; grid-template-columns: 250px minmax(0, 1fr); font: 14px/1.6 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Ubuntu, Roboto, sans-serif; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+  * { scrollbar-width: thin; scrollbar-color: #4a4e56 transparent; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* índice */
+  aside { display: flex; flex-direction: column; height: 100vh; background: var(--side); border-right: 1px solid #121315; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 16px 16px 12px; }
+  .brand img { width: 34px; height: 34px; border-radius: 8px; }
+  .brand b { display: block; font-size: 15px; color: #f2f3f5; line-height: 1.2; }
+  .brand span { color: var(--dim); font-size: 12px; }
+  .search { padding: 0 14px 10px; }
+  .search input { width: 100%; height: 32px; padding: 0 10px; font: inherit; font-size: 13px; color: var(--text); background: #17181b; border: 1px solid var(--line); border-radius: 5px; }
+  .search input:focus { border-color: var(--accent); outline: none; }
+  .count { min-height: 18px; margin: 6px 2px 0; font-size: 12px; color: var(--dim); }
+  nav { flex: 1; overflow: auto; padding: 4px 8px 16px; }
+  nav a { display: block; padding: 6px 10px; border-radius: 5px; color: var(--dim); text-decoration: none; font-size: 13px; border-left: 2px solid transparent; }
+  nav a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+  nav a.current { color: #fff; background: rgba(77, 143, 214, 0.16); border-left-color: var(--accent); }
+  nav a.miss { opacity: 0.32; }
+
+  /* conteúdo */
+  main { height: 100vh; overflow: auto; scroll-behavior: smooth; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 30px 36px 80px; }
+  section { padding-top: 10px; margin-bottom: 34px; scroll-margin-top: 14px; }
+  section.hidden { display: none; }
+  h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.01em; color: #f5f6f8; }
+  .lead { margin: 0 0 22px; color: var(--dim); max-width: 60ch; }
+  .rule { height: 2px; width: 120px; margin: 0 0 30px; background: var(--spectrum); border-radius: 2px; }
+  h2 { margin: 0 0 10px; padding-bottom: 8px; font-size: 19px; font-weight: 600; color: #f0f1f4; border-bottom: 1px solid var(--line); }
+  h3 { margin: 20px 0 6px; font-size: 14px; font-weight: 600; color: #e6e8ec; }
+  p { margin: 0 0 10px; max-width: 68ch; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; max-width: 68ch; }
+  li { margin-bottom: 4px; }
+  kbd { display: inline-block; min-width: 20px; padding: 0 6px; font: 600 12px/20px "Segoe UI", system-ui, sans-serif; text-align: center; color: #eef0f3; background: #33363c; border: 1px solid #111214; border-bottom-width: 2px; border-radius: 4px; white-space: nowrap; }
+  .path { color: #cfe3fa; white-space: nowrap; }
+  .tip { margin: 12px 0; padding: 10px 14px; background: var(--card); border-left: 3px solid var(--accent); border-radius: 0 5px 5px 0; max-width: 68ch; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 16px; font-size: 13px; }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #2c2f34; vertical-align: top; }
+  th { color: var(--dim); font-weight: 600; background: #212326; }
+  td:last-child { white-space: nowrap; }
+  table.wide td:last-child { white-space: normal; }
+  mark { background: #ffd43b; color: #111; border-radius: 2px; padding: 0 1px; }
+  .empty { display: none; padding: 40px 0; color: var(--dim); }
+  .empty.show { display: block; }
+  details { margin: 0 0 8px; background: var(--card); border: 1px solid #1a1b1d; border-radius: 6px; max-width: 70ch; }
+  summary { padding: 9px 14px; cursor: pointer; font-weight: 600; color: #e9ebee; }
+  details > div { padding: 0 14px 10px; }
+  @media (max-width: 720px) { body { grid-template-columns: 1fr; } aside { height: auto; position: sticky; top: 0; z-index: 2; } nav { display: flex; overflow-x: auto; padding: 0 8px 8px; } nav a { white-space: nowrap; } main { height: auto; } .wrap { padding: 20px; } }
+  @media (prefers-reduced-motion: reduce) { main { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="brand">
+    <img src="../assets/icons/icon-192.png" alt="">
+    <div><b>Imaginarium</b><span>Manual de uso · versão 2.0</span></div>
+  </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Buscar no manual…" aria-label="Buscar no manual" autocomplete="off">
+    <div class="count" id="count" aria-live="polite"></div>
+  </div>
+  <nav id="toc" aria-label="Índice"></nav>
+</aside>
+
+<main id="main">
+<div class="wrap">
+  <h1>Manual do Imaginarium</h1>
+  <p class="lead">Um guia direto para a versão 2.0. O Imaginarium segue o jeito de trabalhar do Photopea e do Photoshop — mesmas ferramentas, mesmos menus e mesmos atalhos —, então o que você já sabe desses programas vale aqui. Use a busca ou o índice para ir ao que interessa.</p>
+  <div class="rule" role="presentation"></div>
+
+  <section id="introducao">
+    <h2>Introdução</h2>
+    <p>O Imaginarium é um editor gráfico que roda inteiro no seu navegador, sem internet e sem instalação. Você abre o arquivo <b>index.html</b> e trabalha como em um programa instalado: camadas, máscaras, estilos, objetos inteligentes, pincéis, textos, vetores, seleções, ajustes e filtros. Ele abre e salva arquivos <b>PSD</b>.</p>
+    <p>Nada é enviado para fora do computador. Suas imagens ficam na memória do navegador até você salvar ou exportar.</p>
+    <h3>Como a tela é organizada</h3>
+    <table class="wide">
+      <tr><th>Área</th><th>Para que serve</th></tr>
+      <tr><td>Barra de menus (topo)</td><td>Arquivo, Editar, Imagem, Camada, Selecionar, Filtro, Visualizar, Janela e Ajuda, com os nomes oficiais em português.</td></tr>
+      <tr><td>Barra de opções</td><td>Muda conforme a ferramenta ativa: tamanho do pincel, tolerância da varinha, fonte do texto, proporção do recorte e assim por diante.</td></tr>
+      <tr><td>Ferramentas (esquerda)</td><td>20 grupos com 66 ferramentas. Clique e segure (ou clique com o botão direito) em um botão para ver as outras do grupo. Embaixo ficam as cores de primeiro plano e de fundo e o botão da máscara rápida.</td></tr>
+      <tr><td>Área de trabalho (centro)</td><td>A imagem, com réguas, grade e guias. Cada documento aberto ganha uma aba.</td></tr>
+      <tr><td>Painéis (direita)</td><td>Camadas, Canais, Demarcadores, Histórico, Propriedades, Ajustes, Cores, Amostras e outros. Todos estão no menu <span class="path">Janela</span>.</td></tr>
+      <tr><td>Barra de status (rodapé)</td><td>Zoom, tamanho da imagem, posição do cursor e posição no histórico.</td></tr>
+    </table>
+  </section>
+
+  <section id="primeiros-passos">
+    <h2>Primeiros passos</h2>
+    <ol>
+      <li>Abra o arquivo <b>index.html</b> com duplo clique (Chrome, Edge, Firefox ou Safari atualizados).</li>
+      <li>Na tela inicial, escolha <b>Novo projeto</b>, <b>Abrir</b> ou arraste um arquivo para a janela.</li>
+      <li>Escolha uma ferramenta pela barra da esquerda ou pela letra do teclado e ajuste-a na barra de opções.</li>
+      <li>Trabalhe em camadas: cada elemento em uma camada própria facilita mudar de ideia depois.</li>
+      <li>Salve em <b>PSD</b> (ou no projeto <b>.edt</b>) para continuar depois; use <span class="path">Arquivo › Exportar como</span> para gerar PNG, JPG, WEBP, GIF, SVG, PDF e outros.</li>
+    </ol>
+    <h3>Movendo-se pela imagem</h3>
+    <ul>
+      <li><b>Zoom:</b> <kbd>Alt</kbd> + roda do mouse (ou a pinça do touchpad), <kbd>Ctrl</kbd> <kbd>+</kbd> e <kbd>Ctrl</kbd> <kbd>−</kbd>. <kbd>Ctrl</kbd> <kbd>0</kbd> ajusta à janela; <kbd>Ctrl</kbd> <kbd>1</kbd> mostra em 100%. A ferramenta <b>Zoom</b> (<kbd>Z</kbd>) amplia com clique, reduz com <kbd>Alt</kbd>+clique e faz zoom contínuo arrastando para os lados; <kbd>Ctrl</kbd> <kbd>Espaço</kbd> a ativa temporariamente.</li>
+      <li><b>Deslocar:</b> a roda do mouse rola na vertical e, com <kbd>Ctrl</kbd> (ou <kbd>Shift</kbd>), na horizontal — como no Photopea. Também dá para segurar <kbd>Espaço</kbd> e arrastar, ou usar a <b>Mão</b> (<kbd>H</kbd>).</li>
+      <li><b>Girar vista:</b> ferramenta <b>Girar vista</b> (no grupo da Mão, <kbd>Shift</kbd> <kbd>H</kbd>). Arraste para girar a tela sem alterar a imagem; <kbd>Shift</kbd> gira de 15° em 15°; <kbd>Esc</kbd> ou clique duplo volta a 0°.</li>
+      <li><b>Navegador:</b> no painel Navegador, arraste o retângulo para ir a outra parte da imagem.</li>
+    </ul>
+    <h3>Réguas, grade e guias</h3>
+    <ul>
+      <li><kbd>Ctrl</kbd> <kbd>R</kbd> mostra as réguas. Arraste a partir de uma régua para criar uma guia; com a ferramenta Mover, arraste a guia para reposicioná-la ou solte-a fora da tela para removê-la.</li>
+      <li><span class="path">Visualizar › Novo layout de guias</span> cria colunas e linhas de uma vez; <span class="path">Novas guias a partir da forma</span> usa os limites da camada.</li>
+      <li><kbd>Ctrl</kbd> <kbd>'</kbd> mostra a grade, <kbd>Ctrl</kbd> <kbd>;</kbd> as guias e <kbd>Ctrl</kbd> <kbd>H</kbd> todos os extras. O tamanho e a cor da grade ficam em <span class="path">Editar › Preferências</span> (<kbd>Ctrl</kbd> <kbd>K</kbd>).</li>
+      <li>Ao mover camadas ou desenhar formas, o programa encaixa em guias, bordas, centros e em outras camadas (guias inteligentes em rosa). Segure <kbd>Ctrl</kbd> durante o arraste para desligar o encaixe.</li>
+    </ul>
+    <div class="tip">Errou? <kbd>Ctrl</kbd> <kbd>Z</kbd> desfaz e <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>Z</kbd> refaz; <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Z</kbd> volta vários passos. O painel Histórico guarda 120 passos por padrão; clique em qualquer um para voltar àquele ponto.</div>
+  </section>
+
+  <section id="arquivos">
+    <h2>Abrir, salvar e exportar</h2>
+    <h3>Abrir</h3>
+    <p>Formatos aceitos: <b>PSD e PSB</b> (camadas, grupos, máscaras, textos editáveis, formas, estilos de camada, camadas de ajuste, pranchetas, canais alfa e guias), <b>PNG, JPG, WEBP, AVIF, GIF</b> (os quadros viram camadas), <b>BMP, TIFF, TGA, ICO, SVG</b> e o projeto <b>.edt</b>.</p>
+    <ul>
+      <li><span class="path">Arquivo › Abrir</span> (<kbd>Ctrl</kbd> <kbd>O</kbd>): cada arquivo abre em uma aba. <span class="path">Abrir recentes</span> lista os últimos arquivos.</li>
+      <li><span class="path">Arquivo › Abrir e inserir</span>: coloca o arquivo dentro do documento atual como <b>objeto inteligente</b>, já em modo de transformação.</li>
+      <li><b>Arrastar e soltar:</b> soltar sobre a imagem aberta insere o arquivo no documento; soltar com <kbd>Shift</kbd> (ou sem documento aberto) abre em outra aba.</li>
+      <li><b>Colar:</b> <kbd>Ctrl</kbd> <kbd>V</kbd> cola uma imagem copiada de outro programa como nova camada.</li>
+    </ul>
+    <h3>Salvar</h3>
+    <ul>
+      <li><span class="path">Arquivo › Salvar</span> (<kbd>Ctrl</kbd> <kbd>S</kbd>): grava no formato do arquivo aberto (um PSD continua PSD).</li>
+      <li><span class="path">Arquivo › Salvar como PSD</span> (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>S</kbd>): grava um PSD com camadas, grupos, máscaras, textos editáveis, formas, estilos, ajustes e pranchetas, que abre no Photoshop, no Photopea e no próprio Imaginarium.</li>
+      <li><span class="path">Arquivo › Salvar como projeto Imaginarium (.edt)</span>: guarda absolutamente tudo, inclusive objetos e filtros inteligentes, fatias, composições de camadas e informações do arquivo.</li>
+    </ul>
+    <div class="tip">No Chrome e no Edge, o programa pergunta onde gravar e depois salva sempre no mesmo arquivo. Em outros navegadores, o arquivo vai para a pasta de downloads a cada salvamento. O histórico de desfazer não é gravado no arquivo.</div>
+    <h3>Exportar</h3>
+    <p><span class="path">Arquivo › Exportar como</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>W</kbd>) abre um diálogo com prévia, tamanho final estimado, escala em pixels ou porcentagem e qualidade. O submenu <span class="path">Exportar como</span> leva direto a cada formato.</p>
+    <table class="wide">
+      <tr><th>Formato</th><th>Quando usar</th></tr>
+      <tr><td>PNG</td><td>Mantém transparência e não perde qualidade. Bom para logotipos, recortes e arte com texto.</td></tr>
+      <tr><td>JPG</td><td>Arquivos pequenos para fotos. Sem transparência: as áreas vazias recebem a cor escolhida.</td></tr>
+      <tr><td>WEBP</td><td>Menor que JPG e PNG, com transparência. Ideal para sites.</td></tr>
+      <tr><td>GIF</td><td>Até 256 cores; pode ser animado (cada camada vira um quadro).</td></tr>
+      <tr><td>SVG</td><td>Vetores para a web; camadas de forma e texto viram elementos vetoriais.</td></tr>
+      <tr><td>PDF</td><td>Página pronta para imprimir; a resolução define o tamanho em centímetros.</td></tr>
+      <tr><td>BMP, TIFF, TGA, ICO</td><td>Compatibilidade com outros programas; ICO gera ícones em vários tamanhos.</td></tr>
+      <tr><td>PSD</td><td>Mantém as camadas para continuar em outro editor.</td></tr>
+    </table>
+    <ul>
+      <li><span class="path">Arquivo › Exportar camadas</span> grava cada camada em um arquivo (dentro de um .zip). <span class="path">Exportar como › Pranchetas para arquivos</span> e <span class="path">Exportar fatias</span> fazem o mesmo com pranchetas e fatias.</li>
+      <li><span class="path">Arquivo › Exportar pesquisa de cores (.cube)</span> transforma as camadas de ajuste visíveis em um LUT 3D, usável em outros programas e editores de vídeo.</li>
+      <li><span class="path">Arquivo › Imprimir</span> (<kbd>Ctrl</kbd> <kbd>P</kbd>) e <span class="path">Informações do arquivo</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>I</kbd>: título, autor, palavras-chave, direitos autorais).</li>
+      <li><span class="path">Arquivo › Automatizar</span>: <b>Lote</b> (aplica uma ação gravada a vários arquivos) e <b>Folha de contatos</b>. <span class="path">Arquivo › Script</span> executa JavaScript com acesso ao documento.</li>
+      <li><span class="path">Imagem › Variáveis</span>: troca textos e visibilidade de camadas a partir de um CSV e exporta uma imagem por linha.</li>
+    </ul>
+  </section>
+
+  <section id="documento">
+    <h2>Documento: tamanho, recorte e modos</h2>
+    <ol>
+      <li><span class="path">Arquivo › Novo</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>N</kbd>): dê um nome, escolha uma predefinição (Full HD, post quadrado, story, A4…) ou digite largura, altura e resolução.</li>
+      <li>Escolha o fundo: branco, preto, a cor de fundo atual ou transparente, e clique em <b>Criar</b>.</li>
+    </ol>
+    <h3>Mudar o tamanho</h3>
+    <ul>
+      <li><span class="path">Imagem › Tamanho da imagem</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>I</kbd>): pixels, porcentagem, centímetros ou polegadas; resolução; método de reamostragem (bicúbico, mais suave, mais nítido, bilinear, vizinho mais próximo). Desmarque <b>Reamostrar</b> para mudar só a resolução.</li>
+      <li><span class="path">Imagem › Tamanho da tela</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>): aumenta ou corta a área sem redimensionar o conteúdo. A âncora define o lado; <b>Relativo</b> soma ao tamanho atual; a cor de extensão preenche o novo espaço.</li>
+      <li><span class="path">Imagem › Rotação da imagem</span>: 180°, 90°, arbitrária e espelhamentos do documento inteiro.</li>
+      <li><span class="path">Imagem › Cortar</span> (pela seleção), <span class="path">Aparar</span> (remove bordas transparentes ou da cor do pixel de um canto, escolhendo os lados) e <span class="path">Revelar tudo</span> (amplia a tela até mostrar o que está fora dela).</li>
+    </ul>
+    <h3>Ferramenta Recorte (C)</h3>
+    <ul>
+      <li>Arraste a área ou ajuste pelas alças; arraste por <b>fora</b> da caixa para girar. Com <kbd>Ctrl</kbd> pressionado, arraste ao longo do horizonte para <b>endireitar</b>.</li>
+      <li>Na barra de opções: proporção (livre, original, 1:1, 4:5, 16:9…, ou largura × altura × resolução), <kbd>X</kbd> troca a orientação, <b>Excluir pixels cortados</b> e <b>Sensível ao conteúdo</b> (preenche as bordas vazias ao girar).</li>
+      <li>Sobreposições: regra dos terços, grade, diagonal, triângulo, proporção áurea e espiral áurea — <kbd>O</kbd> alterna entre elas.</li>
+      <li><kbd>Enter</kbd> aplica, <kbd>Esc</kbd> cancela.</li>
+      <li><b>Corte em perspectiva</b> (<kbd>Shift</kbd> <kbd>C</kbd>): clique os quatro cantos de um objeto fotografado de lado; ao aplicar, ele fica de frente.</li>
+    </ul>
+    <h3>Modos de imagem</h3>
+    <p><span class="path">Imagem › Modo</span>: Bitmap, Tons de cinza, Cores indexadas (paleta com pontilhamento), Cores RGB, CMYK e Lab, além de 8, 16 e 32 bits por canal. <span class="path">Imagem › Duplicar</span> cria uma cópia do documento e <span class="path">Aplicar imagem</span> mescla um canal ou camada em outra.</p>
+  </section>
+
+  <section id="camadas">
+    <h2>Camadas</h2>
+    <p>Camadas são folhas empilhadas; a de cima cobre a de baixo. Tudo acontece no painel <b>Camadas</b> (<kbd>F7</kbd>) e no menu <span class="path">Camada</span>.</p>
+    <table class="wide">
+      <tr><th>Ação</th><th>Como fazer</th></tr>
+      <tr><td>Nova camada</td><td>Botão de folha no rodapé do painel ou <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>N</kbd>. <span class="path">Camada › Novo › Camada</span> abre o diálogo com nome, cor, modo e opacidade.</td></tr>
+      <tr><td>Selecionar</td><td>Clique na camada. <kbd>Ctrl</kbd>+clique soma; <kbd>Shift</kbd>+clique seleciona um intervalo. <kbd>Alt</kbd> <kbd>]</kbd> / <kbd>Alt</kbd> <kbd>[</kbd> passam para a camada de cima / de baixo. Com a ferramenta Mover, <kbd>Ctrl</kbd>+clique na imagem seleciona a camada sob o cursor (ou ligue <b>Seleção automática</b>).</td></tr>
+      <tr><td>Renomear</td><td>Clique duplo no nome, ou <kbd>F2</kbd>.</td></tr>
+      <tr><td>Reorganizar</td><td>Arraste no painel, ou <kbd>Ctrl</kbd> <kbd>]</kbd> / <kbd>Ctrl</kbd> <kbd>[</kbd> (uma posição) e <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>]</kbd> / <kbd>[</kbd> (topo / base).</td></tr>
+      <tr><td>Ocultar / mostrar</td><td>Clique no olho. <kbd>Alt</kbd>+clique mostra só aquela camada. <kbd>Ctrl</kbd> <kbd>,</kbd> oculta as selecionadas.</td></tr>
+      <tr><td>Duplicar</td><td><kbd>Ctrl</kbd> <kbd>J</kbd> (camada via cópia; com seleção, copia só a área selecionada). <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>J</kbd> recorta a seleção para uma nova camada.</td></tr>
+      <tr><td>Agrupar</td><td><kbd>Ctrl</kbd> <kbd>G</kbd> agrupa; <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>G</kbd> desagrupa.</td></tr>
+      <tr><td>Mesclar</td><td><kbd>Ctrl</kbd> <kbd>E</kbd> mescla abaixo (ou as selecionadas), <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>E</kbd> mescla as visíveis e <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>E</kbd> carimba tudo em uma nova camada.</td></tr>
+      <tr><td>Máscara de recorte</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>G</kbd>, ou <kbd>Alt</kbd>+clique na camada de cima no painel: ela só aparece onde a de baixo tem conteúdo.</td></tr>
+      <tr><td>Mover e alinhar</td><td>Ferramenta Mover (<kbd>V</kbd>). As setas deslocam 1 px (<kbd>Shift</kbd>: 10 px); <kbd>Alt</kbd>+arrastar duplica. A barra de opções e <span class="path">Camada › Alinhar / Distribuir</span> alinham à tela, à seleção ou entre camadas.</td></tr>
+    </table>
+    <h3>Tipos de camada</h3>
+    <p>Pixels, <b>texto</b>, <b>forma</b>, <b>grupo</b>, <b>ajuste</b>, <b>preenchimento</b> (cor sólida, gradiente ou padrão), <b>objeto inteligente</b> e <b>prancheta</b>. Texto, forma, ajuste e preenchimento continuam editáveis (clique duplo na miniatura). Para pintar neles, use <span class="path">Camada › Rasterizar</span>.</p>
+    <h3>Opacidade, preenchimento e mesclagem</h3>
+    <p>No topo do painel ficam o <b>modo de mesclagem</b> (27 modos: Normal, Dissolver, Escurecer, Multiplicação, Superexposição de cores, Clarear, Tela, Subexposição de cores, Sobrepor, Luz indireta, Luz direta, Diferença, Exclusão, Matiz, Saturação, Cor, Luminosidade e outros; grupos também têm Passagem), a <b>opacidade</b> e o <b>preenchimento</b> (que não afeta os estilos de camada). Com a ferramenta Mover, as teclas <kbd>1</kbd>–<kbd>0</kbd> mudam a opacidade da camada.</p>
+    <h3>Bloqueios</h3>
+    <p>Bloquear pixels transparentes, pixels da imagem, posição ou tudo (<kbd>Ctrl</kbd> <kbd>/</kbd>). A camada <b>Fundo</b> já nasce bloqueada; clique duplo nela a transforma em camada comum.</p>
+    <h3>Máscaras</h3>
+    <ul>
+      <li><b>Máscara de camada:</b> botão de máscara no rodapé (com uma seleção ativa, a máscara já nasce no formato dela; com <kbd>Alt</kbd>, nasce invertida). Pinte com <b>preto para ocultar</b> e <b>branco para revelar</b>. <kbd>Shift</kbd>+clique na miniatura desliga a máscara; <kbd>Alt</kbd>+clique mostra a máscara na tela; <kbd>Ctrl</kbd>+clique carrega como seleção.</li>
+      <li><b>Máscara vetorial:</b> <span class="path">Camada › Máscara vetorial</span>, a partir do demarcador atual. Edite com as ferramentas de caneta e de seleção direta.</li>
+      <li>O painel <b>Propriedades</b> tem densidade, difusão, Inverter, Aplicar, Excluir e Intervalo de cores para a máscara.</li>
+    </ul>
+    <h3>Estilos de camada</h3>
+    <p>Clique duplo na camada (fora do nome) ou use o botão <i>fx</i>: Opções de mesclagem (inclusive <b>Mesclar se</b>), Chanfro e entalhe, Traçado, Sombra interna, Brilho interno, Cetim, Sobreposição de cores, de gradiente e de padrão, Brilho externo e Sombra projetada. Copie e cole estilos pelo menu <span class="path">Camada › Estilo de camada</span>; o painel <b>Estilos</b> guarda predefinições prontas e as suas.</p>
+    <h3>Organização avançada</h3>
+    <ul>
+      <li><b>Composições de camadas</b> (painel): guardam visibilidade, posição e estilos para alternar entre versões do layout.</li>
+      <li><span class="path">Editar › Alinhar camadas automaticamente</span> encaixa fotos sobrepostas (panorama, pilha) e <span class="path">Mesclar camadas automaticamente</span> cria as máscaras de emenda.</li>
+      <li><span class="path">Camada › Aparação</span>: remover franja, remover fosco preto ou branco.</li>
+    </ul>
+  </section>
+
+  <section id="objetos-inteligentes">
+    <h2>Objetos e filtros inteligentes</h2>
+    <p>Um <b>objeto inteligente</b> guarda o conteúdo original. Você pode ampliar, reduzir, girar e deformar quantas vezes quiser sem perder qualidade.</p>
+    <ul>
+      <li>Crie com <span class="path">Camada › Objetos inteligentes › Converter em objeto inteligente</span>, com <span class="path">Filtro › Converter para filtros inteligentes</span> ou inserindo um arquivo (<span class="path">Arquivo › Abrir e inserir</span>).</li>
+      <li><b>Editar conteúdo</b> (ou clique duplo na miniatura) abre o conteúdo em outra aba. Ao salvar com <kbd>Ctrl</kbd> <kbd>S</kbd>, o objeto se atualiza — e também todas as cópias feitas com <kbd>Ctrl</kbd> <kbd>J</kbd>, que ficam vinculadas. Para uma cópia independente, use <b>Novo objeto inteligente via cópia</b>.</li>
+      <li><b>Substituir conteúdo</b>, <b>Exportar conteúdo</b>, <b>Redefinir transformação</b>, <b>Converter em camadas</b> e <b>Rasterizar</b> ficam no mesmo submenu e no painel Propriedades.</li>
+    </ul>
+    <h3>Filtros inteligentes</h3>
+    <p>Filtros e ajustes aplicados a um objeto inteligente aparecem abaixo dele no painel Camadas e continuam editáveis: clique duplo no nome reabre o filtro, o olho liga e desliga, o ícone ao lado abre as opções de mesclagem (modo e opacidade do filtro) e a <b>máscara de filtro</b> limita onde ele age.</p>
+  </section>
+
+  <section id="selecoes">
+    <h2>Seleções</h2>
+    <ul>
+      <li><b>Letreiros</b> (<kbd>M</kbd>): retangular, elíptico, linha única e coluna única. <kbd>Shift</kbd> mantém a proporção, <kbd>Alt</kbd> desenha a partir do centro e <kbd>Espaço</kbd> reposiciona enquanto arrasta.</li>
+      <li><b>Laços</b> (<kbd>L</kbd>): livre, poligonal (cliques; <kbd>Enter</kbd> ou clique duplo fecha) e magnético (segue as bordas).</li>
+      <li><b>Varinha mágica</b> e <b>Seleção rápida</b> (<kbd>W</kbd>): por cor semelhante ou pintando sobre a área.</li>
+      <li><kbd>Shift</kbd> soma, <kbd>Alt</kbd> subtrai e <kbd>Shift</kbd>+<kbd>Alt</kbd> faz a interseção com a seleção existente.</li>
+    </ul>
+    <h3>Menu Selecionar</h3>
+    <ul>
+      <li>Tudo (<kbd>Ctrl</kbd> <kbd>A</kbd>), Desmarcar (<kbd>Ctrl</kbd> <kbd>D</kbd>), Selecionar novamente (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>D</kbd>) e Inverter (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>I</kbd>).</li>
+      <li><b>Intervalo de cores</b>: seleciona por cor amostrada, faixa de tons (realces, tons médios, sombras) ou tons de pele.</li>
+      <li><b>Refinar borda</b> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>R</kbd>): raio, suavizar, difusão, contraste, deslocar borda, descontaminar cores e saída para seleção, máscara ou nova camada — ideal para cabelos.</li>
+      <li><b>Modificar</b>: borda, suavizar, expandir, contrair e difusão (<kbd>Shift</kbd> <kbd>F6</kbd>). <b>Expandir</b> e <b>Semelhante</b> crescem por cor.</li>
+      <li><b>Transformar seleção</b> deforma só o contorno, sem mexer nos pixels.</li>
+      <li><b>Máscara rápida</b> (<kbd>Q</kbd>): pinte a seleção com pincéis; <kbd>Q</kbd> de novo volta à seleção.</li>
+      <li><b>Salvar seleção</b> e <b>Carregar seleção</b> usam canais alfa (painel Canais). <kbd>Ctrl</kbd>+clique na miniatura de uma camada ou canal carrega sua forma como seleção.</li>
+    </ul>
+    <p>Com a seleção ativa: <kbd>Delete</kbd> limpa, <kbd>Ctrl</kbd> <kbd>C</kbd> copia, a ferramenta Mover desloca os pixels e os filtros agem só ali. <span class="path">Editar › Preenchimento sensível ao conteúdo</span> preenche a área com textura da vizinhança.</p>
+  </section>
+
+  <section id="pintura">
+    <h2>Pintura e retoque</h2>
+    <p>Selecione o <b>Pincel</b> (<kbd>B</kbd>), escolha a cor de primeiro plano e arraste sobre a imagem.</p>
+    <table class="wide">
+      <tr><th>Opção</th><th>O que muda</th></tr>
+      <tr><td>Tamanho</td><td>Diâmetro da ponta. Atalhos: <kbd>[</kbd> e <kbd>]</kbd>.</td></tr>
+      <tr><td>Dureza</td><td>100% dá borda nítida; valores baixos dão borda esfumada. Atalhos: <kbd>{</kbd> e <kbd>}</kbd> (<kbd>Shift</kbd> <kbd>[</kbd> <kbd>]</kbd>).</td></tr>
+      <tr><td>Opacidade e fluxo</td><td>Teclas <kbd>1</kbd>–<kbd>9</kbd> e <kbd>0</kbd> ajustam a opacidade de 10% a 100% (duas teclas rápidas dão valores exatos, como 4 e 5 para 45%). Com <kbd>Shift</kbd>, ajustam o fluxo.</td></tr>
+      <tr><td>Modo</td><td>Modo de mesclagem da tinta (Normal, Multiplicação, Tela, Atrás, Limpar…).</td></tr>
+      <tr><td>Suavização e aerógrafo</td><td>Estabiliza a mão para curvas limpas; o aerógrafo acumula tinta enquanto o botão está pressionado.</td></tr>
+    </table>
+    <ul>
+      <li>O painel <b>Pincel</b> (<kbd>F5</kbd>) tem formato da ponta, ângulo, arredondamento, espaçamento e dinâmicas (tamanho, ângulo, dispersão, cor, transferência), além das pontas personalizadas criadas em <span class="path">Editar › Definir novo › Pincel</span>.</li>
+      <li><kbd>Alt</kbd>+clique captura uma cor da imagem; <kbd>Shift</kbd>+clique liga o último ponto ao novo com uma linha reta.</li>
+      <li>Com uma seleção ativa, a tinta só entra dentro dela. Mesas digitalizadoras: a pressão controla tamanho e/ou opacidade.</li>
+    </ul>
+    <h3>Ferramentas de pintura</h3>
+    <ul>
+      <li><b>Pincel, Lápis, Substituição de cor e Pincel misturador</b> (<kbd>B</kbd>).</li>
+      <li><b>Pincel de histórico</b> (<kbd>Y</kbd>): pinta com o estado escolhido no painel Histórico.</li>
+      <li><b>Borracha, Borracha de plano de fundo e Borracha mágica</b> (<kbd>E</kbd>).</li>
+      <li><b>Gradiente e Balde de tinta</b> (<kbd>G</kbd>): gradientes linear, radial, angular, refletido e diamante, com editor de cores e transparências; o balde preenche com cor ou padrão.</li>
+      <li><b>Conta-gotas</b> (<kbd>I</kbd>): clique para pegar a cor de primeiro plano; <kbd>Alt</kbd>+clique pega a de fundo. No mesmo grupo: Amostra de cor (até 4 pontos no painel Informações), Régua e Contagem.</li>
+    </ul>
+    <h3>Retoque</h3>
+    <ul>
+      <li><b>Carimbo</b> (<kbd>S</kbd>): <kbd>Alt</kbd>+clique define a origem e depois pinte para copiar. <b>Carimbo de padrão</b> pinta com um padrão.</li>
+      <li><b>Família de recuperação</b> (<kbd>J</kbd>): Pincel de recuperação para manchas (só pinte sobre o defeito), Pincel de recuperação (com origem), Remendo, Movimento sensível ao conteúdo e Olhos vermelhos.</li>
+      <li><b>Desfoque, Nitidez e Borrar</b> (<kbd>R</kbd>) e <b>Subexposição, Superexposição e Esponja</b> (<kbd>O</kbd>) clareiam, escurecem, saturam ou dessaturam por pinceladas.</li>
+    </ul>
+    <h3>Cores</h3>
+    <p>Clique nos quadrados de cor para abrir o seletor (HSB, RGB, Lab, CMYK e HEX). O painel <b>Cores</b> tem o seletor rápido e o <b>Amostras</b> guarda cores prontas e as suas. <kbd>X</kbd> troca primeiro plano e fundo; <kbd>D</kbd> volta a preto e branco.</p>
+  </section>
+
+  <section id="vetores">
+    <h2>Formas, caneta e demarcadores</h2>
+    <p>As ferramentas de forma (<kbd>U</kbd>) — <b>Retângulo, Elipse, Polígono, Estrela, Linha e Forma personalizada</b> — criam camadas de forma. Arraste para desenhar; <kbd>Shift</kbd> mantém a proporção e <kbd>Alt</kbd> desenha a partir do centro. Na barra de opções escolha <b>Forma</b>, <b>Demarcador</b> ou <b>Pixels</b>, o preenchimento, o traçado (cor, largura, tracejado, alinhamento), o raio dos cantos e as operações (combinar, subtrair, intersectar, excluir sobreposição).</p>
+    <ul>
+      <li><b>Caneta</b> (<kbd>P</kbd>): clique para pontos retos, clique e arraste para curvas, clique no primeiro ponto para fechar. No grupo: Caneta de forma livre (com opção magnética), Caneta de curvatura, Adicionar e Excluir ponto de ancoragem e Converter ponto.</li>
+      <li><b>Seleção de demarcador</b> e <b>Seleção direta</b> (<kbd>A</kbd>) movem demarcadores inteiros ou pontos e alças individuais.</li>
+      <li>O painel <b>Demarcadores</b> lista o demarcador de trabalho e os salvos; os botões preenchem, contornam, viram seleção (<kbd>Ctrl</kbd> <kbd>Enter</kbd>) ou máscara.</li>
+      <li><span class="path">Editar › Definir novo › Forma personalizada</span> guarda a forma para a ferramenta Forma personalizada. O painel <b>Biblioteca</b> traz formas, gradientes e texturas prontas.</li>
+    </ul>
+  </section>
+
+  <section id="textos">
+    <h2>Textos</h2>
+    <ol>
+      <li>Selecione o <b>Texto horizontal</b> (<kbd>T</kbd>). Clique para texto de ponto ou arraste uma caixa para texto de parágrafo.</li>
+      <li>Digite. <kbd>Enter</kbd> cria uma nova linha.</li>
+      <li>Conclua com <kbd>Ctrl</kbd> <kbd>Enter</kbd>, com o botão de confirmar ou clicando em outra ferramenta. <kbd>Esc</kbd> cancela.</li>
+    </ol>
+    <p>Para editar um texto existente, clique nele com a ferramenta Texto ou dê clique duplo na miniatura da camada. Cada trecho selecionado pode ter fonte, tamanho, cor e estilo próprios.</p>
+    <ul>
+      <li><b>Barra de opções:</b> fonte, estilo, tamanho, suavização, alinhamento, cor, <b>Deformar texto</b> (arco, bandeira, onda, peixe…) e painéis.</li>
+      <li><b>Painel Caracteres:</b> entrelinha, kerning, tracking, escala vertical e horizontal, deslocamento da linha de base, falso negrito/itálico, maiúsculas, versaletes, sobrescrito, subscrito, sublinhado e tachado.</li>
+      <li><b>Painel Parágrafo:</b> alinhamentos e justificação, recuos, espaço antes e depois.</li>
+      <li><b>Painel Glifos:</b> insere qualquer caractere da fonte.</li>
+      <li><b>Texto vertical</b> (<kbd>Shift</kbd> <kbd>T</kbd>), <b>texto em demarcador</b> (clique sobre um demarcador com a ferramenta Texto) e <span class="path">Camada › Texto</span> (converter em parágrafo/ponto, criar demarcador, converter em forma, Lorem Ipsum).</li>
+      <li><b>Máscara de texto horizontal e vertical</b>: digite como texto comum; ao concluir, as letras viram uma <i>seleção</i> em vez de camada.</li>
+    </ul>
+    <p>A lista traz as fontes detectadas pelo navegador. No Chrome e no Edge, o botão <b>Carregar todas as fontes do sistema</b> (painel Caracteres) lista tudo o que está instalado, mediante sua permissão.</p>
+  </section>
+
+  <section id="transformar">
+    <h2>Transformar e deformar</h2>
+    <p><span class="path">Editar › Transformação livre</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>T</kbd>, ou <kbd>Ctrl</kbd> <kbd>T</kbd> quando o navegador permitir) funciona em camadas, grupos, textos, formas, objetos inteligentes, seleções e demarcadores.</p>
+    <table class="wide">
+      <tr><th>Gesto</th><th>Resultado</th></tr>
+      <tr><td>Arrastar um canto</td><td>Escala proporcional (o botão de corrente na barra de opções muda o padrão; <kbd>Shift</kbd> inverte).</td></tr>
+      <tr><td><kbd>Alt</kbd> + arrastar</td><td>Escala a partir do ponto de referência (centro). <kbd>Alt</kbd>+clique dentro da caixa move o ponto de referência.</td></tr>
+      <tr><td>Arrastar fora da caixa</td><td>Gira; com <kbd>Shift</kbd>, de 15° em 15°.</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + canto</td><td>Distorcer livremente.</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> + lado</td><td>Inclinar.</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> + canto</td><td>Perspectiva.</td></tr>
+      <tr><td><kbd>Enter</kbd> / <kbd>Esc</kbd></td><td>Aplicar / cancelar.</td></tr>
+    </table>
+    <ul>
+      <li><span class="path">Editar › Transformar</span>: Escala, Girar, Inclinar, Distorcer, Perspectiva, <b>Deformar</b> (malha com predefinições), giros de 90°/180° e espelhamentos. <b>Novamente</b> (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>T</kbd>) repete a última transformação.</li>
+      <li><span class="path">Editar › Deformação de marionete</span>: alfinetes sobre uma malha para dobrar braços, caules, tecidos.</li>
+      <li><span class="path">Editar › Deformação de perspectiva</span>: desenhe os planos e depois endireite ou mude o ponto de vista.</li>
+      <li><span class="path">Editar › Escala sensível ao conteúdo</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>C</kbd>): muda a proporção preservando pessoas e objetos importantes.</li>
+      <li><span class="path">Filtro › Dissolver</span> (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>X</kbd>, o “Liquify”): deformação para frente, reconstruir, suavizar, redemoinho, franzir, inflar, empurrar e as máscaras de congelamento (<kbd>F</kbd> congela, <kbd>D</kbd> descongela), com desfazer próprio (<kbd>Ctrl</kbd> <kbd>Z</kbd>).</li>
+    </ul>
+  </section>
+
+  <section id="ajustes-e-filtros">
+    <h2>Ajustes e filtros</h2>
+    <p>Ajustes e filtros agem na <b>camada ativa</b> (ou só dentro da seleção) e abrem com pré-visualização ao vivo.</p>
+    <table class="wide">
+      <tr><th>Onde</th><th>O que há</th></tr>
+      <tr><td><span class="path">Imagem › Ajustes</span></td><td>Brilho/Contraste, Níveis (<kbd>Ctrl</kbd> <kbd>L</kbd>), Curvas (<kbd>Ctrl</kbd> <kbd>M</kbd>), Exposição, Vibração, Matiz/Saturação (<kbd>Ctrl</kbd> <kbd>U</kbd>), Equilíbrio de cores (<kbd>Ctrl</kbd> <kbd>B</kbd>), Preto e branco, Filtro de fotos, Misturador de canais, Pesquisa de cores, Inverter (<kbd>Ctrl</kbd> <kbd>I</kbd>), Posterizar, Limiar, Mapa de gradiente, Cor seletiva, Sombras/Realces, Tonificação HDR, Dessaturar, Substituir cor e Equalizar.</td></tr>
+      <tr><td><span class="path">Imagem</span></td><td>Tom automático, Contraste automático e Cor automática.</td></tr>
+      <tr><td><span class="path">Filtro</span></td><td>Galeria de filtros, Filtro Camera Raw, Correção de lente, Dissolver, Ponto de fuga e os grupos Desfoque, Galeria de desfoque (campo, íris, tilt-shift), Distorção, Ruído, Pixelização, Acabamento (nuvens, reflexo de lente, iluminação…), Nitidez, Estilização, Artístico e Outros — 67 filtros no total.</td></tr>
+    </table>
+    <h3>Camadas de ajuste</h3>
+    <p>Prefira camadas de ajuste: elas não alteram os pixels e podem ser reeditadas, mascaradas e recortadas. Crie pelo painel <b>Ajustes</b> (um botão para cada tipo), pelo botão de meio círculo no rodapé do painel Camadas ou por <span class="path">Camada › Nova camada de ajuste</span>. Os controles ficam no painel Propriedades.</p>
+    <ul>
+      <li><b>Curvas:</b> clique na linha para criar pontos e arraste; arrastar um ponto para fora remove. Canais separados, predefinições e <b>Automático</b>.</li>
+      <li><b>Níveis:</b> ajuste pretos, tons médios e brancos olhando o histograma; <b>Automático</b> dá um bom ponto de partida.</li>
+      <li>Em Níveis e Curvas, os três <b>conta-gotas</b> definem o ponto preto, cinza e branco clicando na imagem.</li>
+      <li><b>Último filtro</b> (<kbd>Ctrl</kbd> <kbd>F</kbd>) reaplica com os mesmos valores; <span class="path">Editar › Atenuar</span> (<kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>F</kbd>) reduz a opacidade ou muda o modo do último filtro, ajuste ou pincelada.</li>
+      <li>Em um objeto inteligente, filtros e ajustes viram <b>filtros inteligentes</b> (veja a seção própria).</li>
+    </ul>
+  </section>
+
+  <section id="ponto-de-fuga">
+    <h2>Ponto de fuga</h2>
+    <p><span class="path">Filtro › Ponto de fuga</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>V</kbd>) edita a imagem respeitando a perspectiva de paredes, pisos e fachadas.</p>
+    <ol>
+      <li>Com a ferramenta <b>Criar plano</b>, clique nos quatro cantos de uma superfície retangular da foto. A grade fica azul quando o plano é válido.</li>
+      <li>Ajuste os cantos com <b>Editar plano</b>. Se a grade ficar vermelha, a perspectiva é impossível: mova os cantos até ela voltar a ficar azul.</li>
+      <li>Use o <b>Letreiro</b> para selecionar em perspectiva e arraste com <kbd>Alt</kbd> para duplicar a área; o <b>Carimbo</b> (<kbd>Alt</kbd>+clique na origem) e o <b>Pincel</b> pintam seguindo o plano.</li>
+      <li>Copie algo antes de abrir o filtro e cole com <kbd>Ctrl</kbd> <kbd>V</kbd>: arraste o conteúdo colado para dentro do plano e ele se encaixa na perspectiva.</li>
+      <li>Clique em <b>OK</b>. O resultado vai para a camada atual ou para uma nova camada (opção no diálogo).</li>
+    </ol>
+  </section>
+
+  <section id="pranchetas-e-fatias">
+    <h2>Pranchetas e fatias</h2>
+    <h3>Pranchetas</h3>
+    <ul>
+      <li>Ferramenta <b>Prancheta</b> (<kbd>Shift</kbd> <kbd>V</kbd>): arraste para criar uma prancheta; os botões <b>+</b> ao redor da prancheta selecionada criam outra ao lado.</li>
+      <li><span class="path">Camada › Novo › Prancheta</span>, <span class="path">Prancheta a partir do grupo</span> e <span class="path">Prancheta a partir de camadas</span>.</li>
+      <li>Cada prancheta tem tamanho, predefinição (celular, tablet, web…) e cor de fundo no painel Propriedades. Camadas arrastadas para dentro dela passam a pertencer à prancheta.</li>
+      <li><span class="path">Arquivo › Exportar como › Pranchetas para arquivos</span> gera uma imagem por prancheta.</li>
+    </ul>
+    <h3>Fatias</h3>
+    <ul>
+      <li>Ferramenta <b>Fatia</b> (no grupo do Recorte): arraste para dividir a imagem em regiões. <b>Seleção de fatia</b> move, redimensiona e define nome, link e texto alternativo.</li>
+      <li><span class="path">Visualizar › Bloquear fatias</span> e <span class="path">Limpar fatias</span>; <span class="path">Arquivo › Exportar como › Exportar fatias</span> grava cada fatia em um arquivo.</li>
+    </ul>
+  </section>
+
+  <section id="paineis">
+    <h2>Painéis</h2>
+    <table class="wide">
+      <tr><th>Painel</th><th>Para que serve</th></tr>
+      <tr><td>Camadas (<kbd>F7</kbd>)</td><td>Pilha de camadas, máscaras, estilos, filtros inteligentes, bloqueios, opacidade e preenchimento.</td></tr>
+      <tr><td>Canais</td><td>Ver e editar canais vermelho, verde, azul e alfas (<kbd>Ctrl</kbd> <kbd>2</kbd> a <kbd>Ctrl</kbd> <kbd>9</kbd>).</td></tr>
+      <tr><td>Demarcadores</td><td>Demarcadores de trabalho e salvos; preencher, contornar, seleção e máscara.</td></tr>
+      <tr><td>Histórico</td><td>Lista de passos, instantâneos e origem do Pincel de histórico.</td></tr>
+      <tr><td>Propriedades</td><td>Opções da camada ativa: transformação, ajuste, máscara, texto, forma, objeto inteligente ou prancheta.</td></tr>
+      <tr><td>Ajustes</td><td>Um clique cria uma camada de ajuste.</td></tr>
+      <tr><td>Cores e Amostras</td><td>Seletor rápido e paleta de cores.</td></tr>
+      <tr><td>Pincel (<kbd>F5</kbd>)</td><td>Ponta, dinâmicas e pincéis predefinidos.</td></tr>
+      <tr><td>Caracteres, Parágrafo e Glifos</td><td>Formatação de texto.</td></tr>
+      <tr><td>Navegador, Informações (<kbd>F8</kbd>) e Histograma</td><td>Visão geral, cor e posição sob o cursor, amostradores e distribuição de tons.</td></tr>
+      <tr><td>Ações (<kbd>Alt</kbd> <kbd>F9</kbd>)</td><td>Grave uma sequência de comandos (botão de gravar), pare e reproduza em outros documentos ou em lote.</td></tr>
+      <tr><td>Composições de camadas</td><td>Versões do layout com visibilidade, posição e estilos.</td></tr>
+      <tr><td>Estilos</td><td>Estilos de camada prontos; um clique aplica.</td></tr>
+      <tr><td>Predefinições de ferramenta</td><td>Guarda as opções atuais de uma ferramenta para reutilizar.</td></tr>
+      <tr><td>CSS</td><td>Gera o CSS da camada selecionada (cor, borda, sombra, fonte).</td></tr>
+      <tr><td>Biblioteca</td><td>Formas, gradientes e texturas prontos e a sua biblioteca pessoal.</td></tr>
+    </table>
+    <p>Arraste a aba de um painel para outro grupo, ou para a divisa entre grupos para criar um novo. Arraste as divisas para redimensionar. <kbd>Tab</kbd> oculta toda a interface e <kbd>Shift</kbd> <kbd>Tab</kbd> só os painéis. <span class="path">Janela › Restaurar layout dos painéis</span> volta ao padrão. <span class="path">Editar › Gerenciador de predefinições</span> importa e exporta pincéis, padrões, formas, gradientes, estilos e amostras.</p>
+  </section>
+
+  <section id="aparencia">
+    <h2>Aparência</h2>
+    <p>Em <span class="path">Editar › Preferências › Aparência</span> (ou <span class="path">Mais › Aparência</span>, na aparência Photopea) você escolhe como a interface se apresenta. A troca é imediata e não mexe nos documentos abertos.</p>
+    <table class="wide">
+      <tr><th>Aparência</th><th>Como é</th></tr>
+      <tr><td>Imaginarium</td><td>O visual original: grafite com detalhes em azul, barra de status, painéis em grupos de abas e tela inicial com tamanhos prontos.</td></tr>
+      <tr><td>Photopea</td><td>Igual ao Photopea: cinza #474747, fonte Open Sans 13 px, barra de ferramentas estreita com os mesmos grupos, painéis em duas colunas (ícones à esquerda, abas à direita), menus claros, abas de documento arredondadas, tela inicial com “Solte qualquer arquivo aqui”, pesquisa de comandos (lupa ao lado dos menus) e teclado virtual na barra de ferramentas. As ferramentas que o Photopea não tem ficam ocultas nesta aparência.</td></tr>
+    </table>
+    <p>Na aparência Photopea, clique em um ícone da coluna estreita para abrir o painel ao lado; arraste abas e ícones entre as colunas para reorganizar; o botão <b>≡</b> de cada grupo tem as opções do painel. As setinhas <b>&lt; &gt;</b> no topo expandem a coluna de ícones e recolhem a coluna de painéis.</p>
+  </section>
+
+  <section id="atalhos">
+    <h2>Lista de atalhos</h2>
+    <div class="tip">Os atalhos são os do Photopea/Photoshop. O navegador reserva <kbd>Ctrl</kbd> <kbd>N</kbd>, <kbd>Ctrl</kbd> <kbd>T</kbd> e <kbd>Ctrl</kbd> <kbd>W</kbd> para janelas e abas, e nenhuma página consegue mudar isso; por isso esses comandos também respondem às variantes com <kbd>Alt</kbd>. No Mac, use <kbd>⌘</kbd> no lugar de <kbd>Ctrl</kbd>. Todos os atalhos podem ser vistos e alterados em <span class="path">Editar › Atalhos do teclado</span> (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>K</kbd>); <kbd>?</kbd> mostra a lista rápida.</div>
+    <h3>Arquivo</h3>
+    <table>
+      <tr><td>Novo</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>N</kbd></td></tr>
+      <tr><td>Abrir</td><td><kbd>Ctrl</kbd> <kbd>O</kbd></td></tr>
+      <tr><td>Salvar</td><td><kbd>Ctrl</kbd> <kbd>S</kbd></td></tr>
+      <tr><td>Salvar como PSD</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>S</kbd></td></tr>
+      <tr><td>Exportar como</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>W</kbd></td></tr>
+      <tr><td>Imprimir</td><td><kbd>Ctrl</kbd> <kbd>P</kbd></td></tr>
+      <tr><td>Informações do arquivo</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>I</kbd></td></tr>
+      <tr><td>Fechar</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>W</kbd></td></tr>
+    </table>
+    <h3>Editar</h3>
+    <table>
+      <tr><td>Desfazer / Refazer</td><td><kbd>Ctrl</kbd> <kbd>Z</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>Z</kbd> (ou <kbd>Ctrl</kbd> <kbd>Y</kbd>)</td></tr>
+      <tr><td>Voltar / Avançar um passo</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Z</kbd> / <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>Z</kbd></td></tr>
+      <tr><td>Atenuar</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>F</kbd></td></tr>
+      <tr><td>Recortar / Copiar / Colar</td><td><kbd>Ctrl</kbd> <kbd>X</kbd> / <kbd>Ctrl</kbd> <kbd>C</kbd> / <kbd>Ctrl</kbd> <kbd>V</kbd></td></tr>
+      <tr><td>Copiar mesclado</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>C</kbd></td></tr>
+      <tr><td>Colar no lugar / Colar dentro</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd> / <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>V</kbd></td></tr>
+      <tr><td>Limpar</td><td><kbd>Delete</kbd></td></tr>
+      <tr><td>Preencher…</td><td><kbd>Shift</kbd> <kbd>F5</kbd> ou <kbd>Shift</kbd> <kbd>Backspace</kbd></td></tr>
+      <tr><td>Preencher com primeiro plano / fundo</td><td><kbd>Alt</kbd> <kbd>Backspace</kbd> / <kbd>Ctrl</kbd> <kbd>Backspace</kbd> (com <kbd>Shift</kbd>, preserva a transparência)</td></tr>
+      <tr><td>Transformação livre</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>T</kbd> (ou <kbd>Ctrl</kbd> <kbd>T</kbd>)</td></tr>
+      <tr><td>Transformar novamente</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>T</kbd></td></tr>
+      <tr><td>Escala sensível ao conteúdo</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>C</kbd></td></tr>
+      <tr><td>Preferências</td><td><kbd>Ctrl</kbd> <kbd>K</kbd></td></tr>
+      <tr><td>Atalhos do teclado</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>K</kbd></td></tr>
+    </table>
+    <h3>Imagem</h3>
+    <table>
+      <tr><td>Níveis / Curvas</td><td><kbd>Ctrl</kbd> <kbd>L</kbd> / <kbd>Ctrl</kbd> <kbd>M</kbd></td></tr>
+      <tr><td>Matiz/Saturação / Equilíbrio de cores</td><td><kbd>Ctrl</kbd> <kbd>U</kbd> / <kbd>Ctrl</kbd> <kbd>B</kbd></td></tr>
+      <tr><td>Preto e branco</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>B</kbd></td></tr>
+      <tr><td>Inverter / Dessaturar</td><td><kbd>Ctrl</kbd> <kbd>I</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>U</kbd></td></tr>
+      <tr><td>Tom / Contraste / Cor automáticos</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>L</kbd> / <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>L</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>B</kbd></td></tr>
+      <tr><td>Tamanho da imagem / da tela</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>I</kbd> / <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd></td></tr>
+    </table>
+    <h3>Camada</h3>
+    <table>
+      <tr><td>Nova camada</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>N</kbd></td></tr>
+      <tr><td>Camada via cópia / via recorte</td><td><kbd>Ctrl</kbd> <kbd>J</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>J</kbd></td></tr>
+      <tr><td>Renomear</td><td><kbd>F2</kbd></td></tr>
+      <tr><td>Agrupar / Desagrupar</td><td><kbd>Ctrl</kbd> <kbd>G</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>G</kbd></td></tr>
+      <tr><td>Criar máscara de recorte</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>G</kbd></td></tr>
+      <tr><td>Ocultar / Bloquear camadas</td><td><kbd>Ctrl</kbd> <kbd>,</kbd> / <kbd>Ctrl</kbd> <kbd>/</kbd></td></tr>
+      <tr><td>Mesclar abaixo / visíveis</td><td><kbd>Ctrl</kbd> <kbd>E</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>E</kbd></td></tr>
+      <tr><td>Carimbar visíveis</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>E</kbd></td></tr>
+      <tr><td>Avançar / Recuar</td><td><kbd>Ctrl</kbd> <kbd>]</kbd> / <kbd>Ctrl</kbd> <kbd>[</kbd></td></tr>
+      <tr><td>Trazer para a frente / Enviar para trás</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>]</kbd> / <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>[</kbd></td></tr>
+      <tr><td>Selecionar camada acima / abaixo</td><td><kbd>Alt</kbd> <kbd>]</kbd> / <kbd>Alt</kbd> <kbd>[</kbd> (com <kbd>Shift</kbd>, soma à seleção)</td></tr>
+    </table>
+    <h3>Selecionar</h3>
+    <table>
+      <tr><td>Tudo / Desmarcar</td><td><kbd>Ctrl</kbd> <kbd>A</kbd> / <kbd>Ctrl</kbd> <kbd>D</kbd></td></tr>
+      <tr><td>Selecionar novamente</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>D</kbd></td></tr>
+      <tr><td>Inverter</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>I</kbd> ou <kbd>Shift</kbd> <kbd>F7</kbd></td></tr>
+      <tr><td>Todas as camadas</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>A</kbd></td></tr>
+      <tr><td>Localizar camadas</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>F</kbd></td></tr>
+      <tr><td>Difusão</td><td><kbd>Shift</kbd> <kbd>F6</kbd></td></tr>
+      <tr><td>Refinar borda</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>R</kbd></td></tr>
+      <tr><td>Máscara rápida</td><td><kbd>Q</kbd></td></tr>
+      <tr><td>Demarcador como seleção</td><td><kbd>Ctrl</kbd> <kbd>Enter</kbd></td></tr>
+    </table>
+    <h3>Filtro</h3>
+    <table>
+      <tr><td>Último filtro</td><td><kbd>Ctrl</kbd> <kbd>F</kbd></td></tr>
+      <tr><td>Filtro Camera Raw</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>A</kbd></td></tr>
+      <tr><td>Correção de lente</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>R</kbd></td></tr>
+      <tr><td>Dissolver (Liquify)</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>X</kbd></td></tr>
+      <tr><td>Ponto de fuga</td><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>V</kbd></td></tr>
+    </table>
+    <h3>Visualizar e Janela</h3>
+    <table>
+      <tr><td>Aproximar / Afastar</td><td><kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>Ctrl</kbd> <kbd>−</kbd></td></tr>
+      <tr><td>Ajustar à área / Pixel a pixel</td><td><kbd>Ctrl</kbd> <kbd>0</kbd> / <kbd>Ctrl</kbd> <kbd>1</kbd></td></tr>
+      <tr><td>Mão temporária</td><td><kbd>Espaço</kbd> + arrastar</td></tr>
+      <tr><td>Extras</td><td><kbd>Ctrl</kbd> <kbd>H</kbd></td></tr>
+      <tr><td>Réguas / Grade / Guias</td><td><kbd>Ctrl</kbd> <kbd>R</kbd> / <kbd>Ctrl</kbd> <kbd>'</kbd> / <kbd>Ctrl</kbd> <kbd>;</kbd></td></tr>
+      <tr><td>Encaixar / Bloquear guias</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>;</kbd> / <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>;</kbd></td></tr>
+      <tr><td>Demarcador de destino</td><td><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>H</kbd></td></tr>
+      <tr><td>Canais (composto, R, G, B, alfas)</td><td><kbd>Ctrl</kbd> <kbd>2</kbd> … <kbd>Ctrl</kbd> <kbd>9</kbd></td></tr>
+      <tr><td>Tela cheia</td><td><kbd>F11</kbd></td></tr>
+      <tr><td>Ocultar interface / painéis</td><td><kbd>Tab</kbd> / <kbd>Shift</kbd> <kbd>Tab</kbd></td></tr>
+      <tr><td>Camadas / Pincel / Informações / Ações</td><td><kbd>F7</kbd> / <kbd>F5</kbd> / <kbd>F8</kbd> / <kbd>Alt</kbd> <kbd>F9</kbd></td></tr>
+      <tr><td>Manual / Lista de atalhos</td><td><kbd>F1</kbd> / <kbd>?</kbd></td></tr>
+    </table>
+    <h3>Ferramentas</h3>
+    <p>Pressione a letra para escolher a ferramenta; <kbd>Shift</kbd>+letra alterna entre as ferramentas do mesmo grupo.</p>
+    <table>
+      <tr><td>Mover, Prancheta</td><td><kbd>V</kbd></td></tr>
+      <tr><td>Letreiros (retangular, elíptico, linha, coluna)</td><td><kbd>M</kbd></td></tr>
+      <tr><td>Laço, poligonal, magnético</td><td><kbd>L</kbd></td></tr>
+      <tr><td>Varinha mágica, Seleção rápida</td><td><kbd>W</kbd></td></tr>
+      <tr><td>Recorte, Corte em perspectiva, Fatia, Seleção de fatia</td><td><kbd>C</kbd></td></tr>
+      <tr><td>Conta-gotas, Amostra de cor, Régua, Contagem</td><td><kbd>I</kbd></td></tr>
+      <tr><td>Recuperação para manchas, Recuperação, Remendo, Movimento sensível ao conteúdo, Olhos vermelhos</td><td><kbd>J</kbd></td></tr>
+      <tr><td>Pincel, Lápis, Substituição de cor, Pincel misturador</td><td><kbd>B</kbd></td></tr>
+      <tr><td>Carimbo, Carimbo de padrão</td><td><kbd>S</kbd></td></tr>
+      <tr><td>Pincel de histórico</td><td><kbd>Y</kbd></td></tr>
+      <tr><td>Borracha, de plano de fundo, mágica</td><td><kbd>E</kbd></td></tr>
+      <tr><td>Gradiente, Balde de tinta</td><td><kbd>G</kbd></td></tr>
+      <tr><td>Desfoque, Nitidez, Borrar</td><td><kbd>R</kbd></td></tr>
+      <tr><td>Subexposição, Superexposição, Esponja</td><td><kbd>O</kbd></td></tr>
+      <tr><td>Caneta, de forma livre, de curvatura, pontos de ancoragem</td><td><kbd>P</kbd></td></tr>
+      <tr><td>Texto horizontal e vertical, Máscaras de texto</td><td><kbd>T</kbd></td></tr>
+      <tr><td>Seleção de demarcador, Seleção direta</td><td><kbd>A</kbd></td></tr>
+      <tr><td>Retângulo, Elipse, Polígono, Estrela, Linha, Forma personalizada</td><td><kbd>U</kbd></td></tr>
+      <tr><td>Mão, Girar vista</td><td><kbd>H</kbd></td></tr>
+      <tr><td>Zoom</td><td><kbd>Z</kbd></td></tr>
+      <tr><td>Tamanho / dureza do pincel</td><td><kbd>[</kbd> <kbd>]</kbd> / <kbd>{</kbd> <kbd>}</kbd></td></tr>
+      <tr><td>Opacidade / fluxo</td><td><kbd>1</kbd>…<kbd>0</kbd> / <kbd>Shift</kbd> + <kbd>1</kbd>…<kbd>0</kbd></td></tr>
+      <tr><td>Cores padrão / Trocar cores</td><td><kbd>D</kbd> / <kbd>X</kbd></td></tr>
+      <tr><td>Mover temporário</td><td>segurar <kbd>Ctrl</kbd></td></tr>
+      <tr><td>Aplicar / cancelar (texto, recorte, transformação)</td><td><kbd>Enter</kbd> / <kbd>Esc</kbd></td></tr>
+    </table>
+  </section>
+
+  <section id="perguntas">
+    <h2>Perguntas frequentes</h2>
+    <details open><summary>Preciso de internet para usar?</summary><div><p>Não. Depois de copiar a pasta para o computador, tudo funciona offline. Nenhuma imagem é enviada para servidores.</p></div></details>
+    <details><summary>Consigo abrir meus arquivos do Photoshop e do Photopea?</summary><div><p>Sim. Arquivos PSD e PSB abrem com camadas, grupos, máscaras, textos editáveis, formas, estilos, camadas de ajuste e pranchetas. E o PSD salvo pelo Imaginarium abre nesses programas.</p></div></details>
+    <details><summary>Por que Ctrl+N ou Ctrl+T abrem outra janela ou aba do navegador?</summary><div><p>Esses atalhos pertencem ao navegador e não podem ser alterados por páginas. Use <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>N</kbd> para um novo documento, <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>T</kbd> para a transformação livre e <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>W</kbd> para fechar — igual ao Photopea.</p></div></details>
+    <details><summary>Fechei a aba sem salvar. Dá para recuperar?</summary><div><p>Não. O Imaginarium avisa antes de fechar quando há alterações pendentes, mas o conteúdo só existe na memória até você salvar. Salve com frequência usando <kbd>Ctrl</kbd> <kbd>S</kbd>.</p></div></details>
+    <details><summary>Qual a diferença entre PSD, .edt e exportar?</summary><div><p><b>PSD</b> guarda as camadas em um formato que outros editores entendem. O projeto <b>.edt</b> guarda tudo o que o Imaginarium sabe fazer (inclusive filtros inteligentes e fatias). <b>Exportar</b> gera a imagem final (PNG, JPG, WEBP, GIF, SVG, PDF…) para usar em outros lugares.</p></div></details>
+    <details><summary>Não consigo pintar na camada. O que pode ser?</summary><div><ul><li>A camada está oculta ou bloqueada (veja os cadeados no painel Camadas).</li><li>É uma camada de texto, forma, ajuste ou objeto inteligente: rasterize para pintar.</li><li>A miniatura da máscara está ativa: você está pintando na máscara.</li><li>Há uma seleção ativa em outro lugar: use <kbd>Ctrl</kbd> <kbd>D</kbd> para desmarcar.</li><li>A máscara rápida está ligada (<kbd>Q</kbd>) ou a opacidade/fluxo do pincel estão muito baixos.</li></ul></div></details>
+    <details><summary>O filtro ou o ajuste não tem efeito visível.</summary><div><p>Filtros agem na camada ativa. Confira se a camada certa está selecionada e se ela tem conteúdo. Em camadas de texto e forma, o programa oferece rasterizar ou converter em objeto inteligente.</p></div></details>
+    <details><summary>Qual o tamanho máximo de imagem?</summary><div><p>Depende da memória do computador. O limite prático fica em torno de 120 megapixels; com muitas camadas, prefira imagens menores. Se ficar lento, use <b>Limpar</b> no painel Histórico para liberar memória.</p></div></details>
+    <details><summary>Minha fonte não aparece na lista.</summary><div><p>No Chrome e no Edge, abra o painel Caracteres e clique em <b>Carregar todas as fontes do sistema</b>. Em outros navegadores aparecem apenas as fontes detectadas automaticamente.</p></div></details>
+    <details><summary>Como reorganizo os painéis?</summary><div><p>Arraste a aba de um painel para outro grupo, ou para a divisa entre grupos para criar um novo. Arraste as divisas para redimensionar e clique na seta para recolher. <span class="path">Janela › Restaurar layout dos painéis</span> volta ao padrão.</p></div></details>
+    <details><summary>Em quais navegadores funciona?</summary><div><p>Nas versões atuais de Chrome, Edge, Firefox e Safari. No Chrome e no Edge há extras: salvar sempre no mesmo arquivo e listar todas as fontes do sistema.</p></div></details>
+  </section>
+
+  <p class="empty" id="empty">Nada encontrado. Tente outra palavra, como “camada”, “PSD”, “exportar” ou “atalho”.</p>
+</div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var toc = document.getElementById('toc'), q = document.getElementById('q'), count = document.getElementById('count'), empty = document.getElementById('empty'), main = document.getElementById('main');
+  var links = {};
+  var original = sections.map(function (s) { return s.innerHTML; });
+  var norm = function (s) { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); };
+
+  // índice navegável
+  sections.forEach(function (s) {
+    var a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.textContent = s.querySelector('h2').textContent;
+    a.addEventListener('click', function (e) { e.preventDefault(); document.getElementById(s.id).scrollIntoView(); setCurrent(s.id); });
+    toc.appendChild(a);
+    links[s.id] = a;
+  });
+  function setCurrent(id) { Object.keys(links).forEach(function (k) { links[k].classList.toggle('current', k === id); }); }
+
+  // destaca no índice a seção visível
+  main.addEventListener('scroll', function () {
+    var top = main.getBoundingClientRect().top + 60, cur = null;
+    sections.forEach(function (s) { if (!s.classList.contains('hidden') && s.getBoundingClientRect().top <= top) cur = s.id; });
+    if (cur) setCurrent(cur);
+  }, { passive: true });
+  setCurrent(sections[0].id);
+
+  // busca interna: filtra as seções e destaca os termos
+  function highlight(root, term) {
+    var n = 0, walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), nodes = [], node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    nodes.forEach(function (t) {
+      var text = t.nodeValue, low = norm(text), i = low.indexOf(term);
+      if (i < 0 || low.length !== text.length) return;
+      var frag = document.createDocumentFragment(), last = 0;
+      while (i >= 0) {
+        frag.appendChild(document.createTextNode(text.slice(last, i)));
+        var m = document.createElement('mark'); m.textContent = text.slice(i, i + term.length); frag.appendChild(m);
+        n++; last = i + term.length; i = low.indexOf(term, last);
+      }
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      t.parentNode.replaceChild(frag, t);
+    });
+    return n;
+  }
+  function search() {
+    var term = norm(q.value.trim()), total = 0, shown = 0;
+    sections.forEach(function (s, i) {
+      s.innerHTML = original[i];
+      if (!term) { s.classList.remove('hidden'); links[s.id].classList.remove('miss'); return; }
+      var hit = norm(s.textContent).indexOf(term) >= 0;
+      s.classList.toggle('hidden', !hit);
+      links[s.id].classList.toggle('miss', !hit);
+      if (hit) { shown++; total += highlight(s, term); Array.prototype.forEach.call(s.querySelectorAll('details'), function (d) { if (d.querySelector('mark')) d.open = true; }); }
+    });
+    count.textContent = term ? (total ? total + (total === 1 ? ' ocorrência em ' : ' ocorrências em ') + shown + (shown === 1 ? ' seção' : ' seções') : 'Nenhum resultado') : '';
+    empty.classList.toggle('show', !!term && !shown);
+    if (term && shown) { var first = document.querySelector('main mark'); if (first) first.scrollIntoView({ block: 'center' }); }
+  }
+  var timer;
+  q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(search, 120); });
+  q.addEventListener('keydown', function (e) { if (e.key === 'Escape' && q.value) { e.stopPropagation(); q.value = ''; search(); } });
+  // Esc (com a busca vazia) fecha o manual quando ele está aberto dentro do aplicativo
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !e.defaultPrevented && !q.value && window.parent !== window) window.parent.postMessage('imaginarium:close', '*'); });
+
+  if (location.hash && links[location.hash.slice(1)]) { document.getElementById(location.hash.slice(1)).scrollIntoView(); setCurrent(location.hash.slice(1)); }
+})();
+</script>
+</body>
+</html>

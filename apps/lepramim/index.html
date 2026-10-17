@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LêPraMim</title>
+  <meta name="description" content="LêPraMim — leitor de ebooks, documentos e audiobooks que lê em voz alta, 100% offline.">
+  <meta name="author" content="Márcio Willians Barreto de Andrade">
+  <meta name="theme-color" content="#2563EB">
+  <!-- Bloqueia qualquer conexão externa: o app só carrega arquivos da própria pasta -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob: data:; font-src 'self' data:">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icone-192.png">
+  <!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o LêPraMim funciona sozinho) -->
+  <script src="../../shared/nebulosa-bridge.js" data-app="lepramim" data-name="LêPraMim" data-preview="#EEF1F6 #FFFFFF #2563EB #F97316" data-preview-nebulosa="#F2EEFC #323559 #7B4FE0 #FF9C54"></script>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/aparencia-nebulosa.css"><!-- [Nebulosa] aparência Nebulosa Default -->
+</head>
+<body>
+
+<!-- ===================== Ícones (SVG) ===================== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-tocar" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pausar" viewBox="0 0 24 24"><rect x="6" y="5" width="4.2" height="14" rx="1.2" fill="currentColor" stroke="none"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-parar" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pag-ant" viewBox="0 0 24 24"><path d="M6 5v14M19 5.8v12.4a.8.8 0 0 1-1.25.66L9 12.66a.8.8 0 0 1 0-1.32l8.75-6.2A.8.8 0 0 1 19 5.8z"/></symbol>
+  <symbol id="i-pag-prox" viewBox="0 0 24 24"><path d="M18 5v14M5 5.8v12.4a.8.8 0 0 0 1.25.66L15 12.66a.8.8 0 0 0 0-1.32l-8.75-6.2A.8.8 0 0 0 5 5.8z"/></symbol>
+  <symbol id="i-esq" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+  <symbol id="i-dir" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></symbol>
+  <symbol id="i-menos10" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v4.5h4.5"/><text x="12.2" y="15.4" font-size="7.2" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="Segoe UI, Arial, sans-serif">10</text></symbol>
+  <symbol id="i-mais10" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/><text x="11.8" y="15.4" font-size="7.2" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="Segoe UI, Arial, sans-serif">10</text></symbol>
+  <symbol id="i-abrir" viewBox="0 0 24 24"><path d="M3.5 18V6.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h8a1.5 1.5 0 0 1 1.5 1.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z"/><path d="M12 11v5M9.5 13.5H14.5"/></symbol>
+  <symbol id="i-estante" viewBox="0 0 24 24"><path d="M5 4v16M9.5 4v16M5 4h4.5M5 20h4.5M13.2 6.2l3.4-1 4 13.6-3.4 1z"/></symbol>
+  <symbol id="i-config" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.5 2.5h4l.5-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4z"/></symbol>
+  <symbol id="i-grafico" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8.5 16v-5M13 16V8M17.5 16v-3"/></symbol>
+  <symbol id="i-ajuda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9M12 16.8v.2"/></symbol>
+  <symbol id="i-lua" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+  <symbol id="i-busca" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-marcador" viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-sono" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 2.8h5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-fechar" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-lixeira" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5h9l1-12.5M10 10.5v6M14 10.5v6"/></symbol>
+  <symbol id="i-fone" viewBox="0 0 24 24"><path d="M4.5 14v-2a7.5 7.5 0 0 1 15 0v2"/><rect x="3.5" y="13.5" width="4" height="6.5" rx="1.6"/><rect x="16.5" y="13.5" width="4" height="6.5" rx="1.6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5v.2"/></symbol>
+  <symbol id="i-pagina" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10.500a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"/><path d="M14 3.5V8h4M9.500 12.500h5M9.500 16h5"/></symbol>
+  <symbol id="i-microfone" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.500 11.500a6.500 6.500 0 0 0 13 0M12 18v3"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><circle cx="5.500" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18.500" cy="12" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.500v5h3.500l4.500 4v-13l-4.500 4zM15.500 9a4 4 0 0 1 0 6M18 6.500a7.500 7.500 0 0 1 0 11"/></symbol>
+  <symbol id="i-vel" viewBox="0 0 24 24"><path d="M4.500 17a8.500 8.500 0 1 1 15 0M12 14l4-5"/><circle cx="12" cy="14.500" r="1.300" fill="currentColor"/></symbol>
+</svg>
+
+<!-- ===================== Barra superior ===================== -->
+<header class="topo">
+  <button class="bt-icone so-estreito" id="btMenu" title="Mostrar capítulos e marcadores" aria-label="Painel lateral"><svg class="ic"><use href="#i-menu"/></svg></button>
+  <button class="marca" id="btInicio" title="Ir para a biblioteca">
+    <img src="assets/icone-96.png" alt="" width="38" height="38">
+    <span class="marca-nome"><span class="marca-le">Lê</span><span class="marca-pm">PraMim</span></span>
+  </button>
+
+  <nav class="topo-acoes" aria-label="Principal">
+    <button class="bt primario" id="btAbrir"><svg class="ic"><use href="#i-abrir"/></svg><span>Abrir arquivo</span></button>
+    <button class="bt fantasma" id="btBiblioteca"><svg class="ic"><use href="#i-estante"/></svg><span>Biblioteca</span></button>
+    <button class="bt fantasma" id="btEstatisticas"><svg class="ic"><use href="#i-grafico"/></svg><span>Estatísticas</span></button>
+    <button class="bt fantasma" id="btConfig"><svg class="ic"><use href="#i-config"/></svg><span>Configurações</span></button>
+    <button class="bt fantasma" id="btAjuda"><svg class="ic"><use href="#i-ajuda"/></svg><span>Ajuda</span></button>
+  </nav>
+
+  <label class="busca" title="Pesquisar palavras ou frases no livro aberto">
+    <svg class="ic"><use href="#i-busca"/></svg>
+    <input type="search" id="campoBusca" placeholder="Buscar no livro" autocomplete="off">
+  </label>
+  <button class="bt-icone" id="btTema" title="Alternar tema claro/escuro" aria-label="Alternar tema"><svg class="ic"><use href="#i-lua"/></svg></button>
+</header>
+
+<div class="corpo">
+  <!-- ===================== Painel lateral ===================== -->
+  <aside class="lateral" id="lateral" aria-label="Capítulos, marcadores e histórico">
+    <div class="abas" role="tablist">
+      <button role="tab" data-aba="capitulos" class="ativa">Capítulos</button>
+      <button role="tab" data-aba="marcadores">Marcadores</button>
+      <button role="tab" data-aba="historico">Histórico</button>
+      <button role="tab" data-aba="busca">Busca</button>
+    </div>
+    <div class="aba-painel" id="abaCapitulos"></div>
+    <div class="aba-painel" id="abaMarcadores" hidden></div>
+    <div class="aba-painel" id="abaHistorico" hidden></div>
+    <div class="aba-painel" id="abaBusca" hidden></div>
+  </aside>
+  <div class="veu" id="veuLateral" hidden></div>
+
+  <!-- ===================== Área central ===================== -->
+  <main class="central">
+
+    <!-- Biblioteca (estante) -->
+    <section class="visao" id="visaoBiblioteca">
+      <div class="estante-topo">
+        <h1>Biblioteca</h1>
+        <input type="search" id="filtroBiblioteca" placeholder="Filtrar por título ou autor" autocomplete="off">
+      </div>
+      <div class="estante" id="estante"></div>
+      <div class="vazio" id="vazioBiblioteca" hidden>
+        <img src="assets/logo-vertical.png" alt="LêPraMim — Software de Leitura e Audiolivros para Computador" class="vazio-logo">
+        <p class="vazio-texto">Sua estante está vazia. Abra um livro, documento ou audiobook — ou arraste os arquivos para esta janela.</p>
+        <button class="bt primario grande" id="btAbrirVazio"><svg class="ic"><use href="#i-abrir"/></svg><span>Abrir arquivo</span></button>
+        <p class="vazio-formatos">PDF, EPUB, DOCX, TXT, RTF, HTML · MP3, M4A, M4B, AAC, OGG, WAV, FLAC</p>
+      </div>
+    </section>
+
+    <!-- Leitor de texto -->
+    <section class="visao" id="visaoLeitor" hidden>
+      <div class="leitor-cab">
+        <div class="leitor-titulos">
+          <strong id="leitorTitulo"></strong>
+          <span id="leitorCapitulo"></span>
+        </div>
+        <div class="leitor-acoes">
+          <button class="bt-icone texto" id="btFonteMenos" title="Diminuir a letra">A−</button>
+          <button class="bt-icone texto" id="btFonteMais" title="Aumentar a letra">A+</button>
+          <button class="bt pequeno" id="btOriginal" title="Alternar entre o texto limpo e a página original do PDF" hidden><svg class="ic"><use href="#i-pagina"/></svg><span>Página original</span></button>
+          <button class="bt pequeno" id="btHibrido" title="Ouvir o audiobook vinculado acompanhando o texto" hidden><svg class="ic"><use href="#i-fone"/></svg><span>Modo híbrido</span></button>
+          <button class="bt pequeno" id="btSinc" title="Informar qual frase o áudio está falando agora, para melhorar a sincronia" hidden><span>Acertar sincronia</span></button>
+          <button class="bt pequeno" id="btMarcar" title="Adicionar marcador neste ponto (M)"><svg class="ic"><use href="#i-marcador"/></svg><span>Marcar</span></button>
+          <button class="bt pequeno" id="btGerar" title="Converter este livro em arquivos de áudio"><svg class="ic"><use href="#i-microfone"/></svg><span>Gerar audiobook</span></button>
+          <button class="bt-icone" id="btInfo" title="Informações do livro"><svg class="ic"><use href="#i-info"/></svg></button>
+        </div>
+      </div>
+      <div class="rolagem" id="rolagem" tabindex="-1">
+        <article class="pagina" id="pagina" lang="pt-BR"></article>
+        <div class="original" id="original" hidden><canvas id="canvasOriginal"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Player de audiobook -->
+    <section class="visao" id="visaoAudio" hidden>
+      <div class="audio-palco">
+        <div class="audio-capa" id="audioCapa"></div>
+        <div class="audio-ficha">
+          <h1 id="audioTitulo"></h1>
+          <p class="audio-autor" id="audioAutor"></p>
+          <p class="audio-detalhes" id="audioDetalhes"></p>
+          <p class="audio-capitulo" id="audioCapituloAtual"></p>
+          <div class="audio-linha">
+            <span id="audioTempo">00:00</span>
+            <input type="range" id="audioBarra" min="0" max="1000" value="0" step="1" aria-label="Posição no audiobook">
+            <span id="audioDuracao">00:00</span>
+          </div>
+          <div class="audio-extra">
+            <button class="bt pequeno" id="btMarcarAudio"><svg class="ic"><use href="#i-marcador"/></svg><span>Marcar este ponto</span></button>
+            <span class="audio-ouvido" id="audioOuvido"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===================== Barra inferior (controles) ===================== -->
+<footer class="barra" id="barra" hidden>
+  <div class="barra-progresso"><div id="progressoLivro"></div></div>
+
+  <!-- Controles da leitura por voz -->
+  <div class="controles" id="controlesLeitor">
+    <div class="grupo">
+      <button class="bt-icone" id="btPagAnt" title="Página anterior (←)"><svg class="ic"><use href="#i-pag-ant"/></svg></button>
+      <button class="bt-icone" id="btTrechoAnt" title="Trecho anterior"><svg class="ic"><use href="#i-esq"/></svg></button>
+      <button class="bt-tocar" id="btTocar" title="Ler em voz alta / pausar (Espaço)" aria-label="Ler em voz alta">
+        <svg class="ic"><use href="#i-tocar"/></svg>
+        <span class="ondas" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <button class="bt-icone" id="btParar" title="Parar"><svg class="ic"><use href="#i-parar"/></svg></button>
+      <button class="bt-icone" id="btTrechoProx" title="Próximo trecho"><svg class="ic"><use href="#i-dir"/></svg></button>
+      <button class="bt-icone" id="btPagProx" title="Próxima página (→)"><svg class="ic"><use href="#i-pag-prox"/></svg></button>
+    </div>
+    <div class="grupo campo-pagina" title="Ir para uma página específica">
+      <span>Página</span>
+      <input type="number" id="campoPagina" min="1" value="1" aria-label="Ir para a página">
+      <span id="totalPaginas">de 1</span>
+    </div>
+    <div class="grupo">
+      <select id="selModo" title="O que a voz deve ler" aria-label="Modo de leitura">
+        <option value="pagina">Só a página atual</option>
+        <option value="continuo">Página atual e seguir adiante</option>
+        <option value="capitulo">Capítulo atual</option>
+        <option value="livro">Livro inteiro</option>
+      </select>
+    </div>
+    <div class="grupo deslizante" title="Velocidade da voz">
+      <svg class="ic"><use href="#i-vel"/></svg>
+      <input type="range" id="selVelocidade" min="0.5" max="3" step="0.05" value="1" aria-label="Velocidade da voz">
+      <output id="rotVelocidade">1,0×</output>
+    </div>
+  </div>
+
+  <!-- Controles do audiobook -->
+  <div class="controles" id="controlesAudio" hidden>
+    <div class="grupo">
+      <button class="bt-icone" id="btAudioCapAnt" title="Capítulo anterior"><svg class="ic"><use href="#i-pag-ant"/></svg></button>
+      <button class="bt-icone" id="btAudioMenos10" title="Voltar 10 segundos (←)"><svg class="ic"><use href="#i-menos10"/></svg></button>
+      <button class="bt-tocar" id="btAudioTocar" title="Tocar / pausar (Espaço)" aria-label="Tocar">
+        <svg class="ic"><use href="#i-tocar"/></svg>
+        <span class="ondas" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <button class="bt-icone" id="btAudioParar" title="Parar"><svg class="ic"><use href="#i-parar"/></svg></button>
+      <button class="bt-icone" id="btAudioMais10" title="Avançar 10 segundos (→)"><svg class="ic"><use href="#i-mais10"/></svg></button>
+      <button class="bt-icone" id="btAudioCapProx" title="Próximo capítulo"><svg class="ic"><use href="#i-pag-prox"/></svg></button>
+    </div>
+    <div class="grupo" title="Velocidade de reprodução">
+      <svg class="ic"><use href="#i-vel"/></svg>
+      <select id="selVelAudio" aria-label="Velocidade de reprodução"></select>
+    </div>
+    <div class="grupo deslizante" title="Volume">
+      <svg class="ic"><use href="#i-volume"/></svg>
+      <input type="range" id="volAudio" min="0" max="1" step="0.02" value="1" aria-label="Volume">
+    </div>
+  </div>
+
+  <div class="grupo fim">
+    <button class="bt pequeno" id="btSono" title="Temporizador do sono"><svg class="ic"><use href="#i-sono"/></svg><span id="rotSono">Sono</span></button>
+  </div>
+</footer>
+
+<input type="file" id="entradaArquivo" multiple hidden
+  accept=".pdf,.epub,.docx,.txt,.rtf,.html,.htm,.xhtml,.mp3,.m4a,.m4b,.aac,.ogg,.oga,.opus,.wav,.flac,.png,.jpg,.jpeg,.webp">
+<div class="soltar" id="soltar" hidden><div>Solte os arquivos para adicionar à biblioteca</div></div>
+<div id="modais"></div>
+<div id="avisos" role="status" aria-live="polite"></div>
+<audio id="tocador" preload="metadata"></audio>
+
+<!-- ===================== Módulos (ordem de dependência) ===================== -->
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="js/armazenamento.js"></script>
+<script src="js/zip.js"></script>
+<script src="js/capitulos.js"></script>
+<script src="js/limpeza.js"></script>
+<script src="js/livro.js"></script>
+<script src="js/metadados-audio.js"></script>
+<script src="js/importadores.js"></script>
+<script src="js/voz.js"></script>
+<script src="js/piper.js"></script>
+<script src="js/interface.js"></script>
+<script src="js/estatisticas.js"></script>
+<script src="js/temporizador.js"></script>
+<script src="js/marcadores.js"></script>
+<script src="js/busca.js"></script>
+<script src="js/leitor.js"></script>
+<script src="js/audiobook.js"></script>
+<script src="js/hibrido.js"></script>
+<script src="js/gerador.js"></script>
+<script src="js/biblioteca.js"></script>
+<script src="js/configuracoes.js"></script>
+<script src="js/ajuda.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

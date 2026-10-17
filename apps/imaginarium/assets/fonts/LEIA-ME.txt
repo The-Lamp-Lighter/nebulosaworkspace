@@ -1,0 +1,10 @@
+Imaginarium — pasta de fontes
+
+A interface na aparência "Photopea" usa a fonte Open Sans (licença SIL Open
+Font License 1.1 — veja OpenSans-OFL.txt). Ela já vem embutida em
+css/fonts.css, por isso funciona offline sem instalar nada.
+
+Para usar uma fonte nova nos textos das imagens, instale-a no sistema
+operacional (clique duplo no arquivo .ttf ou .otf e escolha "Instalar") e
+reabra o Imaginarium. No Chrome e no Edge, o painel Caracteres tem o botão
+"Carregar todas as fontes do sistema".

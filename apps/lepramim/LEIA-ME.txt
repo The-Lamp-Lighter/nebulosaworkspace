@@ -1,0 +1,76 @@
+﻿LêPraMim — Software de Leitura e Audiolivros para Computador
+Versão 1.1.0 — Autor: Márcio Willians Barreto de Andrade — Uso doméstico
+=====================================================================
+
+COMO ABRIR
+----------
+Modo recomendado (todos os recursos):
+  1. Extraia a pasta LePraMim para qualquer lugar do computador.
+  2. Dê duplo clique em "Iniciar-LePraMim.bat".
+     Uma janela preta fica aberta (é o servidor local, que só atende
+     este computador) e o LêPraMim abre no navegador padrão.
+  3. No Edge ou no Chrome, use o menu "Aplicativos > Instalar LêPraMim"
+     para ter o programa com ícone próprio. Depois de instalado, ele
+     abre mesmo sem o Iniciar-LePraMim e sem internet.
+
+Modo simples:
+  Dê duplo clique em "index.html". Quase tudo funciona, exceto o OCR
+  e a instalação como aplicativo. PDFs grandes demoram mais para abrir.
+
+Linux e macOS: execute "sh iniciar.sh" (precisa de Python 3).
+
+BIBLIOTECAS OPCIONAIS (uma única vez, com internet)
+---------------------------------------------------
+Execute "Baixar-Bibliotecas.bat" para instalar na pasta libs:
+  - Tesseract.js: OCR de PDFs digitalizados e de imagens
+  - lamejs: exportar audiobook em MP3 (sem ele, a exportação é em WAV)
+  - Mammoth.js: leitura de DOCX (opcional; já existe um leitor interno)
+  - Piper: voz neural "Cadu" em português do Brasil (cerca de 90 MB)
+Depois disso o programa não precisa mais de internet.
+O PDF.js (leitura de PDF) já vem incluído.
+
+PRIVACIDADE
+-----------
+Nenhum documento, áudio ou dado de uso é enviado para a internet.
+A biblioteca, o progresso, os marcadores e as estatísticas ficam
+guardados no navegador deste computador. Se você apagar os dados de
+navegação do site "localhost:8777", a biblioteca é apagada junto
+(os arquivos originais não são afetados).
+As vozes "online" do Edge enviam o texto ao provedor da voz; por isso
+ficam desligadas até você liberar em Configurações.
+
+VOZ NEURAL "CADU" (PIPER)
+-------------------------
+Depois de executar o Baixar-Bibliotecas, abra pelo Iniciar-LePraMim.
+A voz "Cadu — Piper" passa a ser a voz padrão; para trocar, use
+Configurações > Voz. Ela funciona sem internet e nada sai do computador.
+  - A primeira frase demora alguns segundos (a voz é carregada na memória).
+  - Não funciona abrindo direto o index.html.
+  - Com ela, o Gerar Audiobook cria os arquivos sem compartilhar a tela.
+  - Outras vozes Piper em português (Faber, Jeff, Edresson): veja o
+    comentário dentro de baixar-bibliotecas.ps1.
+
+OBSERVAÇÕES
+-----------
+- Os dados do modo recomendado (localhost) e do modo simples (index.html)
+  são separados. Escolha um modo e use sempre o mesmo.
+- Gerar Audiobook grava o som do computador enquanto a voz lê; o
+  navegador pede para compartilhar a tela com o áudio do sistema.
+- No modo híbrido, a sincronia entre texto e áudio é aproximada.
+- Para mais vozes em português no Windows:
+  Configurações > Hora e idioma > Fala.
+- O tutorial completo está no botão "Ajuda" do programa.
+
+ESTRUTURA DO PROJETO
+--------------------
+index.html            página principal
+css/estilo.css        visual (temas claro e escuro)
+css/aparencia-nebulosa.css   aparência "Nebulosa Default" (Nebulosa Workspace)
+js/                   módulos do programa (comentados em português)
+  config, util, armazenamento, zip, capitulos, limpeza, livro,
+  metadados-audio, importadores, voz, piper, piper-worker, interface, estatisticas,
+  temporizador, marcadores, busca, leitor, audiobook, hibrido,
+  gerador, biblioteca, configuracoes, ajuda, app
+assets/               logotipo (vertical, horizontal, ícone, favicon)
+libs/                 bibliotecas de terceiros (PDF.js incluído)
+sw.js, manifest.webmanifest   modo aplicativo (PWA)
