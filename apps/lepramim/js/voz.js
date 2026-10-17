@@ -65,7 +65,7 @@
     });
   }
 
-  /** Carrega todas as vozes: as do sistema e as Piper instaladas em libs/piper. */
+  /** Carrega todas as vozes: as do sistema e as Piper (de libs/piper ou da internet). */
   voz.carregar = async function () {
     const piper = LPM.piper ? LPM.piper.detectar().catch(() => []) : Promise.resolve([]);
     await Promise.all([carregarNativas(), piper]);
@@ -97,6 +97,13 @@
 
   voz.porUri = uri => voz.vozes.find(v => v.voiceURI === uri) || null;
 
+  /** A melhor voz do sistema (sem Piper), para quando a voz neural não pode ser usada. */
+  voz.melhorDoSistema = function () {
+    const sist = voz.filtradas().filter(v => !v.piper);
+    return sist.find(v => /^pt[-_]BR/i.test(v.lang)) || sist.find(v => /^pt/i.test(v.lang)) || sist[0] ||
+      voz.vozes.find(v => !v.piper && v.localService !== false) || null;
+  };
+
   /**
    * Fala um texto.
    * op = { aoLimite(indice, tamanho), aoTerminar(), aoErro(e), voz, velocidade, volume, tom }
@@ -105,6 +112,24 @@
     op = op || {};
     const c = cfg();
     const v = op.voz || voz.escolhida();
+
+    // Voz Piper da internet ainda não baixada: pede permissão e baixa uma vez
+    if (v && v.piper && !LPM.piper.liberada(v)) {
+      const minha = ++voz._ficha;
+      if (sintese) sintese.cancel();
+      voz.falando = true;
+      LPM.piper.garantir(v).then(ok => {
+        if (minha !== voz._ficha) return; // o usuário parou ou mudou de trecho enquanto isso
+        if (ok) { voz.falar(texto, op); return; }
+        // Recusou ou falhou: passa a usar a melhor voz do sistema
+        const alt = voz.melhorDoSistema();
+        if (!alt) { voz.falando = false; if (op.aoErro) op.aoErro({ error: 'Nenhuma voz disponível neste navegador.' }); return; }
+        c.voz = alt.voiceURI;
+        LPM.dados.salvarCfg();
+        voz.falar(texto, Object.assign({}, op, { voz: alt }));
+      });
+      return;
+    }
 
     // Voz neural Piper: o áudio é gerado pelo próprio app
     if (v && v.piper) {
@@ -177,7 +202,7 @@
   /** Prepara com antecedência o áudio da próxima frase (leitura sem pausas com vozes Piper). */
   voz.preparar = function (texto) {
     const v = voz.escolhida();
-    if (v && v.piper && texto) LPM.piper.sintetizar(texto, cfg().velocidade, v.id);
+    if (v && v.piper && texto && LPM.piper.liberada(v)) LPM.piper.sintetizar(texto, cfg().velocidade, v.id).catch(() => {});
   };
 
   /** true quando a voz em uso é uma voz Piper. */

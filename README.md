@@ -2,8 +2,9 @@
 
 Os programas da família Nebulosa num só lugar, direto no navegador:
 **Typee** (documentos), **Flyde** (apresentações), **EmCanto** (partituras),
-**LêPraMim** (leitura e audiolivros), **PazNoBolso** (orçamento doméstico) e
-**Imaginarium** (editor de imagens).
+**LêPraMim** (leitura e audiolivros), **PazNoBolso** (orçamento doméstico),
+**#pratododia** (receitas), **Imaginarium** (editor de imagens) e
+**FotoFlow** (filmes com fotos).
 
 O Workspace é só a "casca": menu lateral, abas, busca (`Alt+K`) e o painel de
 aparência. **Cada programa mora na própria pasta e continua sendo um programa
@@ -29,31 +30,38 @@ nebulosa-workspace/
 │   ├── flyde/                 index.html + nebulosa-skin.css
 │   ├── emcanto/               index.html + nebulosa-skin.css
 │   ├── paznobolso/            index.html + nebulosa-skin.css
+│   ├── pratododia/            index.html + nebulosa-skin.css
 │   ├── lepramim/              projeto completo (css/, js/, libs/, assets/…)
-│   └── imaginarium/           projeto completo (css/, js/, help/, assets/…)
-├── tools/servidor-local.ps1   servidor local usado pelo Iniciar-Workspace.bat
-├── Iniciar-Workspace.bat      abre tudo num servidor local (Windows)
-└── iniciar.sh                 o mesmo para Linux e macOS
+│   ├── imaginarium/           projeto completo (css/, js/, help/, assets/…)
+│   └── fotoflow/              projeto completo (index.html, styles.css, *.js, assets/) + nebulosa-skin.css
+└── .nojekyll                  diz ao GitHub Pages para publicar os arquivos como estão
 ```
 
-## Como abrir
+## Publicar no GitHub Pages
 
-- **No GitHub Pages** (recomendado): publique o repositório (Settings › Pages ›
-  branch `main`, pasta `/ (root)`) e abra o endereço do site. Tudo funciona.
-- **No computador, com todos os recursos:** dê duplo clique em
-  `Iniciar-Workspace.bat` (Windows) ou rode `sh iniciar.sh` (Linux/macOS).
-  Abre em `http://localhost:8780/`.
-- **No computador, modo simples:** duplo clique no `index.html`. Quase tudo
-  funciona; o OCR e a voz Piper do LêPraMim pedem um dos dois modos acima.
+1. Envie todo o conteúdo desta pasta para a raiz do repositório
+   (o `index.html` do Workspace fica na raiz).
+2. No GitHub: **Settings › Pages › Build and deployment** → *Deploy from a branch*,
+   branch `main`, pasta `/ (root)`.
+3. Abra o endereço que o GitHub mostrar (`https://<usuário>.github.io/<repositório>/`).
 
-As bibliotecas opcionais do LêPraMim (OCR, MP3 e a voz neural Piper, cerca de
-90 MB) não vêm no pacote: rode `apps/lepramim/Baixar-Bibliotecas.bat` uma vez e,
-se quiser que elas funcionem também no GitHub Pages, envie junto a pasta
-`apps/lepramim/libs/`.
+Cada programa também tem endereço próprio, por exemplo
+`…/apps/typee/` — dá para abrir um programa sozinho, fora do Workspace.
+
+**Voz neural do LêPraMim (Piper) no site:** funciona sem instalar nada. Na
+primeira leitura o LêPraMim pede permissão e baixa a voz escolhida (Cadu, Faber,
+Jeff ou Edresson; cerca de 60 MB, mais uns 25 MB do motor) do jsDelivr e do
+Hugging Face — os mesmos endereços do `Baixar-Bibliotecas`. A voz fica guardada
+no navegador e o texto dos livros nunca sai do computador. Os endereços estão em
+`apps/lepramim/js/config.js` (`PIPER_WEB`).
+
+As outras bibliotecas opcionais do LêPraMim (OCR, MP3 e DOCX) não vêm no
+pacote. Para tê-las no site, rode uma vez no computador o
+`apps/lepramim/Baixar-Bibliotecas.bat` e envie também a pasta
+`apps/lepramim/libs/` que ele cria.
 
 > Os dados de cada programa (documentos recentes, biblioteca, preferências)
-> ficam guardados no navegador **por endereço**: o site no GitHub Pages, o
-> `localhost:8780` e o arquivo aberto do disco têm memórias separadas.
+> ficam guardados no navegador de quem usa, ligados ao endereço do site.
 
 ## Como atualizar um programa
 
@@ -81,8 +89,10 @@ envie a pasta do programa que está aqui (`apps/<programa>`) e peça para
 | Flyde | `index.html`: ponte no `<head>`, link do `nebulosa-skin.css`, botão "Aparência", cores do tema de slides "Nebulosa" · `nebulosa-skin.css` |
 | EmCanto | `index.html`: ponte no `<head>`, link do `nebulosa-skin.css`, campo "Aparência (skin)" nas Configurações, aviso de alterações (último `<script>`) · `nebulosa-skin.css` |
 | PazNoBolso | `index.html`: ponte no `<head>`, link do `nebulosa-skin.css`, ação `A.skin` + aviso de alterações, "Visual do programa" em Ajustes · `nebulosa-skin.css` |
+| #pratododia | `index.html`: ponte no `<head>`, link do `nebulosa-skin.css`, "Visual do programa" em Configurações › Aparência (`PD.entrada.ajVisual`), aviso de alterações (último `<script>`) · `nebulosa-skin.css` |
 | LêPraMim | `index.html` (ponte e link do CSS), `js/configuracoes.js` ("Visual" nas Configurações), `sw.js` (cache), `css/aparencia-nebulosa.css` |
 | Imaginarium | `index.html` (ponte com `data-provider` e link do CSS), `js/core/skins.js` (aparência Nebulosa e registro na ponte), `css/skin-nebulosa.css` |
+| FotoFlow | `index.html`: ponte e link do CSS no `<head>`, botão "Aparência" na barra, bloco depois do `app.js` (aviso de alterações) · `nebulosa-skin.css` |
 
 ## Como incluir um programa novo
 

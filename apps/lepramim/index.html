@@ -7,8 +7,10 @@
   <meta name="description" content="LêPraMim — leitor de ebooks, documentos e audiobooks que lê em voz alta, 100% offline.">
   <meta name="author" content="Márcio Willians Barreto de Andrade">
   <meta name="theme-color" content="#2563EB">
-  <!-- Bloqueia qualquer conexão externa: o app só carrega arquivos da própria pasta -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob: data:; font-src 'self' data:">
+  <!-- Bloqueia conexões externas: o app só carrega arquivos da própria pasta. Única exceção:
+       o motor e as vozes Piper (jsDelivr e Hugging Face), baixados uma vez quando a pasta
+       libs/piper não os tem, como no GitHub Pages. Nenhum texto é enviado. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob: data: https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co; font-src 'self' data:">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/favicon.png">

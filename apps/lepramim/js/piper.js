@@ -1,9 +1,16 @@
 /* ============================================================
    LêPraMim — piper.js
-   Vozes neurais do Piper (ex.: "Cadu", português do Brasil),
-   funcionando sem internet. A síntese acontece no arquivo
-   piper-worker.js; este módulo cuida de:
-   - descobrir quais vozes estão instaladas em libs/piper/vozes
+   Vozes neurais do Piper (ex.: "Cadu", português do Brasil).
+   A síntese acontece no arquivo piper-worker.js, dentro do
+   navegador: o texto nunca sai do computador.
+   De onde vêm o motor e as vozes:
+   - da pasta libs/piper (instalada pelo "Baixar-Bibliotecas"), ou
+   - da internet, quando a pasta não os tem (ex.: no GitHub Pages):
+     cada voz é baixada uma única vez, com a permissão do usuário,
+     e fica guardada no navegador (LPM.config.PIPER_WEB).
+   Este módulo cuida de:
+   - descobrir quais vozes estão disponíveis
+   - pedir permissão e mostrar o progresso do primeiro download
    - pedir o áudio de cada frase (com cache e preparo antecipado
      da frase seguinte, para a leitura não ter pausas)
    - tocar, pausar, retomar e calar
@@ -14,10 +21,12 @@
   'use strict';
   const util = LPM.util;
   const BASE = 'libs/piper/';
+  const WEB = LPM.config.PIPER_WEB;
   const MAX_CACHE = 8;
 
   const P = {
-    vozes: [],        // vozes instaladas, no mesmo formato das vozes do sistema
+    vozes: [],        // vozes disponíveis, no mesmo formato das vozes do sistema
+    motor: 'local',   // 'local' (libs/piper) ou 'web' (internet, guardado no navegador)
     pausada: false,
     _ficha: 0
   };
@@ -25,6 +34,8 @@
   let worker = null;
   let proximoId = 1;
   const pendentes = new Map();   // id -> { resolve, reject, chave }
+  const downloads = new Map();   // id -> { resolve, reject, progresso }
+  const liberadas = new Set();   // vozes da internet já baixadas nesta sessão
   const cache = new Map();       // chave -> Promise<{pcm, taxa}>
   let ctx = null, fonte = null, relogio = null;
   let avisouCarga = false;
@@ -35,50 +46,162 @@
     try { return (await fetch(BASE + caminho, { method: 'HEAD', cache: 'no-store' })).ok; } catch (e) { return false; }
   }
 
-  /** Procura as vozes Piper instaladas. Só funciona no modo servidor local. */
+  /** Endereços da voz na internet (repositório oficial de vozes do Piper). */
+  function enderecosWeb(v) {
+    const m = /^([a-z]{2,3})_([A-Z]{2})-(.+)-(x_low|low|medium|high)$/.exec(v.id);
+    if (!WEB || !m) return null;
+    const base = WEB.vozes + m[1] + '/' + m[1] + '_' + m[2] + '/' + m[3] + '/' + m[4] + '/' + v.id;
+    return { json: base + '.onnx.json', onnx: base + '.onnx' };
+  }
+
+  async function abrirCache() {
+    if (!window.caches || !WEB) return null;
+    try { return await caches.open(WEB.cache); } catch (e) { return null; }
+  }
+
+  function nomeDaVoz(v) { return v.name.split(' — ')[0]; }
+
+  /**
+   * Procura as vozes Piper. Precisa do app aberto por http(s) — servidor
+   * local ou site. Abrindo o index.html direto do disco não há vozes Piper.
+   */
   P.detectar = async function () {
     const achadas = [];
     const concluir = () => { P.vozes = achadas; return achadas; };
-    if (!util.viaServidor() || typeof Worker === 'undefined') return concluir();
+    if (!util.viaServidor() || typeof Worker === 'undefined' || typeof WebAssembly === 'undefined') return concluir();
     let lista;
     try {
       const r = await fetch(BASE + 'vozes/vozes.json', { cache: 'no-store' });
       if (!r.ok) return concluir();
       lista = await r.json();
     } catch (e) { return concluir(); }
-    const motor = (await existe('ort/ort.wasm.min.js')) && (await existe('phonemize/piper_phonemize.js'));
-    if (!motor) return concluir();
+    const motorLocal = (await existe('ort/ort.wasm.min.js')) && (await existe('phonemize/piper_phonemize.js'));
+    P.motor = motorLocal ? 'local' : 'web';
+    const cache = motorLocal ? null : await abrirCache();
     for (const v of lista) {
-      if ((await existe('vozes/' + v.id + '.onnx.json')) && (await existe('vozes/' + v.id + '.onnx'))) {
-        achadas.push({
-          piper: true, id: v.id, genero: v.genero || '',
-          name: v.nome + ' — Piper (neural, offline)', lang: v.idioma || 'pt-BR',
-          voiceURI: 'piper:' + v.id, localService: true
-        });
+      const basico = { piper: true, id: v.id, genero: v.genero || '', lang: v.idioma || 'pt-BR', voiceURI: 'piper:' + v.id, localService: true };
+      if (motorLocal && (await existe('vozes/' + v.id + '.onnx.json')) && (await existe('vozes/' + v.id + '.onnx'))) {
+        achadas.push(Object.assign(basico, {
+          origem: 'local', name: v.nome + ' — Piper (neural, offline)',
+          json: util.urlAbsoluta(BASE + 'vozes/' + v.id + '.onnx.json'), onnx: util.urlAbsoluta(BASE + 'vozes/' + v.id + '.onnx')
+        }));
+        continue;
       }
+      if (motorLocal) continue; // instalação local: só as vozes que estão na pasta
+      const web = enderecosWeb(v);
+      if (!web) continue;
+      const baixada = liberadas.has(v.id) || !!(cache && await cache.match(web.onnx));
+      achadas.push(Object.assign(basico, web, {
+        origem: 'web', baixada, mb: v.mb || 60,
+        name: v.nome + (baixada ? ' — Piper (neural, guardada neste navegador)' : ' — Piper (neural, baixa ' + (v.mb || 60) + ' MB na 1ª vez)')
+      }));
     }
     return concluir();
   };
 
+  /** true quando a voz já pode falar sem baixar nada (local ou já guardada). */
+  P.liberada = v => !!v && (v.origem !== 'web' || v.baixada || liberadas.has(v.id));
+
+  /**
+   * Garante que uma voz da internet esteja baixada: pergunta na primeira vez,
+   * mostra o progresso e guarda a voz no navegador. Resolve true se pode falar.
+   */
+  const emAndamento = new Map();
+  P.garantir = function (v) {
+    if (!v || !v.piper || P.liberada(v)) return Promise.resolve(true);
+    if (emAndamento.has(v.id)) return emAndamento.get(v.id);
+    const ui = LPM.ui, cfg = LPM.dados.cfg;
+    const tarefa = (async () => {
+      if (!cfg.piperWeb) {
+        const ok = await ui.perguntar('Baixar a voz ' + nomeDaVoz(v) + '?',
+          'Para ler com a voz neural ' + nomeDaVoz(v) + ', o LêPraMim baixa a voz uma única vez (cerca de ' + v.mb +
+          ' MB, mais uns 25 MB do motor de voz, que servem para todas as vozes). Ela fica guardada neste navegador e, das próximas vezes, a leitura começa na hora. ' +
+          'O texto dos seus livros nunca sai do computador: a leitura acontece aqui mesmo.',
+          'Baixar a voz', 'Usar a voz do sistema');
+        if (!ok) return false;
+        cfg.piperWeb = true;
+        LPM.dados.salvarCfg();
+      }
+      const janela = ui.progresso('Baixando a voz ' + nomeDaVoz(v));
+      garantirWorker();
+      const id = proximoId++;
+      const mb = n => (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: n < 10485760 ? 1 : 0 });
+      const pronto = new Promise((resolve, reject) => downloads.set(id, {
+        resolve, reject,
+        progresso: m => janela.atualizar(
+          (m.rotulo === 'voz' ? 'Voz ' + nomeDaVoz(v) : 'Motor de voz') + ': ' + mb(m.carregado) + (m.total ? ' de ' + mb(m.total) : '') + ' MB',
+          m.total ? m.carregado / m.total : undefined)
+      }));
+      worker.postMessage({ tipo: 'baixar', id, voz: { id: v.id, json: v.json, onnx: v.onnx } });
+      // o botão Cancelar da janela só marca "cancelado": confere aqui
+      const vigia = setInterval(() => {
+        if (!janela.cancelado || !downloads.has(id)) return;
+        const d = downloads.get(id); downloads.delete(id);
+        reiniciarWorker(new Error('cancelado'));
+        d.reject(new Error('cancelado'));
+      }, 200);
+      try {
+        await pronto;
+        liberadas.add(v.id);
+        v.baixada = true;
+        v.name = nomeDaVoz(v) + ' — Piper (neural, guardada neste navegador)';
+        if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+        if (LPM.voz.aoMudar) LPM.voz.aoMudar();
+        ui.aviso('Voz ' + nomeDaVoz(v) + ' pronta e guardada neste navegador.', null, 5000);
+        return true;
+      } catch (e) {
+        if (e.message !== 'cancelado') ui.aviso('Não foi possível baixar a voz: ' + e.message, 'erro', 9000);
+        return false;
+      } finally {
+        clearInterval(vigia);
+        janela.fechar();
+      }
+    })();
+    emAndamento.set(v.id, tarefa);
+    tarefa.finally(() => emAndamento.delete(v.id));
+    return tarefa;
+  };
+
   /* ---------------- Síntese ---------------- */
+
+  /** Encerra o worker e devolve o erro a todos os pedidos em andamento. */
+  function reiniciarWorker(erro) {
+    pendentes.forEach(p => { cache.delete(p.chave); p.reject(erro); });
+    pendentes.clear();
+    downloads.forEach(d => d.reject(erro));
+    downloads.clear();
+    if (worker) { try { worker.terminate(); } catch (e) { /* ignora */ } }
+    worker = null;
+  }
 
   function garantirWorker() {
     if (worker) return;
     worker = new Worker('js/piper-worker.js');
+    const web = P.motor === 'web';
+    worker.postMessage({
+      tipo: 'config',
+      ort: web ? WEB.ort : util.urlAbsoluta(BASE + 'ort/'),
+      fonemizador: web ? WEB.fonemizador : util.urlAbsoluta(BASE + 'phonemize/'),
+      cache: WEB ? WEB.cache : undefined
+    });
     worker.onmessage = ev => {
-      const m = ev.data, p = pendentes.get(m.id);
-      if (!p) return;
+      const m = ev.data;
+      const d = downloads.get(m.id);
+      if (d) {
+        if (m.tipo === 'progresso') { d.progresso(m); return; }
+        downloads.delete(m.id);
+        if (m.tipo === 'erro') d.reject(new Error(m.mensagem)); else d.resolve();
+        return;
+      }
+      const p = pendentes.get(m.id);
+      if (!p || m.tipo === 'progresso') return;
       pendentes.delete(m.id);
       if (m.tipo === 'audio') p.resolve({ pcm: m.pcm, taxa: m.taxa });
       else { cache.delete(p.chave); p.reject(new Error(m.mensagem)); }
     };
     worker.onerror = ev => {
       // falha geral do worker: devolve o erro a quem estava esperando e recomeça do zero
-      const erro = new Error('O motor de voz Piper falhou: ' + (ev.message || 'erro desconhecido'));
-      pendentes.forEach(p => { cache.delete(p.chave); p.reject(erro); });
-      pendentes.clear();
-      try { worker.terminate(); } catch (e) { /* ignora */ }
-      worker = null;
+      reiniciarWorker(new Error('O motor de voz Piper falhou: ' + (ev.message || 'erro desconhecido')));
     };
   }
 
@@ -87,6 +210,9 @@
    * velocidade 1 = normal; 2 = duas vezes mais rápido.
    */
   P.sintetizar = function (texto, velocidade, vozId) {
+    const voz = P.vozes.find(x => x.id === vozId);
+    if (!voz) return Promise.reject(new Error('A voz Piper "' + vozId + '" não está disponível.'));
+    if (!P.liberada(voz)) return Promise.reject(new Error('A voz ' + nomeDaVoz(voz) + ' ainda não foi baixada.'));
     const escala = Math.round((1 / util.limitar(velocidade || 1, 0.4, 3.5)) * 1000) / 1000;
     const chave = vozId + '|' + escala + '|' + texto;
     if (cache.has(chave)) {
@@ -100,7 +226,7 @@
     promessa.catch(() => {}); // evita aviso de "erro não tratado" em preparos antecipados
     cache.set(chave, promessa);
     while (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value);
-    worker.postMessage({ tipo: 'sintetizar', id, voz: vozId, texto, escala });
+    worker.postMessage({ tipo: 'sintetizar', id, voz: { id: voz.id, json: voz.json, onnx: voz.onnx }, texto, escala });
     return promessa;
   };
 

@@ -50,6 +50,16 @@ Configurações > Voz. Ela funciona sem internet e nada sai do computador.
   - Outras vozes Piper em português (Faber, Jeff, Edresson): veja o
     comentário dentro de baixar-bibliotecas.ps1.
 
+VOZ PIPER PELA INTERNET (SITE, EX.: GITHUB PAGES)
+-------------------------------------------------
+Quando o LêPraMim é aberto por um site e a pasta libs/piper não tem o
+motor e as vozes, ele oferece as vozes Cadu, Faber, Jeff e Edresson
+mesmo assim. Na primeira leitura, pede permissão e baixa a voz escolhida
+(cerca de 60 MB, mais uns 25 MB do motor, uma única vez) do jsDelivr e do
+Hugging Face, os mesmos endereços usados pelo Baixar-Bibliotecas. A voz
+fica guardada no navegador; o texto dos livros nunca sai do computador.
+Endereços em js/config.js (PIPER_WEB).
+
 OBSERVAÇÕES
 -----------
 - Os dados do modo recomendado (localhost) e do modo simples (index.html)

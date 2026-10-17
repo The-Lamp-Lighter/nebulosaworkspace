@@ -266,7 +266,10 @@
   async function gravar(op) {
     const L = LPM.leitor;
     if (!op.partes.length || !caracteres(op.partes)) { ui.aviso('Não há texto para gravar neste trecho.', 'erro'); return; }
-    if (op.voz && op.voz.piper) return gerarDireto(op);
+    if (op.voz && op.voz.piper) {
+      if (!(await LPM.piper.garantir(op.voz))) return; // voz da internet: baixa antes (pede permissão)
+      return gerarDireto(op);
+    }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
       ui.aviso('Este navegador não permite gravar o áudio do sistema. Use o Microsoft Edge ou o Chrome no computador.', 'erro');
       return;

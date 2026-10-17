@@ -1,0 +1,40 @@
+FotoFlow
+Autor: Márcio Willians Barreto de Andrade
+
+COMO USAR
+1. Abra o arquivo index.html no navegador (Chrome ou Edge recomendados).
+2. Importe suas fotos e, se quiser, uma música.
+3. Clique em "Gerar filme automático", escolha o modelo e confirme.
+4. Ajuste o que desejar na linha do tempo e no painel de propriedades.
+5. Use "Exportar" para gravar o vídeo ou gerar PNG, JPG, PDF, PPTX e JSON.
+
+ESTILOS DE FILME
+Clássico: cada foto ocupa a tela, com câmera virtual e transições.
+Mural:    as fotos ficam como impressões sobre uma superfície (madeira, papel,
+          linho, cortiça ou ardósia) e a câmera voa de uma para a outra,
+          no ritmo medido no vídeo de referência do CofeShow.
+Escolha o estilo em "Gerar filme automático" ou no painel Projeto.
+
+SUPERFÍCIE PRÓPRIA
+No estilo Mural, em Projeto ou no editor de modelos, use "Importar imagem de
+superfície". A imagem é recortada em quadrado, suavizada e espelhada para
+repetir sem emendas, e fica guardada no modelo ou no projeto.
+
+O menu Tutorial traz o passo a passo; o menu Créditos, o programa e o autor.
+
+O FotoFlow funciona sem internet. Nenhum arquivo sai do seu computador.
+
+ARQUIVOS
+index.html       Tela principal
+styles.css       Aparência
+nebulosa-skin.css  Aparência "Nebulosa Default" (Nebulosa Workspace)
+app.js           Projeto, biblioteca, player, propriedades, geração automática
+timeline.js      Linha do tempo
+transitions.js   Motor de câmera, Ken Burns, transições e textos
+templates.js     Modelos e sugestão automática
+export.js        Exportação (imagens, PDF, PPTX, JSON, vídeo)
+assets/          Ícone e este arquivo
+
+FORMATOS PRÓPRIOS
+Projeto:  arquivo .fotoflow.json (inclui as fotos e os áudios)
+Modelo:   arquivo .fftemplate

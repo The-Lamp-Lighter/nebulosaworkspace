@@ -72,7 +72,7 @@ window.NEBULOSA_APPS = [
     id: 'paznobolso',
     name: 'PazNoBolso',
     path: 'apps/paznobolso/',
-    group: 'Dinheiro',
+    group: 'Dia a dia',
     tag: 'Finanças',
     desc: 'Orçamento doméstico no seu computador, sem internet e com planilhas do Excel.',
     keywords: 'dinheiro orcamento financas gastos contas planilha excel xlsx casa',
@@ -81,15 +81,39 @@ window.NEBULOSA_APPS = [
     defaultSkin: 'default'
   },
   {
+    id: 'pratododia',
+    name: '#pratododia',
+    path: 'apps/pratododia/',
+    group: 'Dia a dia',
+    tag: 'Receitas',
+    desc: 'Suas receitas num só lugar: cardápio, lista de compras, eventos e um livro de receitas para imprimir.',
+    keywords: 'receita receitas cozinha comida culinaria cardapio prato almoco jantar lista compras livro',
+    icon: 'food',
+    colors: ['#FF9C54', '#FEFF36'],
+    defaultSkin: 'default'
+  },
+  {
     id: 'imaginarium',
     name: 'Imaginarium',
     path: 'apps/imaginarium/',
-    group: 'Imagens',
+    group: 'Imagens e vídeo',
     tag: 'Imagens',
     desc: 'Editor gráfico completo: camadas, filtros, arquivos PSD e muito mais.',
     keywords: 'imagem foto editar photoshop photopea camadas filtro design desenho arte',
     icon: 'brush',
     colors: ['#A778FF', '#FF9C54'],
     defaultSkin: 'imaginarium'
+  },
+  {
+    id: 'fotoflow',
+    name: 'FotoFlow',
+    path: 'apps/fotoflow/',
+    group: 'Imagens e vídeo',
+    tag: 'Vídeos',
+    desc: 'Transforme fotos em filmes com movimentos de câmera, transições e música.',
+    keywords: 'video filme foto slideshow fotos musica transicao montagem apresentacao clipe animacao',
+    icon: 'film',
+    colors: ['#7f63e8', '#FF9C54'],
+    defaultSkin: 'default'
   }
 ];

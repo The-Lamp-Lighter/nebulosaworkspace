@@ -46,12 +46,24 @@ LPM.config = {
     lame: 'libs/lamejs/lame.min.js'
   },
 
+  // Voz neural Piper pela internet: usada quando a pasta libs/piper não tem o motor
+  // ou a voz (por exemplo, no site do GitHub Pages). São os mesmos arquivos que o
+  // "Baixar-Bibliotecas" instala. Só os arquivos da voz são baixados, uma única vez,
+  // e ficam guardados neste navegador; o texto dos livros nunca sai do computador.
+  PIPER_WEB: {
+    ort: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/',
+    fonemizador: 'https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/',
+    vozes: 'https://huggingface.co/rhasspy/piper-voices/resolve/main/',
+    cache: 'lepramim-piper-v1'
+  },
+
   // Configurações padrão do usuário (gravadas no LocalStorage)
   PADRAO: {
     tema: 'claro',
     voz: '',              // voiceURI da última voz utilizada
     genero: 'todas',      // todas | feminina | masculina
     vozesOnline: false,   // vozes online enviam o texto ao provedor — desligado por padrão
+    piperWeb: false,      // o usuário já aceitou baixar vozes Piper pela internet?
     velocidade: 1,
     volume: 1,
     tom: 1,

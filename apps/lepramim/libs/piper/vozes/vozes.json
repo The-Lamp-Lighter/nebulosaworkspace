@@ -3,24 +3,28 @@
   "id": "pt_BR-cadu-medium",
   "nome": "Cadu",
   "genero": "masculina",
-  "idioma": "pt-BR"
+  "idioma": "pt-BR",
+  "mb": 63
  },
  {
   "id": "pt_BR-faber-medium",
   "nome": "Faber",
   "genero": "masculina",
-  "idioma": "pt-BR"
+  "idioma": "pt-BR",
+  "mb": 63
  },
  {
   "id": "pt_BR-jeff-medium",
   "nome": "Jeff",
   "genero": "masculina",
-  "idioma": "pt-BR"
+  "idioma": "pt-BR",
+  "mb": 63
  },
  {
   "id": "pt_BR-edresson-low",
   "nome": "Edresson",
   "genero": "masculina",
-  "idioma": "pt-BR"
+  "idioma": "pt-BR",
+  "mb": 63
  }
 ]

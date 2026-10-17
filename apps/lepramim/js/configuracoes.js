@@ -86,6 +86,7 @@
       if (!LPM.voz.disponivel) notaVoz.textContent = 'Este navegador não oferece leitura por voz. Use o Microsoft Edge ou o Chrome.';
       else if (!LPM.voz.vozes.length) notaVoz.textContent = 'Nenhuma voz foi encontrada no sistema. No Windows, instale vozes em Configurações > Hora e idioma > Fala.';
       else if (!lista.length) notaVoz.textContent = 'Nenhuma voz corresponde a este filtro. Escolha "Todas" para ver as vozes instaladas.';
+      else if (atual && atual.piper && !LPM.piper.liberada(atual)) notaVoz.textContent = 'Voz neural Piper: na primeira leitura ela é baixada uma única vez (cerca de ' + atual.mb + ' MB) e fica guardada neste navegador. O texto dos livros nunca sai do computador. O ajuste de tom não se aplica a ela, e o destaque da palavra é estimado.';
       else if (atual && atual.piper) notaVoz.textContent = 'Voz neural Piper: funciona sem internet e nada sai deste computador. O ajuste de tom não se aplica a ela, e o destaque da palavra é estimado.';
       else notaVoz.textContent = 'As vozes vêm do sistema operacional. O gênero é estimado pelo nome da voz. Para vozes melhores, instale a voz neural Piper com o "Baixar-Bibliotecas" e abra pelo "Iniciar-LePraMim".';
     };
@@ -160,13 +161,14 @@
     const libs = el('div', { class: 'secao' }, [
       el('h3', { text: 'Componentes' }),
       linhaLib('PDF.js', 'abrir PDFs', () => LPM.importar.carregarPdfJs().then(() => true, () => false)),
-      linhaLib('Piper', 'voz neural offline (Cadu)', async () => (await LPM.piper.detectar()).length > 0),
+      linhaLib('Piper', LPM.piper.motor === 'web' ? 'voz neural (baixada pela internet, uma vez)' : 'voz neural offline (Cadu)', async () => (await LPM.piper.detectar()).length > 0),
       linhaLib('Tesseract.js', 'OCR', async () => (await existe(L.tesseract)) && (!servidor || await existe(L.tesseractLang + '/por.traineddata.gz'))),
       linhaLib('lamejs', 'exportar MP3', () => existe(L.lame)),
       linhaLib('Mammoth.js', 'DOCX (opcional)', () => existe(L.mammoth)),
       el('p', { class: 'nota', text: (servidor
-        ? 'Modo servidor local: todos os recursos estão disponíveis, inclusive OCR e instalação como aplicativo. '
-        : 'Aberto direto do arquivo: OCR e instalação como aplicativo exigem abrir pelo "Iniciar-LePraMim". ') +
+        ? 'Aberto pelo servidor local ou por um site: todos os recursos estão disponíveis, inclusive OCR e instalação como aplicativo. ' +
+          (LPM.piper.motor === 'web' ? 'A voz Piper é baixada pela internet na primeira leitura e fica guardada neste navegador. ' : '')
+        : 'Aberto direto do arquivo: OCR, voz Piper e instalação como aplicativo exigem abrir pelo "Iniciar-LePraMim". ') +
         'Componentes "não instalados" são baixados uma única vez com o "Baixar-Bibliotecas"; depois disso tudo funciona sem internet.' })
     ]);
 

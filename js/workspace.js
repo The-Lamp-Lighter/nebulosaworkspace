@@ -479,7 +479,7 @@
     pSel = Math.min(pSel, Math.max(0, pItems.length - 1));
     $('#plist').innerHTML = pItems.length
       ? pItems.map((x, i) => `<button class="pit ${i === pSel ? 'on' : ''}" data-i="${i}">${x.icon}<span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span>${x.k ? `<span class="k">${x.k}</span>` : ''}</button>`).join('')
-      : '<div class="pempty">Nada encontrado. Tente “escrever”, “slides”, “partitura”, “livro”, “orçamento” ou “imagem”.</div>';
+      : '<div class="pempty">Nada encontrado. Tente “escrever”, “slides”, “partitura”, “livro”, “orçamento”, “receita”, “imagem” ou “vídeo”.</div>';
   }
   function openPalette() {
     closeOthers('palette');
