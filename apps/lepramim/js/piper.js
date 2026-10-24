@@ -148,6 +148,8 @@
         if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
         if (LPM.voz.aoMudar) LPM.voz.aoMudar();
         ui.aviso('Voz ' + nomeDaVoz(v) + ' pronta e guardada neste navegador.', null, 5000);
+        // [Nebulosa] também no canto de notificações do Workspace (o download pode levar alguns minutos)
+        if (window.NebulosaSkin && window.NebulosaSkin.notificar) window.NebulosaSkin.notificar({ titulo: 'Voz ' + nomeDaVoz(v) + ' pronta', texto: 'A voz neural foi baixada e fica guardada neste navegador.', tipo: 'sucesso' });
         return true;
       } catch (e) {
         if (e.message !== 'cancelado') ui.aviso('Não foi possível baixar a voz: ' + e.message, 'erro', 9000);

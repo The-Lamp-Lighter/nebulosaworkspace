@@ -1,0 +1,36 @@
+/* ==========================================================================
+   FotoFlow — aparência "Nebulosa Default"
+   Integração com o Nebulosa Workspace. Só vale quando <html data-skin="nebulosa">,
+   atributo posto pela ponte ../../shared/nebulosa-bridge.js. Sem a ponte
+   este arquivo não muda nada no programa.
+   Mesma organização da ilha de edição; o fundo continua escuro para as fotos
+   aparecerem com cor fiel. O âmbar das ações e do cursor vira o roxo Nebulosa;
+   as cores das trilhas (transições, áudio, textos, câmera) continuam as mesmas.
+   ========================================================================== */
+:root[data-skin="nebulosa"] {
+  --bg: #1B1D36;
+  --panel: #232547;
+  --panel-2: #2D3053;
+  --line: #3F4475;
+  --text: #F3F1FF;
+  --muted: #B4B7DE;
+  --amber: #A778FF;      /* ação principal e cursor */
+  --violet: #C6A8FF;     /* textos (mais claro, para não confundir com as ações) */
+}
+:root[data-skin="nebulosa"] :focus-visible { outline-color: #FEFF36; }
+:root[data-skin="nebulosa"] .btn:hover { border-color: #50568A; background: #363A64; }
+:root[data-skin="nebulosa"] .btn.primary { color: #1B1D38; }
+:root[data-skin="nebulosa"] .btn.primary:hover { background: #B890FF; }
+:root[data-skin="nebulosa"] .media-used { color: #1B1D38; }
+:root[data-skin="nebulosa"] .drop.over { background: rgba(167, 120, 255, .10); }
+:root[data-skin="nebulosa"] .suggest { background: rgba(167, 120, 255, .12); border-color: rgba(167, 120, 255, .5); }
+:root[data-skin="nebulosa"] .tpl-card:hover { border-color: #50568A; }
+:root[data-skin="nebulosa"] .stage,
+:root[data-skin="nebulosa"] .preview-wrap { background: #15172D; }
+:root[data-skin="nebulosa"] .tbtn.play::before { border-left-color: #1B1D38; }
+:root[data-skin="nebulosa"] .tbtn.play.is-playing::before { border-left-color: #1B1D38; border-right-color: #1B1D38; }
+:root[data-skin="nebulosa"] .clip.text { background: rgba(198, 168, 255, .20); color: #EFE6FF; }
+:root[data-skin="nebulosa"] .modal,
+:root[data-skin="nebulosa"] .busy { background: rgba(10, 11, 28, .72); }
+:root[data-skin="nebulosa"] .toast { background: #15172D; }
+:root[data-skin="nebulosa"] ::selection { background: rgba(167, 120, 255, .45); }

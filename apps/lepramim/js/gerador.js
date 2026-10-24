@@ -191,6 +191,10 @@
   }
 
   function mostrarResultado(cancelado, gerados, lista) {
+    // [Nebulosa] avisa no canto de notificações do Workspace (útil se a pessoa foi para outro programa)
+    if (!cancelado && gerados && window.NebulosaSkin && window.NebulosaSkin.notificar) {
+      window.NebulosaSkin.notificar({ titulo: 'Audiobook pronto', texto: (gerados === 1 ? '1 arquivo foi salvo' : gerados + ' arquivos foram salvos') + ' na pasta de downloads.', tipo: 'sucesso' });
+    }
     ui.modal({
       titulo: cancelado ? 'Geração interrompida' : 'Audiobook gerado',
       corpo: el('div', null, [

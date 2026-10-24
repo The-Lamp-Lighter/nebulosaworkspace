@@ -1,0 +1,82 @@
+/* ============================================================
+   LêPraMim — aparencia-nebulosa.css
+   Aparência "Nebulosa Default" (integração com o Nebulosa
+   Workspace). Só vale quando <html data-skin="nebulosa">,
+   atributo posto pela ponte ../../shared/nebulosa-bridge.js;
+   sem a ponte, este arquivo não muda nada no programa.
+   Mesma organização do LêPraMim; mudam só as cores:
+   roxo #A778FF, azul-marinho #323559, laranja #FF9C54 e
+   amarelo #FEFF36. Funciona com os temas claro e escuro.
+   ============================================================ */
+
+/* ---------- Tema claro ---------- */
+:root[data-skin="nebulosa"] {
+  --azul: #7B4FE0;
+  --azul-forte: #5D37C0;
+  --azul-suave: #EEE7FF;
+  --laranja: #FF9C54;
+  --laranja-suave: #FFE7D3;
+  --marinho: #323559;
+  --roxo: #A778FF;
+
+  --fundo: #F2EEFC;
+  --superficie: #FFFFFF;
+  --superficie-2: #F7F4FF;
+  --tinta: #323559;
+  --tinta-suave: #62679C;
+  --linha: #DCD3F5;
+  --papel: #FFFFFF;
+  --tinta-papel: #1B1D38;
+  --sombra: 0 1px 2px rgba(50, 53, 89, .10), 0 6px 20px rgba(50, 53, 89, .10);
+  --perigo: #B8432F;
+}
+
+/* ---------- Tema escuro ---------- */
+:root[data-skin="nebulosa"][data-tema="escuro"] {
+  --azul: #A778FF;
+  --azul-forte: #C6A8FF;
+  --azul-suave: #3B3970;
+  --laranja: #FF9C54;
+  --laranja-suave: #4A3A45;
+  --marinho: #F3F1FF;
+  --roxo: #A778FF;
+
+  --fundo: #1B1D36;
+  --superficie: #262948;
+  --superficie-2: #2E3156;
+  --tinta: #F3F1FF;
+  --tinta-suave: #B9BCE0;
+  --linha: #41457A;
+  --papel: #222440;
+  --tinta-papel: #ECEAFF;
+  --sombra: 0 1px 2px rgba(0, 0, 0, .45), 0 8px 24px rgba(8, 9, 24, .45);
+  --perigo: #FF8F8A;
+}
+
+/* ---------- Barra superior azul-marinho ---------- */
+:root[data-skin="nebulosa"] .topo { background: #323559; border-bottom-color: #262947; color: #F3F1FF; }
+:root[data-skin="nebulosa"][data-tema="escuro"] .topo { background: #1D1F3A; border-bottom-color: #15172D; }
+:root[data-skin="nebulosa"] .topo .marca-le { color: #FF9C54; }
+:root[data-skin="nebulosa"] .topo .marca-pm { color: #F3F1FF; }
+:root[data-skin="nebulosa"] .topo .bt.fantasma,
+:root[data-skin="nebulosa"] .topo .bt-icone { color: #E6E3FF; }
+:root[data-skin="nebulosa"] .topo .bt.fantasma:hover,
+:root[data-skin="nebulosa"] .topo .bt.fantasma.ativo,
+:root[data-skin="nebulosa"] .topo .bt-icone:hover { background: rgba(255, 255, 255, .10); color: #FFFFFF; }
+:root[data-skin="nebulosa"] .topo .bt.primario { background: #A778FF; border-color: #A778FF; color: #1B1D38; }
+:root[data-skin="nebulosa"] .topo .bt.primario:hover { background: #B890FF; border-color: #B890FF; }
+:root[data-skin="nebulosa"] .topo .busca { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .18); color: #B9BCE0; }
+:root[data-skin="nebulosa"] .topo .busca:focus-within { border-color: #A778FF; }
+:root[data-skin="nebulosa"] .topo .busca input { color: #FFFFFF; }
+:root[data-skin="nebulosa"] .topo .busca input::placeholder { color: #B9BCE0; }
+:root[data-skin="nebulosa"] .topo :focus-visible { outline-color: #FEFF36; }
+
+/* ---------- Detalhes com cor fixa no estilo original ---------- */
+:root[data-skin="nebulosa"] :focus-visible { outline-color: var(--azul); }
+:root[data-skin="nebulosa"] .bt-tocar { box-shadow: 0 4px 14px rgba(123, 79, 224, .35); }
+:root[data-skin="nebulosa"] .soltar { background: rgba(167, 120, 255, .18); }
+:root[data-skin="nebulosa"] .modal-fundo { background: rgba(27, 29, 56, .55); }
+:root[data-skin="nebulosa"] .aviso { background: #323559; }
+:root[data-skin="nebulosa"][data-tema="escuro"] .aviso { background: #F3F1FF; color: #1B1D38; }
+:root[data-skin="nebulosa"] .aviso.erro { background: #9B1C1C; color: #FFFFFF; }
+:root[data-skin="nebulosa"] ::selection { background: rgba(167, 120, 255, .40); }

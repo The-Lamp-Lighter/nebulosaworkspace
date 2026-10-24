@@ -47,6 +47,12 @@
                           devolve false fora do Workspace (o programa abre por conta própria)
      provide(impl)        para programas com aparência própria: {list(), get(), set(id), openDialog?, isDirty?}
      notify()             avisa o Workspace que a aparência mudou (usado com provide)
+     notificar({ titulo, texto, tipo, duracao, sempre })
+                          aviso no canto de notificações do Workspace (tipo: 'info' | 'sucesso' |
+                          'aviso' | 'erro'; duracao em ms). Se o programa está na tela, o aviso
+                          vai só para o sino, a menos que sempre = true. Devolve false fora do
+                          Workspace — aí o programa mostra o aviso do jeito dele.
+   Também disponível como window.Nebulosa (mesmo objeto).
    Alterações não salvas: o programa define window.__nebulosaDirty = function () { return true|false; }
    ========================================================================== */
 (function () {
@@ -142,8 +148,20 @@
       try { window.parent.postMessage({ nebulosa: 'new-window', app: APP, hash: hash || '' }, '*'); return true; } catch (e) { return false; }
     },
     provide: function (impl) { provider = impl || null; post('hello'); },
-    notify: function () { post('skin'); }
+    notify: function () { post('skin'); },
+    notificar: function (op) {
+      if (!inFrame || !op) return false;
+      try {
+        window.parent.postMessage({
+          nebulosa: 'notify', app: APP,
+          title: String(op.titulo || '').slice(0, 90), text: String(op.texto || '').slice(0, 320),
+          kind: op.tipo || 'info', ttl: +op.duracao || 0, always: !!op.sempre
+        }, '*');
+        return true;
+      } catch (e) { return false; }
+    }
   };
+  if (!window.Nebulosa) window.Nebulosa = api;
 
   /* ---------- conversa com o Workspace ---------- */
   window.addEventListener('message', function (e) {

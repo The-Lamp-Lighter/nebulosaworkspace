@@ -1,0 +1,8 @@
+﻿Bibliotecas de terceiros usadas pelo LêPraMim.
+
+pdfjs/      PDF.js (Mozilla, Apache 2.0) - já incluído.
+tesseract/  Tesseract.js (OCR) - criado pelo Baixar-Bibliotecas.
+lamejs/     lamejs (MP3) - criado pelo Baixar-Bibliotecas.
+mammoth/    Mammoth.js (DOCX) - criado pelo Baixar-Bibliotecas.
+piper/      Piper (voz neural): motor e vozes - criado pelo Baixar-Bibliotecas.
+            O arquivo vozes/vozes.json lista as vozes que o app reconhece.

@@ -21,6 +21,9 @@
        dirty          { dirty: true|false }  resposta ao query-dirty
        key            { code }  atalho Alt+0…9 / Alt+K apertado dentro do programa
        new-window     { app, hash }  abrir o programa numa nova janela
+       notify         { title, text, kind, ttl, always }  aviso no canto de notificações
+                      (kind: info | sucesso | aviso | erro). Se o programa está
+                      na tela, o aviso vai só para o sino, a menos que always = true.
 
    Um programa que não fala esse "idioma" (sem shared/nebulosa-bridge.js)
    abre e funciona normalmente; ele só não oferece aparências pelo Workspace
@@ -37,6 +40,8 @@
   const ICONS = window.NEBULOSA_ICONS || {};
   const LOGO = '<img src="assets/img/logo-112.png" alt="" aria-hidden="true" draggable="false">';
   const LOGO_BIG = '<img src="assets/img/logo-320.png" alt="Nebulosa Workspace" draggable="false">';
+  const DOA = window.NEBULOSA_DOACAO && window.NEBULOSA_DOACAO.pix ? window.NEBULOSA_DOACAO : null;
+  const NOTIF = window.NebulosaNotificacoes;
   const IFRAME_ALLOW = 'clipboard-read; clipboard-write; fullscreen; display-capture; autoplay; microphone';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -82,7 +87,9 @@
       const extra = ST[a.id].open ? '<i class="dot" title="Aberto"></i>' : (a.soon ? '<span class="soon rl">em breve</span>' : '');
       h += `<button class="ritem" data-go="${a.id}" aria-current="${active === a.id ? 'page' : 'false'}" title="${esc(a.name)}${i < 9 ? ' (Alt+' + (i + 1) + ')' : ''}">${ric(a)}<span class="rl">${esc(a.name)}</span>${extra}</button>`;
     });
-    h += `<div class="rspacer"></div><div class="rfoot"><button class="ritem" id="rAbout"><span class="ric">${ICONS.info}</span><span class="rl">Sobre o Workspace</span></button></div>`;
+    h += `<div class="rspacer"></div><div class="rfoot">` +
+      (DOA ? `<button class="ritem doe" id="rDoe" title="Apoie o Nebulosa Workspace com um Pix"><span class="ric">${ICONS.heart}</span><span class="rl"><b>Doe com Pix</b></span></button>` : '') +
+      `<button class="ritem" id="rAbout"><span class="ric">${ICONS.info}</span><span class="rl">Sobre o Workspace</span></button></div>`;
     $('#rail').innerHTML = h;
   }
   $('#rail').addEventListener('click', e => {
@@ -90,6 +97,7 @@
     if (g) { if (g.dataset.go === 'home') goHome(); else openApp(g.dataset.go, g); return; }
     if (e.target.closest('#brand')) goHome();
     if (e.target.closest('#rAbout')) openAbout();
+    if (e.target.closest('#rDoe')) openDonate();
   });
 
   /* ---------- abas ---------- */
@@ -335,6 +343,16 @@
       const hash = typeof d.hash === 'string' ? d.hash.replace(/^#/, '') : 'novo';
       const w = window.open(location.href.split('#')[0] + '#app=' + encodeURIComponent(a.id) + (hash ? '&h=' + encodeURIComponent(hash) : ''), '_blank');
       if (!w) toast('O navegador bloqueou a nova janela. Permita pop-ups para este site.');
+    } else if (d.nebulosa === 'notify' && NOTIF) {
+      const tipo = ['info', 'sucesso', 'aviso', 'erro'].indexOf(d.kind) >= 0 ? d.kind : 'info';
+      const naFrente = active === a.id && document.body.dataset.view === 'app' && !document.hidden;
+      NOTIF.mostrar({
+        titulo: typeof d.title === 'string' ? d.title : '', texto: typeof d.text === 'string' ? d.text : '',
+        tipo, app: a.id, origem: a.name, cor: tipo === 'info' ? grad(a) : undefined,
+        duracao: Math.min(Math.max(+d.ttl || 9000, 3000), 60000),
+        naTela: !naFrente || !!d.always,
+        aoClicar: () => openApp(a.id)
+      });
     }
   });
 
@@ -398,7 +416,7 @@
   }
 
   /* ---------- painéis e janelas ---------- */
-  const POPS = ['skinPanel', 'palette', 'about', 'confirm'];
+  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel'];
   function openPop(el) {
     const sc = $('#scrim');
     sc.classList.add('show');
@@ -427,6 +445,7 @@
   $('#palette').dataset.from = 'translate(-50%,-10px) scale(.98)'; $('#palette').dataset.to = 'translate(-50%,0) scale(1)';
   $('#about').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#about').dataset.to = 'translate(-50%,-50%) scale(1)';
   $('#confirm').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#confirm').dataset.to = 'translate(-50%,-50%) scale(1)';
+  $('#donate').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#donate').dataset.to = 'translate(-50%,-50%) scale(1)';
   function openSkinPanel() { renderSkinPanel(); closeOthers('skinPanel'); openPop($('#skinPanel')); }
   $('#btnSkin').addEventListener('click', () => { if ($('#skinPanel').classList.contains('show')) closePops(); else openSkinPanel(); });
   $('#btnFs').addEventListener('click', () => {
@@ -453,6 +472,142 @@
     $('#abOk').onclick = closePops;
   }
 
+  /* ---------- doação (Doe com Pix) ---------- */
+  // Dados e textos em js/doacao.js; o QR Code é desenhado por js/qrcode.js.
+  const LANTERNA = '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="45" fill="#1a103c"/><path d="M50 22 L66 36 L34 36 Z" fill="#fef08a"/><rect x="38" y="36" width="24" height="28" rx="2" fill="#fde047" fill-opacity=".9"/><circle cx="50" cy="50" r="6" fill="#f97316"/><rect x="48" y="64" width="4" height="20" fill="#e2e8f0"/><path d="M28 48 L38 52 M72 48 L62 52" stroke="#fef08a" stroke-width="3" stroke-linecap="round"/></svg>';
+  const heartRic = () => `<span class="ric" style="background:linear-gradient(135deg,var(--o),var(--p));color:#1b1d38">${ICONS.heart}</span>`;
+  let qrSvg = null;
+  function openDonate() {
+    if (!DOA) return;
+    if (qrSvg === null) {
+      try { qrSvg = window.NebulosaQR.svg(DOA.pix, { nivel: 'M', borda: 2, escuro: '#1b1d38', rotulo: 'QR Code do Pix para apoiar o Nebulosa Workspace' }); }
+      catch (e) { qrSvg = ''; }
+    }
+    const curto = DOA.pix.length > 30 ? DOA.pix.slice(0, 22) + '…' + DOA.pix.slice(-4) : DOA.pix;
+    const texto = esc(DOA.texto || '').replace('Nebulosa Workspace', '<strong>Nebulosa Workspace</strong>');
+    const d = $('#donate');
+    d.innerHTML = `<div class="faixa"></div><div class="dcorpo">
+      <div class="dtopo">
+        <span class="lanterna">${LANTERNA}</span>
+        <div class="dquem"><div><b>${esc(DOA.equipe || 'Nebulosa Workspace')}</b>${DOA.papel ? `<span class="papel">${esc(DOA.papel)}</span>` : ''}</div>
+          <small><i></i>Projeto <strong>Nebulosa Workspace</strong></small></div>
+        ${DOA.selo ? `<span class="selo"><i></i>${esc(DOA.selo)}</span>` : ''}
+      </div>
+      <div class="dgrade">
+        <div>
+          <h3>${esc(DOA.titulo || 'Apoie o projeto')} <em>✨</em></h3>
+          <p class="dtexto">${texto}</p>
+          ${DOA.instrucao ? `<p class="dica">${ICONS.qr}<span>${esc(DOA.instrucao)}</span></p>` : ''}
+          <div class="rotulo"><span>Pix Copia e Cola</span><span>${esc(DOA.pix.slice(0, 8))}…${esc(DOA.pix.slice(-4))}</span></div>
+          <div class="copiar">
+            <div class="codigo" id="dCodigo" title="Código Pix Copia e Cola"><span>${esc(curto)}</span></div>
+            <button class="chip prim" id="dCopiar">${ICONS.copy}<span>Copiar Pix</span></button>
+          </div>
+          <p class="copiado" id="dCopiado" hidden>${ICONS.check}<span>${esc(DOA.copiado || 'Chave Pix copiada!')}</span></p>
+        </div>
+        <div class="qr">${qrSvg ? `<span class="img">${qrSvg}</span>` : '<p style="color:#323559;margin:20px 0">Use o Pix Copia e Cola ao lado.</p>'}<small>${ICONS.pix}Pague com qualquer banco</small></div>
+      </div>
+      <div class="dpe"><span>${ICONS.heart}${esc(DOA.rodape || '')}</span><button class="chip" id="dFechar">Fechar</button></div>
+    </div>`;
+    closeOthers('donate'); openPop(d);
+    $('#dCopiar').onclick = copiarPix;
+    $('#dFechar').onclick = closePops;
+    adiarLembrete(); // abrir a janela conta como lembrete visto
+    setTimeout(() => { const b = $('#dCopiar'); if (b) b.focus(); }, 60);
+  }
+  async function copiarPix() {
+    let ok = false;
+    try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(DOA.pix); ok = true; } } catch (e) { ok = false; }
+    if (!ok) {
+      const t = document.createElement('textarea');
+      t.value = DOA.pix; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;left:-9999px;opacity:0';
+      document.body.appendChild(t); t.select();
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      t.remove();
+    }
+    const b = $('#dCopiar');
+    if (!b) return;
+    if (ok) {
+      b.classList.add('ok'); b.querySelector('span').textContent = 'Copiado!';
+      $('#dCopiado').hidden = false;
+      pausarLembretes();
+      setTimeout(() => { if (b.isConnected) { b.classList.remove('ok'); b.querySelector('span').textContent = 'Copiar Pix'; } }, 3500);
+    } else {
+      // sem permissão para copiar: mostra o código inteiro, já selecionado
+      const c = $('#dCodigo');
+      c.innerHTML = `<input readonly value="${esc(DOA.pix)}" aria-label="Pix Copia e Cola" style="flex:1;min-width:0;background:none;border:0;color:inherit;font:inherit">`;
+      const i = c.querySelector('input'); i.focus(); i.select();
+      toast('Não consegui copiar sozinho: o código está selecionado, é só apertar Ctrl+C.');
+    }
+  }
+
+  /* ---------- lembrete de doação (mais ou menos a cada hora) ---------- */
+  const LEMB = (DOA && DOA.lembretes) || {};
+  const LEMB_KEY = 'nebulosa.lembrete';
+  const abertoEm = Date.now();
+  let lemb = { proximo: 0, pausaAte: 0, indice: 0 };
+  try { Object.assign(lemb, JSON.parse(localStorage.getItem(LEMB_KEY) || '{}')); } catch (e) { /* sem armazenamento */ }
+  const salvarLemb = () => { try { localStorage.setItem(LEMB_KEY, JSON.stringify(lemb)); } catch (e) { /* sem armazenamento */ } };
+  // varia ±10% para não aparecer sempre no mesmo minuto
+  const intervalo = () => Math.max(1, +LEMB.intervaloMinutos || 60) * 60000 * (0.9 + Math.random() * 0.2);
+  function adiarLembrete() { lemb.proximo = Date.now() + intervalo(); salvarLemb(); }
+  function pausarLembretes() { lemb.pausaAte = Date.now() + Math.max(0, +LEMB.pausaDepoisDeCopiarHoras || 0) * 3600000; adiarLembrete(); }
+  if (!lemb.proximo) adiarLembrete(); // primeira visita: o primeiro lembrete vem depois de ~1 hora de uso
+  function conferirLembrete() {
+    const msgs = LEMB.mensagens || [];
+    if (!DOA || !NOTIF || LEMB.ligado === false || !msgs.length) return;
+    const agora = Date.now();
+    if (document.hidden || agora < lemb.proximo || agora < (lemb.pausaAte || 0)) return;
+    if (agora - abertoEm < Math.max(0, +LEMB.esperaAoAbrirMinutos || 0) * 60000) return;
+    if (POPS.some(id => document.getElementById(id).classList.contains('show'))) return; // espera fechar as janelas
+    const m = msgs[(lemb.indice || 0) % msgs.length];
+    lemb.indice = ((lemb.indice || 0) + 1) % msgs.length;
+    adiarLembrete();
+    NOTIF.mostrar({
+      titulo: m.titulo, texto: m.texto, icone: heartRic(), origem: 'Nebulosa Workspace',
+      cor: 'linear-gradient(180deg,var(--o),var(--p))', guardar: false,
+      duracao: Math.max(5, +LEMB.duracaoSegundos || 25) * 1000,
+      acoes: [{ texto: 'Doar com Pix', primaria: true, acao: openDonate }, { texto: 'Agora não' }],
+      aoClicar: openDonate
+    });
+  }
+  setInterval(conferirLembrete, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(conferirLembrete, 20000); });
+
+  /* ---------- sino (histórico de notificações) ---------- */
+  if (NOTIF) {
+    NOTIF.configurar({ icone: id => byId[id] ? ric(byId[id]) : `<span class="ric" style="background:linear-gradient(135deg,var(--p),var(--o));color:#1b1d38">${ICONS.bell}</span>` });
+    NOTIF.aoMudar(() => { atualizarSino(); if ($('#notifPanel').classList.contains('show')) renderNotifPanel(); });
+  }
+  function atualizarSino() {
+    const n = NOTIF ? NOTIF.naoLidas() : 0, b = $('#nbadge');
+    b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n);
+    $('#btnNotif').setAttribute('aria-label', n ? `Notificações (${n} nova${n > 1 ? 's' : ''})` : 'Notificações');
+  }
+  function renderNotifPanel() {
+    const p = $('#notifPanel');
+    p.innerHTML = `<div class="nhead"><h3>Notificações</h3><button class="chip" id="nLimpar">Limpar</button></div><div class="nlist" id="nlist"></div>`;
+    if (NOTIF) NOTIF.renderizarLista($('#nlist'));
+    $('#nLimpar').hidden = !$('#nlist .nitem');
+    $('#nLimpar').onclick = () => { if (NOTIF) NOTIF.limpar(); };
+  }
+  function openNotifs() {
+    const p = $('#notifPanel');
+    if (p.classList.contains('show')) { closePops(); return; }
+    if (NOTIF) NOTIF.fecharTodas(); // o que estava no canto já está na lista
+    renderNotifPanel(); closeOthers('notifPanel'); openPop(p);
+    setTimeout(() => { if (NOTIF && p.classList.contains('show')) NOTIF.marcarLidas(); }, 1500);
+  }
+  $('#btnNotif').addEventListener('click', openNotifs);
+  $('#btnDoeTop').addEventListener('click', openDonate);
+  if (!DOA) $('#btnDoeTop').remove();
+  $('#notifPanel').addEventListener('click', e => {
+    const it = e.target.closest('.nitem');
+    if (it && it.dataset.app && byId[it.dataset.app]) { closePops(); openApp(it.dataset.app); }
+  });
+  /** Aviso do próprio Workspace no canto de notificações. */
+  function notificar(op) { return NOTIF ? NOTIF.mostrar(Object.assign({ origem: 'Nebulosa Workspace' }, op)) : null; }
+
   /* ---------- busca rápida (Alt+K) ---------- */
   let pItems = [], pSel = 0;
   function actions() {
@@ -470,6 +625,8 @@
     L.push({ t: 'Voltar cada programa ao visual padrão', s: 'Desfaz a aparência Nebulosa', kw: 'aparencia skin padrao original todos', icon: plainRic(ICONS.paint), run: () => { closePops(); applyAll(null); } });
     L.push({ t: H.theme === 'dark' ? 'Workspace em modo claro' : 'Workspace em modo escuro', s: 'Muda só o Workspace', kw: 'tema claro escuro modo', icon: plainRic(ICONS.moon), run: () => { closePops(); setTheme(H.theme === 'dark' ? 'light' : 'dark'); } });
     L.push({ t: 'Tela cheia', s: 'Ocupa a tela inteira', kw: 'tela cheia fullscreen', icon: plainRic('⤢'), run: () => { closePops(); $('#btnFs').click(); } });
+    if (DOA) L.push({ t: 'Doe com Pix', s: 'Apoie o Nebulosa Workspace com qualquer valor', kw: 'doar doacao doe pix apoiar apoio contribuir ajudar retribuir', icon: heartRic(), run: () => { closePops(); setTimeout(openDonate, 180); } });
+    L.push({ t: 'Notificações', s: 'Avisos recentes dos programas', kw: 'notificacoes avisos alertas sino historico', icon: plainRic(ICONS.bell), run: () => { closePops(); setTimeout(openNotifs, 180); } });
     L.push({ t: 'Sobre o Workspace', s: 'Versão e créditos', kw: 'sobre ajuda creditos autor', icon: plainRic(ICONS.info), run: () => { closePops(); setTimeout(openAbout, 180); } });
     return L;
   }
@@ -517,7 +674,7 @@
   });
 
   /* ---------- partida ---------- */
-  renderRail(); renderTabs(); renderHome();
+  renderRail(); renderTabs(); renderHome(); atualizarSino();
   // Link direto para um programa: index.html#app=typee  (h=... vira o #... do programa)
   (function bootHash() {
     const p = new URLSearchParams(location.hash.slice(1));
@@ -529,5 +686,9 @@
   })();
 
   // acesso para depuração no console
-  window.__nebulosa = { APPS, ST, openApp, goHome, closeApp, showApp, applyAll, get active() { return active; }, get order() { return order; } };
+  window.__nebulosa = {
+    APPS, ST, openApp, goHome, closeApp, showApp, applyAll, openDonate, openNotifs, notificar,
+    lembrete: { conferir: conferirLembrete, get estado() { return lemb; } },
+    get active() { return active; }, get order() { return order; }
+  };
 })();

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Márcio Willians Barreto de Andrade">
+  <meta name="description" content="FotoFlow: transforme fotos em filmes com movimentos de câmera e transições cinematográficas, 100% offline.">
+  <title>FotoFlow</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o programa funciona sozinho) -->
+  <script src="../../shared/nebulosa-bridge.js" data-app="fotoflow" data-name="FotoFlow" data-preview="#171b26 #1f2533 #f2b84b #4fb6a8"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="nebulosa-skin.css"><!-- [Nebulosa] aparência Nebulosa Default -->
+</head>
+<body>
+
+  <!-- ===================== Barra superior ===================== -->
+  <header class="topbar">
+    <div class="brand" title="FotoFlow, por Márcio Willians Barreto de Andrade">
+      <img src="assets/logo.svg" alt="" width="28" height="28">
+      <span class="brand-name">FotoFlow</span>
+    </div>
+    <nav class="menu" aria-label="Projeto">
+      <button class="btn ghost" id="btnNovo" type="button">Novo</button>
+      <button class="btn ghost" id="btnAbrir" type="button">Abrir</button>
+      <button class="btn ghost" id="btnSalvar" type="button" title="Salvar projeto (Ctrl+S)">Salvar</button>
+      <button class="btn ghost" id="btnDuplicar" type="button" title="Salvar uma cópia e continuar nela">Duplicar</button>
+      <span class="menu-sep" aria-hidden="true"></span>
+      <button class="btn ghost" id="btnTutorial" type="button" title="Como usar o FotoFlow">Tutorial</button>
+      <button class="btn ghost" id="btnCreditos" type="button" title="Sobre o programa e o autor">Créditos</button>
+      <button class="btn ghost" id="btnSkin" type="button" title="Trocar a aparência do FotoFlow">Aparência</button><!-- [Nebulosa] -->
+    </nav>
+    <input class="proj-name" id="projName" type="text" aria-label="Nome do filme" placeholder="Nome do filme" spellcheck="false">
+    <div class="menu right">
+      <button class="btn primary" id="btnAuto" type="button">Gerar filme automático</button>
+      <button class="btn" id="btnExportar" type="button">Exportar</button>
+    </div>
+  </header>
+
+  <!-- ===================== Área de trabalho ===================== -->
+  <main class="workspace">
+
+    <!-- Biblioteca de mídias, modelos e textos -->
+    <aside class="panel library" aria-label="Biblioteca">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="midias" type="button">Mídias</button>
+        <button class="tab" data-tab="modelos" type="button">Modelos</button>
+        <button class="tab" data-tab="textos" type="button">Textos</button>
+      </div>
+
+      <div class="tabpanel" data-panel="midias">
+        <div class="drop" id="dropZone">
+          <button class="btn wide" id="btnImportar" type="button">Importar fotos e áudios</button>
+          <p class="muted">ou arraste os arquivos para esta janela<br>JPG, PNG, WEBP, SVG · MP3, WAV, AAC</p>
+        </div>
+        <p class="lib-counts muted" id="libCounts"></p>
+        <p class="empty" id="libEmpty">Suas fotos aparecem aqui. Clique em uma foto para colocá-la no filme.</p>
+        <div class="media-grid" id="mediaGrid"></div>
+        <div class="audio-list" id="audioList"></div>
+      </div>
+
+      <div class="tabpanel" data-panel="modelos" hidden>
+        <div class="suggest" id="suggestBox" hidden></div>
+        <div class="tpl-grid" id="tplGrid"></div>
+        <div class="btn-row">
+          <button class="btn small" id="btnNovoModelo" type="button">Criar modelo próprio</button>
+          <button class="btn small" id="btnImportarModelo" type="button">Importar modelo</button>
+        </div>
+      </div>
+
+      <div class="tabpanel" data-panel="textos" hidden>
+        <p class="muted">O texto entra na posição atual do cursor da linha do tempo, já com o estilo do modelo.</p>
+        <div class="text-buttons">
+          <button class="text-add t-title" data-addtext="title" type="button">Título</button>
+          <button class="text-add t-sub" data-addtext="subtitle" type="button">Subtítulo</button>
+          <button class="text-add t-cap" data-addtext="caption" type="button">Legenda</button>
+          <button class="text-add t-phrase" data-addtext="phrase" type="button">Frase de impacto</button>
+          <button class="text-add t-cred" data-addtext="credits" type="button">Créditos finais</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Preview -->
+    <section class="stage" aria-label="Preview">
+      <div class="preview-wrap" id="previewWrap">
+        <canvas id="preview" width="1280" height="720" aria-label="Preview do filme"></canvas>
+        <div class="empty-stage" id="emptyStage">
+          <h1>Seu filme começa com as fotos</h1>
+          <p>Importe as fotos, escolha uma música e um modelo, e clique em <b>Gerar filme automático</b>.</p>
+          <p><button class="btn small" id="btnTutorialVazio" type="button">Ver o tutorial</button></p>
+        </div>
+      </div>
+      <div class="transport">
+        <button class="tbtn play" id="btnPlay" type="button" aria-label="Reproduzir" title="Reproduzir / pausar (Espaço)"></button>
+        <button class="tbtn stop" id="btnStop" type="button" aria-label="Parar" title="Parar e voltar ao início"></button>
+        <output class="time" id="timeLabel">00:00.0 / 00:00.0</output>
+        <span class="spacer"></span>
+        <label class="vol" title="Volume"><span aria-hidden="true">Volume</span>
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume"></label>
+        <button class="tbtn full" id="btnFull" type="button" aria-label="Tela cheia" title="Tela cheia"></button>
+      </div>
+    </section>
+
+    <!-- Propriedades -->
+    <aside class="panel props" id="props" aria-label="Propriedades"></aside>
+  </main>
+
+  <!-- ===================== Linha do tempo ===================== -->
+  <footer class="timeline-area">
+    <div class="tl-toolbar">
+      <strong>Linha do tempo</strong>
+      <button class="btn small" id="btnDupSel" type="button" title="Duplicar o item selecionado (Ctrl+D)">Duplicar</button>
+      <button class="btn small" id="btnDelSel" type="button" title="Excluir o item selecionado (Delete)">Excluir</button>
+      <span class="spacer"></span>
+      <label class="zoom">Zoom <input id="tlZoom" type="range" min="10" max="160" step="2" value="60" aria-label="Zoom da linha do tempo"></label>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </footer>
+
+  <!-- ===================== Janelas ===================== -->
+  <div class="modal" id="modalAuto" hidden role="dialog" aria-modal="true" aria-labelledby="autoTitle">
+    <div class="dialog">
+      <h2 id="autoTitle">Gerar filme automático</h2>
+      <div id="autoForm"></div>
+      <div class="dialog-actions">
+        <button class="btn ghost" data-close type="button">Cancelar</button>
+        <button class="btn primary" id="btnGerar" type="button">Gerar filme</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalExport" hidden role="dialog" aria-modal="true" aria-labelledby="expTitle">
+    <div class="dialog">
+      <h2 id="expTitle">Exportar</h2>
+      <div id="exportForm"></div>
+      <div class="progress" id="exportProgress" hidden>
+        <p class="progress-text"></p>
+        <div class="progress-bar"><span></span></div>
+        <button class="btn small" type="button">Cancelar gravação</button>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn ghost" data-close type="button">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalTpl" hidden role="dialog" aria-modal="true" aria-labelledby="tplTitle">
+    <div class="dialog wide">
+      <h2 id="tplTitle">Editor de modelos</h2>
+      <div class="tpl-form" id="tplForm"></div>
+      <div class="dialog-actions">
+        <button class="btn ghost danger" id="btnTplExcluir" type="button">Excluir modelo</button>
+        <span class="spacer"></span>
+        <button class="btn ghost" data-close type="button">Cancelar</button>
+        <button class="btn" id="btnTplExportar" type="button">Exportar arquivo .fftemplate</button>
+        <button class="btn primary" id="btnTplSalvar" type="button">Salvar modelo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalTutorial" hidden role="dialog" aria-modal="true" aria-labelledby="tutTitle">
+    <div class="dialog wide">
+      <h2 id="tutTitle">Tutorial: seu primeiro filme em 6 passos</h2>
+      <ol class="tutorial">
+        <li><strong>Importe as fotos e a música</strong>
+          <p>Na aba <b>Mídias</b>, clique em <b>Importar fotos e áudios</b> ou arraste os arquivos para a janela. Aceita JPG, PNG, WEBP, SVG, MP3, WAV e AAC.</p></li>
+        <li><strong>Gere o filme automático</strong>
+          <p>Clique em <b>Gerar filme automático</b>, escolha a música, o modelo e o estilo (<b>Clássico</b>, com a foto em tela cheia, ou <b>Mural</b>, com as fotos sobre uma mesa e a câmera voando entre elas). Escreva o título e os créditos, se quiser, e confirme.</p></li>
+        <li><strong>Assista e ajuste</strong>
+          <p>Use o botão de reproduzir ou a tecla <kbd>Espaço</kbd>. Na <b>linha do tempo</b>, arraste as fotos para mudar a ordem e puxe a borda direita de uma foto para mudar o tempo dela. Clique em uma foto, transição, texto ou áudio para editar no painel da direita.</p></li>
+        <li><strong>Acrescente textos e áudio</strong>
+          <p>Na aba <b>Textos</b>, escolha título, legenda, frase ou créditos: o texto entra na posição do cursor. Na aba <b>Mídias</b>, use os botões <b>Música</b>, <b>Narração</b> ou <b>Efeito</b> ao lado de cada áudio.</p></li>
+        <li><strong>Troque ou crie um modelo</strong>
+          <p>Na aba <b>Modelos</b>, clique em um modelo para aplicar. Em <b>Criar modelo próprio</b> você escolhe cores, fontes, transições e ritmo. No estilo Mural, pode <b>importar uma imagem</b> (tecido, papel, madeira, parede) para servir de superfície: o FotoFlow ajusta a imagem sozinho.</p></li>
+        <li><strong>Salve e exporte</strong>
+          <p><b>Salvar</b> grava o projeto em um arquivo que você pode reabrir depois. <b>Exportar</b> grava o vídeo ou gera imagens, PDF e PowerPoint. O vídeo é gravado enquanto toca: mantenha a janela visível até terminar.</p></li>
+      </ol>
+      <h3>Atalhos</h3>
+      <ul class="shortcuts">
+        <li><kbd>Espaço</kbd> reproduzir ou pausar</li>
+        <li><kbd>←</kbd> <kbd>→</kbd> mover o cursor (com <kbd>Shift</kbd>, 1 segundo)</li>
+        <li><kbd>Delete</kbd> excluir o item selecionado</li>
+        <li><kbd>Ctrl</kbd>+<kbd>D</kbd> duplicar · <kbd>Ctrl</kbd>+<kbd>S</kbd> salvar o projeto</li>
+      </ul>
+      <div class="dialog-actions"><button class="btn primary" data-close type="button">Entendi</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalCreditos" hidden role="dialog" aria-modal="true" aria-labelledby="credTitle">
+    <div class="dialog credits">
+      <img src="assets/logo.svg" alt="" width="72" height="72">
+      <h2 id="credTitle">FotoFlow</h2>
+      <p class="muted">Fotos que viram filme</p>
+      <p class="credit-line">Criado por</p>
+      <p class="credit-name">Márcio Willians Barreto de Andrade</p>
+      <p class="muted">Versão 1.2 · Funciona sem internet: tudo é processado no seu computador.</p>
+      <div class="dialog-actions"><button class="btn primary" data-close type="button">Fechar</button></div>
+    </div>
+  </div>
+
+  <div class="busy" id="busy" hidden><div class="busy-box"><span class="spinner"></span><span id="busyText">Processando…</span></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <input id="fileMedia" type="file" multiple hidden accept=".jpg,.jpeg,.png,.webp,.svg,.mp3,.wav,.aac,.m4a,image/*,audio/*">
+  <input id="fileProject" type="file" hidden accept=".json,application/json">
+  <input id="fileTpl" type="file" hidden accept=".fftemplate,.json,application/json">
+  <input id="fileSurface" type="file" hidden accept=".jpg,.jpeg,.png,.webp,image/*">
+
+  <!-- Scripts clássicos (sem módulos) para funcionar abrindo o arquivo direto do disco. -->
+  <script src="transitions.js"></script>
+  <script src="templates.js"></script>
+  <script src="timeline.js"></script>
+  <script src="export.js"></script>
+  <script src="app.js"></script>
+  <script>/* [Nebulosa] integração com o Nebulosa Workspace: aviso de alterações e botão Aparência */
+    window.__nebulosaDirty = function () { return !!(window.FF && FF.App && FF.App.state.project && FF.App.state.project.scenes.length); };
+    (function () { var nb = document.getElementById('btnSkin'); if (!nb) return; if (window.NebulosaSkin) nb.addEventListener('click', function () { NebulosaSkin.openDialog(); }); else nb.remove(); })();
+  </script>
+</body>
+</html>
