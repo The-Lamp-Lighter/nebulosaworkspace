@@ -1,0 +1,46 @@
+/* ==========================================================================
+   Stardust — aparência "Nebulosa Default"
+   Integração com o Nebulosa Workspace. Só vale quando <html data-skin="nebulosa">,
+   atributo posto pela ponte ../../shared/nebulosa-bridge.js. Sem a ponte
+   este arquivo não muda nada no programa.
+   Cores Nebulosa: roxo #A778FF, azul-marinho #323559, laranja #FF9C54, amarelo #FEFF36.
+   ========================================================================== */
+:root[data-skin="nebulosa"] {
+  --bg0: #1b1d36; --bg1: #232547; --bg2: #2b2e50; --bg3: #363a64; --bg4: #434879; --bg5: #50568a;
+  --line: #15172d; --line-soft: #444977;
+  --text: #eeecff; --text-dim: #b4b7de; --text-faint: #8084b5;
+  --accent: #A778FF; --accent-strong: #8f5df0; --accent-soft: rgba(167, 120, 255, .24); --accent-ink: #1b1d38;
+  --warn: #FEFF36;
+  --spectrum: linear-gradient(90deg, #A778FF, #c77dff 38%, #FF9C54 74%, #FEFF36);
+  --shadow: 0 14px 40px rgba(10, 11, 30, .6), 0 0 0 1px rgba(10, 11, 30, .7);
+  --sheet: #222440; --sheet-ink: #f3f1ff; --sheet-grid: #34375e;
+  --hdr: #282a4b; --hdr-ink: #9a9dcc; --hdr-sel: #3d3570; --hdr-sel-ink: #d9c8ff;
+  --sel: #A778FF; --sel-fill: rgba(167, 120, 255, .18); --freeze: #FF9C54;
+  --chart-bg: #282a4b; --chart-ink: #f3f1ff; --chart-ink2: #b4b7de; --chart-grid: rgba(190, 185, 255, .12);
+  color-scheme: dark;
+}
+:root[data-skin="nebulosa"][data-theme="light"] {
+  --bg0: #e9e3fa; --bg1: #f7f4ff; --bg2: #ffffff; --bg3: #f1ebff; --bg4: #e4d9ff; --bg5: #d6c8fb;
+  --line: #d6cbf3; --line-soft: #e2d8fa;
+  --text: #323559; --text-dim: #5f6396; --text-faint: #8588b6;
+  --accent: #7b4fe0; --accent-strong: #6538cc; --accent-soft: rgba(123, 79, 224, .14); --accent-ink: #ffffff;
+  --warn: #d9722a;
+  --shadow: 0 14px 40px rgba(50, 53, 89, .2), 0 0 0 1px rgba(50, 53, 89, .1);
+  --sheet: #ffffff; --sheet-ink: #1b1d38; --sheet-grid: #e6e0f7;
+  --hdr: #f5f1ff; --hdr-ink: #6b6fa0; --hdr-sel: #e6dcff; --hdr-sel-ink: #4b2aa8;
+  --sel: #7b4fe0; --sel-fill: rgba(123, 79, 224, .12); --freeze: #ef7d28;
+  --chart-bg: #ffffff; --chart-ink: #323559; --chart-ink2: #5f6396; --chart-grid: rgba(50, 53, 89, .12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root[data-skin="nebulosa"]:not([data-theme]) {
+    --bg0: #e9e3fa; --bg1: #f7f4ff; --bg2: #ffffff; --bg3: #f1ebff; --bg4: #e4d9ff; --bg5: #d6c8fb;
+    --line: #d6cbf3; --line-soft: #e2d8fa; --text: #323559; --text-dim: #5f6396; --text-faint: #8588b6;
+    --accent: #7b4fe0; --accent-strong: #6538cc; --accent-soft: rgba(123, 79, 224, .14); --accent-ink: #ffffff; --warn: #d9722a;
+    --sheet: #ffffff; --sheet-ink: #1b1d38; --sheet-grid: #e6e0f7; --hdr: #f5f1ff; --hdr-ink: #6b6fa0; --hdr-sel: #e6dcff; --hdr-sel-ink: #4b2aa8;
+    --sel: #7b4fe0; --sel-fill: rgba(123, 79, 224, .12); --freeze: #ef7d28;
+    --chart-bg: #ffffff; --chart-ink: #323559; --chart-ink2: #5f6396; --chart-grid: rgba(50, 53, 89, .12);
+    color-scheme: light;
+  }
+}
+:root[data-skin="nebulosa"] ::selection { background: rgba(167, 120, 255, .45); }

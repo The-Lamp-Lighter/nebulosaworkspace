@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual do Stardust</title>
+<meta name="description" content="Manual de usuário: Stardust by Nebulosa Workspace — Planilhas de Cálculo e Gráficos.">
+<link rel="icon" type="image/png" href="../assets/img/favicon-64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="manual.css">
+<script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
+<style>:root{--c1:#4d8fd6;--c2:#a244f5}</style>
+</head>
+<body>
+<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/stardust/" target="_blank" rel="noopener">Abrir o Stardust</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
+<div class="capa"><div class="in"><span class="tag">Produtividade &amp; Dados</span><h1>Stardust<small>by Nebulosa Workspace</small></h1><p class="funcao">Planilhas de Cálculo e Gráficos</p><p>O Stardust é a planilha do Nebulosa Workspace: tabelas, fórmulas em português, formatação, classificação, filtros e gráficos, com arquivos que abrem no Excel e no LibreOffice. Tudo roda no seu navegador; nenhum dado sai do computador.</p>
+<div class="acoes"><a href="../index.html#app=stardust">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
+<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. A tela</a><a href="#s2">2. Primeiros passos</a><a href="#s3">3. Selecionar e mover-se</a><a href="#s4">4. Fórmulas e funções</a><a href="#s5">5. Copiar, colar e preencher</a><a href="#s6">6. Formatar</a><a href="#s7">7. Linhas, colunas e planilhas</a><a href="#s8">8. Dados: classificar, filtrar, localizar</a><a href="#s9">9. Gráficos</a><a href="#s10">10. Abrir arquivos</a><a href="#s11">11. Salvar e exportar</a><a href="#s12">12. Atalhos de teclado</a><a href="#s13">13. Perguntas frequentes</a><a href="#s14">14. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>A tela</h2>
+<table><tr><th>Área</th><th>Para que serve</th></tr>
+<tr><td>Barra de cima</td><td>Menus (Arquivo, Editar, Inserir, Formatar, Dados, Exibir, Ajuda), nome da pasta de trabalho, desfazer/refazer, Abrir, <b>Salvar</b> e Aparência.</td></tr>
+<tr><td>Ferramentas (cápsulas)</td><td>Fonte e tamanho · N I S (negrito, itálico, sublinhado) · cor do texto, preenchimento e bordas · alinhamentos, quebrar texto e mesclar · formato de número (R$, %, 000, casas decimais) · Σ AutoSoma, classificar e filtro · <b>Gráfico</b> · painel lateral.</td></tr>
+<tr><td>Barra de fórmulas</td><td>À esquerda, a <b>caixa de nome</b> (mostra a célula atual; digite <code>B12</code> ou <code>A1:D20</code> e Enter para ir até lá). <b>ƒx</b> abre a lista de funções. A barra larga mostra e edita o conteúdo da célula.</td></tr>
+<tr><td>Grade</td><td>As células. Colunas com letras (A, B, C…) e linhas com números.</td></tr>
+<tr><td>Painel lateral</td><td>Abas <b>Funções</b> (lista com explicação e exemplo) e <b>Gráfico</b> (tipo, título, dados, legenda e cores).</td></tr>
+<tr><td>Rodapé</td><td>Abas das planilhas (pílulas), botão <b>+</b> para nova planilha, Soma/Média/Contagem da seleção e zoom.</td></tr></table></section><section id="s2"><h2><span class="num">2</span>Primeiros passos</h2>
+<ol>
+<li>Clique numa célula e digite. <kbd>Enter</kbd> confirma e desce; <kbd>Tab</kbd> confirma e vai para a direita.</li>
+<li>Números podem ser digitados do jeito brasileiro: <code>1.234,56</code>, <code>R$ 50,00</code>, <code>15%</code>, datas <code>25/10/2026</code> e horas <code>14:30</code>. O Stardust reconhece e já aplica o formato.</li>
+<li>Para uma fórmula, comece com <kbd>=</kbd>: <code>=A1+B1</code>, <code>=SOMA(B2:B10)</code>.</li>
+<li>Para começar com um exemplo pronto, use <b>Arquivo › Novo a partir de modelo</b>: Orçamento mensal, Notas da turma, Vendas por mês ou Lista de compras.</li>
+<li>Salve com <kbd>Ctrl</kbd>+<kbd>S</kbd>. O formato padrão é o do Excel (.xlsx).</li>
+</ol>
+<div class="dica">Para escrever um texto que começa com “=” ou um número que deve ficar como texto (ex.: <code>00123</code>), comece com um apóstrofo: <code>'00123</code>.</div></section><section id="s3"><h2><span class="num">3</span>Selecionar e mover-se</h2>
+<ul>
+<li>Clique e arraste para selecionar um intervalo; <kbd>Shift</kbd>+clique amplia a seleção.</li>
+<li>Clique na letra da coluna ou no número da linha para selecionar a coluna ou a linha inteira; o canto superior esquerdo seleciona tudo.</li>
+<li><kbd>Ctrl</kbd> + <kbd>setas</kbd> vai até o fim dos dados; <kbd>Shift</kbd> + <kbd>setas</kbd> amplia a seleção; <kbd>Ctrl</kbd> + <kbd>Home</kbd> volta para A1.</li>
+<li>A barra de baixo mostra a <b>Soma</b>, a <b>Média</b> e a <b>Contagem</b> da seleção.</li>
+<li>Zoom: controle no rodapé ou <kbd>Ctrl</kbd> + <kbd>roda do mouse</kbd>.</li>
+</ul></section><section id="s4"><h2><span class="num">4</span>Fórmulas e funções</h2>
+<p>As fórmulas seguem o Excel em português: <b>ponto e vírgula</b> separa os argumentos e a <b>vírgula</b> é o separador decimal.</p>
+<table><tr><th>Exemplo</th><th>Resultado</th></tr>
+<tr><td><code>=SOMA(B2:B10)</code></td><td>Soma do intervalo</td></tr>
+<tr><td><code>=MÉDIA(B2:B10)</code></td><td>Média</td></tr>
+<tr><td><code>=SE(B2&gt;=7;"Aprovado";"Recuperação")</code></td><td>Escolhe um texto conforme o teste</td></tr>
+<tr><td><code>=PROCV(A2;Produtos!A:C;3;FALSO)</code></td><td>Procura um valor numa tabela</td></tr>
+<tr><td><code>=SOMASE(A:A;"Aluguel";B:B)</code></td><td>Soma só o que atende ao critério</td></tr>
+<tr><td><code>=CONT.SE(C2:C50;"&gt;100")</code></td><td>Conta as células acima de 100</td></tr>
+<tr><td><code>=DATADIF(B2;HOJE();"Y")</code></td><td>Idade em anos</td></tr>
+<tr><td><code>=PGTO(1%;12;-1000)</code></td><td>Valor da prestação</td></tr></table>
+<ul>
+<li><b>Mais de 120 funções</b>: matemática, estatística, lógica, texto, procura e referência, data e hora, informação e financeiras. A lista completa, com explicação de cada uma, está no painel <b>Funções</b> (botão <b>ƒx</b>).</li>
+<li>Pode digitar os nomes em português (SOMA, MÉDIA, SE, PROCV) ou em inglês (SUM, AVERAGE, IF, VLOOKUP), com ou sem acento.</li>
+<li>Enquanto você digita, aparece a lista de funções: <kbd>↑</kbd> <kbd>↓</kbd> escolhem e <kbd>Tab</kbd> aceita. Embaixo da barra de fórmulas aparece a <b>dica</b> com os argumentos, destacando o que você está escrevendo.</li>
+<li>Escrevendo uma fórmula, clique numa célula (ou arraste por um intervalo) para colocar a referência. As referências aparecem coloridas na grade.</li>
+<li><kbd>F4</kbd> alterna entre <code>A1</code>, <code>$A$1</code>, <code>A$1</code> e <code>$A1</code> (referência fixa ao copiar).</li>
+<li>Referência a outra planilha: <code>=Vendas!B2</code> ou <code>='Minha planilha'!B2</code>. Escrevendo a fórmula, clique na aba da outra planilha e depois na célula.</li>
+<li>Parênteses esquecidos no fim são fechados sozinhos.</li>
+</ul>
+<h3>Erros</h3>
+<table><tr><th>Erro</th><th>O que significa</th></tr>
+<tr><td><code>#DIV/0!</code></td><td>Divisão por zero</td></tr><tr><td><code>#VALOR!</code></td><td>Texto onde se esperava número</td></tr>
+<tr><td><code>#NOME?</code></td><td>Função que não existe (confira o nome)</td></tr><tr><td><code>#REF!</code></td><td>Referência a células ou planilha que não existem mais</td></tr>
+<tr><td><code>#N/D</code></td><td>Valor não encontrado (PROCV, CORRESP…)</td></tr><tr><td><code>#NÚM!</code></td><td>Número inválido</td></tr>
+<tr><td><code>#CIRC!</code></td><td>Referência circular: a fórmula depende dela mesma</td></tr></table></section><section id="s5"><h2><span class="num">5</span>Copiar, colar e preencher</h2>
+<ul>
+<li><kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>Ctrl</kbd> + <kbd>X</kbd> / <kbd>Ctrl</kbd> + <kbd>V</kbd>: copiar, recortar e colar — inclusive de e para o Excel, o LibreOffice e o Google Planilhas.</li>
+<li>Ao colar fórmulas, as referências relativas acompanham a nova posição (como no Excel).</li>
+<li><b>Editar › Colar só os valores</b> e <b>Colar só a formatação</b>.</li>
+<li><b>Alça de preenchimento</b>: o quadradinho no canto da seleção. Arraste para baixo ou para o lado para continuar séries: 1, 2, 3…; datas; jan, fev, mar…; segunda, terça…; “Item 1, Item 2…”; e para copiar fórmulas. Dois cliques na alça preenchem até o fim dos dados da coluna vizinha.</li>
+<li><kbd>Ctrl</kbd> + <kbd>D</kbd> preenche para baixo e <kbd>Ctrl</kbd> + <kbd>R</kbd> para a direita. <kbd>Ctrl</kbd> + <kbd>Enter</kbd> escreve o mesmo valor em todas as células selecionadas.</li>
+</ul></section><section id="s6"><h2><span class="num">6</span>Formatar</h2>
+<ul>
+<li>Barra de ferramentas: fonte (Calibri, Cambria, Consolas), tamanho, negrito, itálico, sublinhado, tachado, cor do texto, cor de preenchimento, bordas (todas, externas, espessa, inferior, superior…), alinhamentos, quebrar texto e <b>mesclar e centralizar</b>.</li>
+<li>Formatos de número: Geral, Número, Moeda (R$), Porcentagem, Data, Data por extenso, Hora, Texto e Científico; botões para casas decimais e separador de milhar.</li>
+<li><b>Formatar células</b> (<kbd>Ctrl</kbd> + <kbd>1</kbd>): abas Número (com código de formato do Excel, ex.: <code>#,##0.00</code>), Alinhamento, Fonte, Borda e Preenchimento.</li>
+<li>Largura das colunas e altura das linhas: arraste a divisa no cabeçalho; dois cliques ajustam ao conteúdo. Também em <b>Formatar</b>.</li>
+<li>Ocultar e reexibir linhas e colunas: clique com o botão direito no cabeçalho.</li>
+</ul></section><section id="s7"><h2><span class="num">7</span>Linhas, colunas e planilhas</h2>
+<ul>
+<li>Inserir e excluir linhas e colunas: menu <b>Inserir</b> ou botão direito na célula ou no cabeçalho. As fórmulas se ajustam sozinhas.</li>
+<li>Nova planilha: botão <b>+</b> no rodapé (<kbd>Shift</kbd>+<kbd>F11</kbd>). Dois cliques na aba renomeiam; botão direito duplica, move ou exclui; arraste a aba para mudar a ordem.</li>
+<li><b>Exibir › Congelar painéis</b>: primeira linha, primeira coluna ou tudo acima e à esquerda da célula atual. Útil para manter o cabeçalho visível.</li>
+<li><b>Exibir › Linhas de grade</b> mostra ou esconde as linhas da grade.</li>
+</ul></section><section id="s8"><h2><span class="num">8</span>Dados: classificar, filtrar, localizar</h2>
+<ul>
+<li><b>Classificar A→Z / Z→A</b>: clique numa célula da coluna e use os botões. O Stardust encontra a tabela inteira e percebe se a primeira linha é cabeçalho. <b>Dados › Classificar…</b> permite escolher a coluna, a ordem e um segundo critério.</li>
+<li><b>Filtro</b>: liga setinhas no cabeçalho da tabela. Em cada uma, marque os valores que quer ver, procure, classifique ou limpe o filtro.</li>
+<li><b>Remover duplicadas</b>: apaga linhas repetidas, mantendo a primeira.</li>
+<li><b>Localizar</b> (<kbd>Ctrl</kbd> + <kbd>F</kbd>) e <b>Localizar e substituir</b> (<kbd>Ctrl</kbd> + <kbd>H</kbd>), nesta planilha ou em todas.</li>
+</ul></section><section id="s9"><h2><span class="num">9</span>Gráficos</h2>
+<ol>
+<li>Selecione os dados <b>com os títulos</b> (por exemplo, meses na primeira coluna e os valores ao lado).</li>
+<li>Clique em <b>Gráfico</b> e escolha o tipo: Colunas, Barras, Linhas, Área, Pizza, Rosca ou Dispersão.</li>
+<li>O gráfico aparece ao lado dos dados e o painel <b>Gráfico</b> abre para os ajustes: tipo, título, intervalo dos dados (digite ou clique em ▦ para escolher na planilha), séries em colunas ou linhas, legenda, valores no gráfico, empilhado e cores (Stardust, Nebulosa ou Sóbrio).</li>
+<li>Arraste o gráfico para mover; as bolinhas mudam o tamanho. <kbd>Delete</kbd> exclui o gráfico selecionado.</li>
+<li>Botão direito no gráfico › <b>Baixar imagem (PNG)</b>.</li>
+</ol>
+<p>Os gráficos acompanham os dados: mudou um número, o gráfico muda junto. No arquivo .xlsx eles são gravados como <b>gráficos nativos do Excel</b>, editáveis no Excel e no LibreOffice.</p></section><section id="s10"><h2><span class="num">10</span>Abrir arquivos</h2>
+<p><b>Abrir</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) ou arrastar o arquivo para a janela. Formatos aceitos: <code>.xlsx</code>, <code>.xlsm</code>, <code>.xlsb</code>, <code>.xls</code>, <code>.ods</code>, <code>.csv</code> (separado por ponto e vírgula, vírgula ou tabulação), <code>.tsv</code> e <code>.txt</code>.</p>
+<ul><li>Do .xlsx/.xlsm vêm valores, fórmulas, formatação, larguras, células mescladas, painéis congelados e gráficos.</li>
+<li>Do .xls, .xlsb e .ods vêm valores, fórmulas, formatos de número, larguras e células mescladas.</li>
+<li>Arquivos protegidos por senha não abrem.</li></ul></section><section id="s11"><h2><span class="num">11</span>Salvar e exportar</h2>
+<p><b>Salvar</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) e <b>Salvar como</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>) mostram os formatos:</p>
+<table><tr><th>Formato</th><th>O que guarda</th></tr>
+<tr><td><b>.xlsx</b> — Excel</td><td>Tudo: valores, fórmulas, formatação, mescladas, painéis congelados e gráficos. <b>Recomendado.</b></td></tr>
+<tr><td><b>.xlsm</b> — Excel habilitado para macro</td><td>O mesmo que o .xlsx (o Stardust não cria macros).</td></tr>
+<tr><td><b>.xlsb</b> — Excel binário</td><td>Valores, fórmulas, formatos de número e larguras. Sem cores e sem gráficos.</td></tr>
+<tr><td><b>.xls</b> — Excel 97-2003</td><td>Valores calculados, formatos de número e larguras. Sem cores e sem gráficos.</td></tr>
+<tr><td><b>.ods</b> — LibreOffice</td><td>Valores, fórmulas e formatos de número. Sem cores e sem gráficos.</td></tr>
+<tr><td><b>.csv</b></td><td>Só a planilha aberta e só o texto das células (ponto e vírgula, padrão do Brasil, ou vírgula).</td></tr>
+<tr><td><b>.pdf</b></td><td>Para imprimir ou enviar: retrato ou paisagem, caber na largura, linhas de grade, uma ou todas as planilhas. Os gráficos vão no fim.</td></tr>
+<tr><td><b>.jpg</b></td><td>Uma imagem da planilha aberta, com os gráficos no lugar.</td></tr></table>
+<p>No Chrome e no Edge abre-se a janela do sistema para escolher a pasta e o nome; depois, <kbd>Ctrl</kbd>+<kbd>S</kbd> grava no mesmo arquivo. Nos outros navegadores o arquivo vai para a pasta de downloads.</p>
+<p><b>Arquivo › Imprimir</b> gera o PDF e abre a impressão do navegador.</p>
+<div class="dica">O Stardust guarda uma cópia de recuperação neste navegador enquanto você trabalha. Se a janela fechar sem salvar, ao abrir de novo ele oferece <b>Recuperar</b>. Mesmo assim, salve em arquivo.</div></section><section id="s12"><h2><span class="num">12</span>Atalhos de teclado</h2>
+<table><tr><th>Teclas</th><th>O que faz</th></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd> · <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td>Salvar · Salvar como</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd> · <kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Abrir · PDF/imprimir</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> · <kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Desfazer · Refazer</td></tr>
+<tr><td><kbd>F2</kbd></td><td>Editar a célula</td></tr>
+<tr><td><kbd>Enter</kbd> · <kbd>Tab</kbd></td><td>Confirmar e descer · ir para a direita</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>Enter</kbd></td><td>Nova linha dentro da célula</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Mesmo valor em toda a seleção</td></tr>
+<tr><td><kbd>F4</kbd></td><td>Alternar $ nas referências</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>B</kbd> / I / U · <kbd>Ctrl</kbd> + <kbd>5</kbd></td><td>Negrito / itálico / sublinhado · tachado</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>1</kbd></td><td>Formatar células</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>D</kbd> · <kbd>Ctrl</kbd> + <kbd>R</kbd></td><td>Preencher abaixo · à direita</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>=</kbd></td><td>AutoSoma</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>;</kbd></td><td>Data de hoje</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd> · <kbd>Ctrl</kbd> + <kbd>H</kbd></td><td>Localizar · Substituir</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd> · <kbd>Ctrl</kbd> + <kbd>Espaço</kbd> · <kbd>Shift</kbd> + <kbd>Espaço</kbd></td><td>Selecionar tudo · coluna · linha</td></tr>
+<tr><td><kbd>Delete</kbd></td><td>Limpar o conteúdo</td></tr>
+<tr><td><kbd>Shift</kbd> + <kbd>F11</kbd> · <kbd>Alt</kbd> + <kbd>PageUp/PageDown</kbd></td><td>Nova planilha · trocar de planilha</td></tr>
+<tr><td><kbd>F9</kbd></td><td>Recalcular tudo</td></tr></table>
+<p>A lista também está em <b>Ajuda › Atalhos de teclado</b>.</p></section><section id="s13"><h2><span class="num">13</span>Perguntas frequentes</h2>
+<h3>Abri um .xls e salvei de novo: sumiram as cores.</h3><p>Os formatos .xls, .xlsb e .ods são salvos sem cores e sem gráficos. Salve em .xlsx para manter tudo.</p>
+<h3>Aparece ######## na célula.</h3><p>O número não cabe na largura da coluna. Dê dois cliques na divisa da coluna, no cabeçalho, para ajustar.</p>
+<h3>Minha fórmula com vírgula não funciona.</h3><p>No Stardust, como no Excel brasileiro, o separador de argumentos é o ponto e vírgula: <code>=SOMA(A1;B1)</code>. A vírgula é o decimal: <code>=A1*1,5</code>.</p>
+<h3>Os gráficos aparecem no Excel?</h3><p>Sim, quando salvos em .xlsx ou .xlsm: são gráficos nativos, que você pode editar no Excel ou no LibreOffice.</p>
+<h3>O que não existe (ainda)?</h3><p>Macros, tabelas dinâmicas, formatação condicional, validação de dados e comentários.</p></section><section id="s14"><h2><span class="num">14</span>Dentro do Nebulosa Workspace</h2>
+<ul>
+<li>Abra o Stardust pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
+<li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Stardust entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
+<li>Ao fechar a aba do Stardust com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
+<li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
+<li>O Stardust também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/stardust/</code>) ou pelo arquivo HTML único.</li>
+</ul></section></main></div>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.3</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p></footer>
+</body>
+</html>

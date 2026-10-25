@@ -3709,7 +3709,7 @@ PD.ui = (function () {
     const escuro = document.documentElement.dataset.tema === 'escuro';
     const atual = (id) => (rota.tela === id || (id === 'receitas' && (rota.tela === 'receita' || rota.tela === 'editor')) ? PD.cru('aria-current="page"') : '');
     document.getElementById('lateral').innerHTML = h`
-      <a class="marca" href="#/receitas">${logo ? h`<img src="${logo}" alt="">` : ''}${UI.nomeMarca()}</a>
+      <a class="marca" href="#/receitas">${logo ? h`<img src="${logo}" alt="">` : ''}${UI.nomeMarca()}<small class="nb-by">by Nebulosa Workspace</small></a><!-- [Nebulosa] assinatura -->
       <nav class="menu">${UI.MENU.map((m) => (m.sep ? h`<div class="sep"></div>` : h`<a href="#/${m.id}" ${atual(m.id)}>${ic(m.icone)}<span>${m.rotulo}</span></a>`))}</nav>
       <div class="lateral-pe">${e ? h`<div>${e.nome}</div><div>${e.receitas.length} ${u.plural(e.receitas.length, 'receita', 'receitas')}</div>` : ''}</div>`;
     const tela = PD.telas[rota.tela] || {};
@@ -4015,7 +4015,7 @@ PD.telas.inicio = {
         <div class="inicio-topo">
           ${logo ? h`<img src="${logo}" alt="Logotipo do #pratododia" width="84" height="84">` : ''}
           <div>
-            <h1 id="inicio-nome" class="inicio-nome tri-claro"><span class="a">#prato</span><span class="b">do</span><span class="c">dia</span></h1>
+            <h1 id="inicio-nome" class="inicio-nome tri-claro"><span class="a">#prato</span><span class="b">do</span><span class="c">dia</span><small class="nb-by">by Nebulosa Workspace</small></h1><!-- [Nebulosa] assinatura -->
             <p class="inicio-lema">Suas receitas. Mais sabor para todos os dias.</p>
           </div>
         </div>
@@ -4039,7 +4039,7 @@ PD.telas.inicio = {
         <img src="${R.mascote}" alt="" width="417" height="640">
       </figure>
 
-      <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR}. Funciona sem internet: seus dados ficam somente neste dispositivo.</p>
+      <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR}. Funciona sem internet: seus dados ficam somente neste dispositivo.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${(window.NebulosaSkin && NebulosaSkin.versao) || '0.3'}</span></p><!-- [Nebulosa] rodapé -->
     </div>`;
   },
   depois(raiz) {

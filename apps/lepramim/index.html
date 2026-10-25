@@ -10,7 +10,7 @@
   <!-- Bloqueia conexões externas: o app só carrega arquivos da própria pasta. Única exceção:
        o motor e as vozes Piper (jsDelivr e Hugging Face), baixados uma vez quando a pasta
        libs/piper não os tem, como no GitHub Pages. Nenhum texto é enviado. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob: data: https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co; font-src 'self' data:">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' blob: data: https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://abacus.jasoncameron.dev; font-src 'self' data:">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -60,7 +60,7 @@
   <button class="bt-icone so-estreito" id="btMenu" title="Mostrar capítulos e marcadores" aria-label="Painel lateral"><svg class="ic"><use href="#i-menu"/></svg></button>
   <button class="marca" id="btInicio" title="Ir para a biblioteca">
     <img src="assets/icone-96.png" alt="" width="38" height="38">
-    <span class="marca-nome"><span class="marca-le">Lê</span><span class="marca-pm">PraMim</span></span>
+    <span class="marca-nome"><span class="marca-le">Lê</span><span class="marca-pm">PraMim</span></span><small class="nb-by">by Nebulosa Workspace</small><!-- [Nebulosa] assinatura -->
   </button>
 
   <nav class="topo-acoes" aria-label="Principal">

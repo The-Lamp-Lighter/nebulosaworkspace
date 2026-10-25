@@ -15,10 +15,22 @@
      icon        ícone de js/icons.js
      colors      as duas cores do degradê do ícone e do cartão
      defaultSkin aparência original do programa (usada em "Voltar ao padrão")
+     tema        temática do cartão na página inicial (NEBULOSA_TEMAS, abaixo)
+     funcao      função prática oficial, mostrada no cartão da página inicial
+     nomeCartao  nome escrito no cartão, quando for diferente de "name" (opcional)
      soon        true = aparece como "em breve" e não abre (opcional)
 
    A ordem da lista é a ordem do menu e dos atalhos Alt+1, Alt+2...
+   O manual de cada programa fica em manuais/<id>.html.
    ========================================================================== */
+
+/* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
+   Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
+window.NEBULOSA_VERSAO = '0.3';
+
+/* Temáticas da página inicial, na ordem em que aparecem. */
+window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];
+
 window.NEBULOSA_APPS = [
   {
     id: 'typee',
@@ -30,7 +42,9 @@ window.NEBULOSA_APPS = [
     keywords: 'texto documento word escrever carta relatorio trabalho docx markdown folha pagina',
     icon: 'doc',
     colors: ['#A778FF', '#7f63e8'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Produtividade & Dados',
+    funcao: 'Editor de Texto, Leitor e Conversor de PDF'
   },
   {
     id: 'flyde',
@@ -42,7 +56,23 @@ window.NEBULOSA_APPS = [
     keywords: 'slides apresentacao powerpoint canva prezi animacao transicao palestra aula',
     icon: 'slides',
     colors: ['#FF9C54', '#A778FF'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Mídia & Criatividade',
+    funcao: 'Apresentações em Slides'
+  },
+  {
+    id: 'stardust',
+    name: 'Stardust',
+    path: 'apps/stardust/',
+    group: 'Escrever e apresentar',
+    tag: 'Planilhas',
+    desc: 'Planilhas com fórmulas, gráficos e formatação, que abrem e salvam arquivos do Excel e do LibreOffice.',
+    keywords: 'planilha planilhas excel calculo calcular tabela formula grafico graficos xlsx xls csv ods soma numeros dados',
+    icon: 'sheet',
+    colors: ['#4d8fd6', '#a244f5'],
+    defaultSkin: 'default',
+    tema: 'Produtividade & Dados',
+    funcao: 'Planilhas de Cálculo e Gráficos'
   },
   {
     id: 'emcanto',
@@ -54,7 +84,9 @@ window.NEBULOSA_APPS = [
     keywords: 'musica partitura cantar coro voz musicxml melodia ouvir',
     icon: 'music',
     colors: ['#FEFF36', '#FF9C54'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Arte & Estilo de Vida',
+    funcao: 'Importador e Editor de Partituras'
   },
   {
     id: 'lepramim',
@@ -66,7 +98,9 @@ window.NEBULOSA_APPS = [
     keywords: 'ler livro ebook audiobook voz leitura pdf epub ouvir audiolivro',
     icon: 'book',
     colors: ['#A778FF', '#FEFF36'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Produtividade & Dados',
+    funcao: 'Leitor de Textos e Audiolivros'
   },
   {
     id: 'paznobolso',
@@ -78,7 +112,10 @@ window.NEBULOSA_APPS = [
     keywords: 'dinheiro orcamento financas gastos contas planilha excel xlsx casa',
     icon: 'wallet',
     colors: ['#8b8fd6', '#A778FF'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Arte & Estilo de Vida',
+    funcao: 'Gerenciador Financeiro Pessoal',
+    nomeCartao: 'Paz no Bolso'
   },
   {
     id: 'pratododia',
@@ -90,7 +127,9 @@ window.NEBULOSA_APPS = [
     keywords: 'receita receitas cozinha comida culinaria cardapio prato almoco jantar lista compras livro',
     icon: 'food',
     colors: ['#FF9C54', '#FEFF36'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Arte & Estilo de Vida',
+    funcao: 'Caderno e Gestor de Receitas Culinárias'
   },
   {
     id: 'imaginarium',
@@ -102,7 +141,9 @@ window.NEBULOSA_APPS = [
     keywords: 'imagem foto editar photoshop photopea camadas filtro design desenho arte',
     icon: 'brush',
     colors: ['#A778FF', '#FF9C54'],
-    defaultSkin: 'imaginarium'
+    defaultSkin: 'imaginarium',
+    tema: 'Mídia & Criatividade',
+    funcao: 'Editor Multifuncional de Imagens'
   },
   {
     id: 'fotoflow',
@@ -114,6 +155,8 @@ window.NEBULOSA_APPS = [
     keywords: 'video filme foto slideshow fotos musica transicao montagem apresentacao clipe animacao',
     icon: 'film',
     colors: ['#7f63e8', '#FF9C54'],
-    defaultSkin: 'default'
+    defaultSkin: 'default',
+    tema: 'Mídia & Criatividade',
+    funcao: 'Criador de Apresentações de Fotos e Vídeo'
   }
 ];

@@ -35,7 +35,19 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-  const VERSION = '0.2 (prévia)';
+  const VERSION = window.NEBULOSA_VERSAO || '0.3';
+  const TEMAS = window.NEBULOSA_TEMAS || [];
+  const ACESSOS = window.NebulosaAcessos;
+  const RODAPE = 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + VERSION;
+  const MANIFESTO = {
+    titulo: 'Bem-vindo ao Nebulosa Workspace',
+    paragrafos: [
+      'O Nebulosa Workspace é uma suíte de aplicativos web gratuitos, leves e de código aberto, desenvolvidos para funcionar direto no seu navegador, em qualquer computador, sem necessidade de instalação.',
+      'Organizado em três temáticas — Produtividade, Criatividade e Estilo de Vida.',
+      'O ecossistema reúne ferramentas acessíveis para simplificar suas tarefas diárias, desde a edição de documentos e criação de vídeos até a organização financeira e culinária.',
+      'Explore nossas temáticas e descubra como o Nebulosa Workspace pode impulsionar suas ideias.'
+    ]
+  };
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ICONS = window.NEBULOSA_ICONS || {};
   const LOGO = '<img src="assets/img/logo-112.png" alt="" aria-hidden="true" draggable="false">';
@@ -49,7 +61,7 @@
   /* ---------- programas (vêm de js/apps.js) ---------- */
   const APPS = (window.NEBULOSA_APPS || [])
     .filter(a => a && /^[a-z0-9-]+$/.test(a.id || '') && a.name && (a.path || a.soon))
-    .map(a => Object.assign({ group: 'Programas', tag: '', desc: '', keywords: '', icon: 'doc', colors: ['#A778FF', '#7f63e8'], defaultSkin: 'default' }, a, {
+    .map(a => Object.assign({ group: 'Programas', tag: '', desc: '', keywords: '', icon: 'doc', colors: ['#A778FF', '#7f63e8'], defaultSkin: 'default', tema: '', funcao: '' }, a, {
       path: a.path ? String(a.path).replace(/\/?$/, '/') : '',
       icon: ICONS[a.icon] ? a.icon : 'doc'
     }));
@@ -133,23 +145,44 @@
     if (h < 24) return 'há ' + h + ' h';
     return 'há ' + Math.round(h / 24) + ' d';
   }
+  const manualUrl = id => 'manuais/' + (id && byId[id] ? id + '.html' : 'index.html');
+  function cardHtml(a, i) {
+    const nome = a.nomeCartao || a.name;
+    return `<button class="card ${a.soon ? 'off' : ''}" data-open="${a.id}" style="animation-delay:${i * 60 + 60}ms" aria-label="Abrir ${esc(nome)}${a.funcao ? ': ' + esc(a.funcao) : ''}"><div class="art" style="background:${grad(a)}">${ICONS[a.icon]}<span class="tag">${esc(a.tag)}</span></div><div class="cbody"><h3>${esc(nome)}${ST[a.id].open ? '<span class="badge">aberto</span>' : ''}${a.soon ? '<span class="badge soon">em breve</span>' : ''}</h3>${a.funcao ? `<p class="fn">${esc(a.funcao)}</p>` : ''}<p>${esc(a.desc)}</p><span class="go">${a.soon ? 'Saiba mais' : 'Abrir'} <i>→</i></span></div></button>`;
+  }
+  function manifestoHtml(cls) {
+    return `<section class="manifesto ${cls || ''}" aria-labelledby="mfT"><h2 id="mfT">${esc(MANIFESTO.titulo)}</h2>${MANIFESTO.paragrafos.map(p => `<p>${esc(p)}</p>`).join('')}</section>`;
+  }
   function renderHome() {
     const hr = new Date().getHours(), gr = hr < 5 ? 'Boa madrugada' : hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
     const rec = Object.entries(H.recent).filter(([id]) => byId[id] && !byId[id].soon).sort((a, b) => b[1] - a[1]).slice(0, 4);
     const lastKey = Math.min(APPS.length, 9);
+    // temáticas: as de NEBULOSA_TEMAS, na ordem; programas sem temática vão para "Outros programas"
+    const grupos = TEMAS.map(t => ({ t, apps: APPS.filter(a => a.tema === t) })).filter(g => g.apps.length);
+    const resto = APPS.filter(a => !TEMAS.includes(a.tema));
+    if (resto.length) grupos.push({ t: grupos.length ? 'Outros programas' : 'Seus programas', apps: resto });
     let h = `<div class="wrap"><p class="greet">${gr}!</p><h1 class="big">O que vamos <em>criar</em> hoje?</h1>
   <button class="search" id="homeSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Buscar um programa ou uma ação…</span><kbd>Alt K</kbd></button>`;
+    h += `<div class="mfwrap">${manifestoHtml()}<nav class="temas" aria-label="Temáticas">${grupos.map((g, i) => `<button class="tema" data-tema="${i}"><b>${esc(g.t)}</b><small>${g.apps.map(a => esc(a.nomeCartao || a.name)).join(' · ')}</small><i>→</i></button>`).join('')}</nav></div>`;
     if (rec.length) {
       h += `<h2 class="sec">Continue de onde parou</h2><div class="recent">${rec.map(([id, ts]) => `<button class="rchip" data-open="${id}">${ric(byId[id])}<span><b>${esc(byId[id].name)}</b><small>${ST[id].open ? 'aberto agora' : ago(ts)}</small></span></button>`).join('')}</div>`;
     }
-    h += `<h2 class="sec">Seus programas</h2><div class="grid">${APPS.map((a, i) => `<button class="card ${a.soon ? 'off' : ''}" data-open="${a.id}" style="animation-delay:${i * 70 + 60}ms" aria-label="Abrir ${esc(a.name)}"><div class="art" style="background:${grad(a)}">${ICONS[a.icon]}<span class="tag">${esc(a.tag)}</span></div><div class="cbody"><h3>${esc(a.name)}${ST[a.id].open ? '<span class="badge">aberto</span>' : ''}${a.soon ? '<span class="badge soon">em breve</span>' : ''}</h3><p>${esc(a.desc)}</p><span class="go">${a.soon ? 'Saiba mais' : 'Abrir'} <i>→</i></span></div></button>`).join('')}</div>
-  <div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div><span>Nebulosa Workspace ${esc(VERSION)}</span></div></div>`;
+    let n = 0;
+    grupos.forEach((g, gi) => {
+      h += `<h2 class="sec tsec" id="tema-${gi}">${esc(g.t)}</h2><div class="grid">${g.apps.map(a => cardHtml(a, n++)).join('')}</div>`;
+    });
+    h += `<div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div>
+  <p class="rodape">${esc(RODAPE)}</p>
+  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Número de acessos da página inicial e de cada programa">Acessos</button></div></div></div>`;
     $('#home').innerHTML = h;
   }
   $('#home').addEventListener('click', e => {
     const o = e.target.closest('[data-open]');
     if (o) { openApp(o.dataset.open, o); return; }
     if (e.target.closest('#homeSearch')) openPalette();
+    if (e.target.closest('#btnAcessos')) openAcessos();
+    const t = e.target.closest('[data-tema]');
+    if (t) { const sec = $('#tema-' + t.dataset.tema); if (sec) sec.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
   });
 
   /* ---------- abrir, mostrar e fechar programas ---------- */
@@ -416,7 +449,7 @@
   }
 
   /* ---------- painéis e janelas ---------- */
-  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel'];
+  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos'];
   function openPop(el) {
     const sc = $('#scrim');
     sc.classList.add('show');
@@ -446,6 +479,7 @@
   $('#about').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#about').dataset.to = 'translate(-50%,-50%) scale(1)';
   $('#confirm').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#confirm').dataset.to = 'translate(-50%,-50%) scale(1)';
   $('#donate').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#donate').dataset.to = 'translate(-50%,-50%) scale(1)';
+  $('#acessos').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#acessos').dataset.to = 'translate(-50%,-50%) scale(1)';
   function openSkinPanel() { renderSkinPanel(); closeOthers('skinPanel'); openPop($('#skinPanel')); }
   $('#btnSkin').addEventListener('click', () => { if ($('#skinPanel').classList.contains('show')) closePops(); else openSkinPanel(); });
   $('#btnFs').addEventListener('click', () => {
@@ -467,9 +501,36 @@
   }
   function openAbout() {
     const a = $('#about');
-    a.innerHTML = `<div class="mk">${LOGO_BIG}</div><h3>Nebulosa Workspace</h3><p>Um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(VERSION)}.</p><div class="alist">${APPS.map(x => `<span>${ric(x)}${esc(x.name)}</span>`).join('')}</div><div class="ra"><button class="chip prim" id="abOk">Fechar</button></div>`;
+    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><button class="chip prim" id="abOk">Fechar</button></div>`;
     closeOthers('about'); openPop(a);
     $('#abOk').onclick = closePops;
+  }
+
+  /* ---------- acessos (botão discreto no rodapé da página inicial) ---------- */
+  // Contagem feita por js/acessos.js (página inicial aqui; cada programa pela ponte).
+  function openAcessos() {
+    const el = $('#acessos');
+    const linhas = [{ id: 'inicio', nome: 'Página inicial do Workspace', icone: `<span class="ric" style="background:linear-gradient(135deg,var(--p),var(--o));color:#1b1d38">${ICONS.home}</span>` }]
+      .concat(APPS.filter(a => !a.soon).map(a => ({ id: a.id, nome: a.nomeCartao || a.name, icone: ric(a) })));
+    const fmt = v => v == null ? '—' : Number(v).toLocaleString('pt-BR');
+    const desenhar = (dados, carregando) => {
+      const online = dados && dados._online;
+      const val = l => !dados ? null : online ? dados[l.id] : (dados._local || {})[l.id];
+      const total = dados ? linhas.reduce((t, l) => t + (+val(l) || 0), 0) : null;
+      el.innerHTML = `<h3>Acessos</h3><p class="sub">${carregando ? 'Buscando os números atualizados…' : online ? 'Número de vezes que cada página foi aberta, somando todos os visitantes.' : 'Não foi possível falar com o serviço de contagem agora. Mostrando só os acessos feitos neste navegador.'}</p>
+        <ol class="aclist">${linhas.map(l => `<li>${l.icone}<span>${esc(l.nome)}</span><b>${carregando ? '<i class="ld"></i>' : fmt(val(l))}</b></li>`).join('')}</ol>
+        ${dados ? `<p class="actot">Total: <b>${fmt(total)}</b>${online ? '' : ' <small>(neste navegador)</small>'}</p>` : ''}
+        <div class="ra"><button class="chip" id="acAtual"${carregando ? ' disabled' : ''}>Atualizar</button><button class="chip prim" id="acOk">Fechar</button></div>`;
+      $('#acOk').onclick = closePops;
+      $('#acAtual').onclick = carregar;
+    };
+    function carregar() {
+      desenhar(null, true);
+      if (!ACESSOS) { desenhar({ _online: false, _local: {} }, false); return; }
+      ACESSOS.ler(linhas.map(l => l.id)).then(d => { if (el.classList.contains('show')) desenhar(d, false); });
+    }
+    closeOthers('acessos'); openPop(el);
+    carregar();
   }
 
   /* ---------- doação (Doe com Pix) ---------- */
@@ -541,24 +602,29 @@
     }
   }
 
-  /* ---------- lembrete de doação (mais ou menos a cada hora) ---------- */
+  /* ---------- lembrete de doação (2 min depois de abrir, depois a cada 30 min) ---------- */
+  // Tempos em js/doacao.js → lembretes (primeiroAposMinutos, intervaloMinutos).
   const LEMB = (DOA && DOA.lembretes) || {};
   const LEMB_KEY = 'nebulosa.lembrete';
   const abertoEm = Date.now();
   let lemb = { proximo: 0, pausaAte: 0, indice: 0 };
   try { Object.assign(lemb, JSON.parse(localStorage.getItem(LEMB_KEY) || '{}')); } catch (e) { /* sem armazenamento */ }
   const salvarLemb = () => { try { localStorage.setItem(LEMB_KEY, JSON.stringify(lemb)); } catch (e) { /* sem armazenamento */ } };
-  // varia ±10% para não aparecer sempre no mesmo minuto
-  const intervalo = () => Math.max(1, +LEMB.intervaloMinutos || 60) * 60000 * (0.9 + Math.random() * 0.2);
+  const intervalo = () => {
+    const v = Math.min(50, Math.max(0, +LEMB.variacaoPorcento || 0)) / 100;
+    return Math.max(1, +LEMB.intervaloMinutos || 30) * 60000 * (1 - v + Math.random() * 2 * v);
+  };
   function adiarLembrete() { lemb.proximo = Date.now() + intervalo(); salvarLemb(); }
   function pausarLembretes() { lemb.pausaAte = Date.now() + Math.max(0, +LEMB.pausaDepoisDeCopiarHoras || 0) * 3600000; adiarLembrete(); }
-  if (!lemb.proximo) adiarLembrete(); // primeira visita: o primeiro lembrete vem depois de ~1 hora de uso
+  // A cada vez que a página abre, o primeiro lembrete vem depois de "primeiroAposMinutos"
+  // (a pausa de quem copiou o Pix continua valendo).
+  lemb.proximo = abertoEm + Math.max(0, LEMB.primeiroAposMinutos == null ? 2 : +LEMB.primeiroAposMinutos) * 60000;
+  salvarLemb();
   function conferirLembrete() {
     const msgs = LEMB.mensagens || [];
     if (!DOA || !NOTIF || LEMB.ligado === false || !msgs.length) return;
     const agora = Date.now();
     if (document.hidden || agora < lemb.proximo || agora < (lemb.pausaAte || 0)) return;
-    if (agora - abertoEm < Math.max(0, +LEMB.esperaAoAbrirMinutos || 0) * 60000) return;
     if (POPS.some(id => document.getElementById(id).classList.contains('show'))) return; // espera fechar as janelas
     const m = msgs[(lemb.indice || 0) % msgs.length];
     lemb.indice = ((lemb.indice || 0) + 1) % msgs.length;
@@ -571,8 +637,8 @@
       aoClicar: openDonate
     });
   }
-  setInterval(conferirLembrete, 30000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(conferirLembrete, 20000); });
+  setInterval(conferirLembrete, 10000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(conferirLembrete, 5000); });
 
   /* ---------- sino (histórico de notificações) ---------- */
   if (NOTIF) {
@@ -627,7 +693,10 @@
     L.push({ t: 'Tela cheia', s: 'Ocupa a tela inteira', kw: 'tela cheia fullscreen', icon: plainRic('⤢'), run: () => { closePops(); $('#btnFs').click(); } });
     if (DOA) L.push({ t: 'Doe com Pix', s: 'Apoie o Nebulosa Workspace com qualquer valor', kw: 'doar doacao doe pix apoiar apoio contribuir ajudar retribuir', icon: heartRic(), run: () => { closePops(); setTimeout(openDonate, 180); } });
     L.push({ t: 'Notificações', s: 'Avisos recentes dos programas', kw: 'notificacoes avisos alertas sino historico', icon: plainRic(ICONS.bell), run: () => { closePops(); setTimeout(openNotifs, 180); } });
-    L.push({ t: 'Sobre o Workspace', s: 'Versão e créditos', kw: 'sobre ajuda creditos autor', icon: plainRic(ICONS.info), run: () => { closePops(); setTimeout(openAbout, 180); } });
+    L.push({ t: 'Sobre o Workspace', s: 'Apresentação, versão e créditos', kw: 'sobre ajuda creditos autor manifesto', icon: plainRic(ICONS.info), run: () => { closePops(); setTimeout(openAbout, 180); } });
+    L.push({ t: 'Manual do Nebulosa Workspace', s: 'Como usar o Workspace e cada programa', kw: 'manual ajuda guia como usar tutorial', icon: plainRic(ICONS.manual), run: () => { closePops(); window.open(manualUrl(), '_blank', 'noopener'); } });
+    APPS.filter(a => !a.soon).forEach(a => L.push({ t: 'Manual de ' + a.name, s: a.funcao || a.tag, kw: 'manual ajuda guia como usar ' + a.name + ' ' + a.keywords, icon: ric(a), run: () => { closePops(); window.open(manualUrl(a.id), '_blank', 'noopener'); } }));
+    L.push({ t: 'Acessos', s: 'Quantas vezes o Workspace e cada programa foram abertos', kw: 'acessos visitas contador estatisticas', icon: plainRic(ICONS.chart), run: () => { closePops(); setTimeout(openAcessos, 180); } });
     return L;
   }
   function renderPalette() {
@@ -636,7 +705,7 @@
     pSel = Math.min(pSel, Math.max(0, pItems.length - 1));
     $('#plist').innerHTML = pItems.length
       ? pItems.map((x, i) => `<button class="pit ${i === pSel ? 'on' : ''}" data-i="${i}">${x.icon}<span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span>${x.k ? `<span class="k">${x.k}</span>` : ''}</button>`).join('')
-      : '<div class="pempty">Nada encontrado. Tente “escrever”, “slides”, “partitura”, “livro”, “orçamento”, “receita”, “imagem” ou “vídeo”.</div>';
+      : '<div class="pempty">Nada encontrado. Tente “escrever”, “planilha”, “slides”, “partitura”, “livro”, “orçamento”, “receita”, “imagem” ou “vídeo”.</div>';
   }
   function openPalette() {
     closeOthers('palette');
@@ -675,6 +744,7 @@
 
   /* ---------- partida ---------- */
   renderRail(); renderTabs(); renderHome(); atualizarSino();
+  if (ACESSOS) ACESSOS.registrar('inicio'); // contador de acessos da página inicial
   // Link direto para um programa: index.html#app=typee  (h=... vira o #... do programa)
   (function bootHash() {
     const p = new URLSearchParams(location.hash.slice(1));
@@ -687,7 +757,7 @@
 
   // acesso para depuração no console
   window.__nebulosa = {
-    APPS, ST, openApp, goHome, closeApp, showApp, applyAll, openDonate, openNotifs, notificar,
+    APPS, ST, openApp, goHome, closeApp, showApp, applyAll, openDonate, openNotifs, notificar, openAcessos, openAbout,
     lembrete: { conferir: conferirLembrete, get estado() { return lemb; } },
     get active() { return active; }, get order() { return order; }
   };

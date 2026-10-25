@@ -32,3 +32,6 @@
 :root[data-skin="nebulosa"] .btn.primary{box-shadow:0 2px 0 rgba(0,0,0,.18)}
 :root[data-skin="nebulosa"] .seg button[aria-pressed="true"],:root[data-skin="nebulosa"] .chip.on,:root[data-skin="nebulosa"] .tb.on{color:#1b1d38}
 :root[data-skin="nebulosa"] ::selection{background:rgba(167,120,255,.45)}
+
+/* [Nebulosa] assinatura "by Nebulosa Workspace" embaixo do nome (em duas linhas, para não alargar a barra) */
+.brand small.nb-by{font-size:9.5px;line-height:1.1;max-width:78px;white-space:normal;letter-spacing:.01em;opacity:.9}

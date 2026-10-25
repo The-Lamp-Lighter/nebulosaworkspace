@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nebulosa Workspace</title>
-<meta name="description" content="Nebulosa Workspace — os programas da família Nebulosa num só lugar: Typee, Flyde, EmCanto, LêPraMim, PazNoBolso, #pratododia, Imaginarium e FotoFlow.">
+<meta name="description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, FotoFlow, EmCanto, Paz no Bolso e #pratododia.">
 <link rel="icon" type="image/png" href="assets/img/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/img/logo-320.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,18 +40,20 @@
 <div class="pop modal" id="about" role="dialog" aria-label="Sobre"></div>
 <div class="pop modal" id="confirm" role="alertdialog" aria-label="Confirmar"></div>
 <div class="pop modal doar" id="donate" role="dialog" aria-label="Apoie o Nebulosa Workspace"></div>
+<div class="pop modal acessos" id="acessos" role="dialog" aria-label="Acessos"></div>
 <div class="pop" id="notifPanel" role="dialog" aria-label="Notificações"></div>
 <div id="notifs" role="region" aria-label="Notificações" aria-live="polite"></div>
 <div id="toast" role="status"></div>
 
 <noscript><p style="position:fixed;inset:auto 0 0;padding:16px;text-align:center">O Nebulosa Workspace precisa de JavaScript ativado no navegador.</p></noscript>
 
-<!-- Ordem importa: dados (ícones, programas, doação) e módulos antes da lógica do Workspace -->
+<!-- Ordem importa: dados (ícones, programas, doação) e módulos (QR, notificações, acessos) antes da lógica do Workspace -->
 <script src="js/icons.js"></script>
 <script src="js/apps.js"></script>
 <script src="js/doacao.js"></script>
 <script src="js/qrcode.js"></script>
 <script src="js/notificacoes.js"></script>
+<script src="js/acessos.js"></script>
 <script src="js/workspace.js"></script>
 </body>
 </html>

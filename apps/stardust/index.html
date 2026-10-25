@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stardust — Planilhas de Cálculo e Gráficos</title>
+<!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o programa funciona sozinho) -->
+<script src="../../shared/nebulosa-bridge.js" data-app="stardust" data-name="Stardust" data-modes data-preview="#17181b #27292d #4d8fd6 #a244f5" data-preview-nebulosa="#1b1d36 #2b2e50 #A778FF #FF9C54"></script>
+<meta name="description" content="Stardust — planilhas de cálculo e gráficos direto no navegador. Abre e salva XLSX, XLS, XLSB, XLSM, ODS, CSV, PDF e JPG. Parte do Nebulosa Workspace.">
+<meta name="author" content="Nebulosa Workspace">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="assets/icone.svg">
+<link rel="stylesheet" href="css/stardust.css">
+<link rel="stylesheet" href="nebulosa-skin.css"><!-- [Nebulosa] aparência Nebulosa Default -->
+</head>
+<body>
+<div id="app">
+  <header id="topo">
+    <button class="marca" id="btnMarca" title="Sobre o Stardust">
+      <img src="assets/icone.svg" alt="" width="26" height="26">
+      <span class="nome">Stardust</span><small class="nb-by">by Nebulosa Workspace</small><!-- [Nebulosa] assinatura -->
+    </button>
+    <nav id="menus" aria-label="Menu principal">
+      <button data-menu="arquivo">Arquivo</button>
+      <button data-menu="editar">Editar</button>
+      <button data-menu="inserir">Inserir</button>
+      <button data-menu="formatar">Formatar</button>
+      <button data-menu="dados">Dados</button>
+      <button data-menu="exibir">Exibir</button>
+      <button data-menu="ajuda">Ajuda</button>
+    </nav>
+    <div class="doc">
+      <input id="docNome" value="Planilha sem nome" maxlength="120" aria-label="Nome da pasta de trabalho" spellcheck="false">
+      <span id="docEstado" class="estado">Novo</span>
+    </div>
+    <div class="acoes">
+      <button class="ib" data-cmd="desfazer" title="Desfazer (Ctrl+Z)" aria-label="Desfazer"></button>
+      <button class="ib" data-cmd="refazer" title="Refazer (Ctrl+Y)" aria-label="Refazer"></button>
+      <button class="bt" data-cmd="abrir" title="Abrir arquivo (Ctrl+O)"><i data-i="abrir"></i><span>Abrir</span></button>
+      <button class="bt pri" data-cmd="salvar" title="Salvar (Ctrl+S)"><i data-i="salvar"></i><span>Salvar</span></button>
+      <button class="bt" data-cmd="aparencia" title="Aparência"><i data-i="paleta"></i><span>Aparência</span></button>
+    </div>
+  </header>
+
+  <div id="ferramentas" role="toolbar" aria-label="Ferramentas de formatação"></div>
+
+  <div id="formula">
+    <div class="caixanome"><input id="caixaNome" value="A1" aria-label="Caixa de nome: digite uma célula ou intervalo e Enter" spellcheck="false"></div>
+    <button class="fx" id="btnFx" title="Inserir função">ƒx</button>
+    <div class="fbarwrap"><textarea id="fbar" rows="1" spellcheck="false" aria-label="Barra de fórmulas"></textarea><div id="dicaSintaxe" hidden></div></div>
+  </div>
+
+  <main id="corpo">
+    <div id="grade" tabindex="-1"></div>
+    <aside id="painel" hidden aria-label="Painel">
+      <div class="pabas" role="tablist">
+        <button role="tab" data-aba="funcoes" aria-selected="true">Funções</button>
+        <button role="tab" data-aba="grafico" aria-selected="false">Gráfico</button>
+        <button class="ib fechar" id="fecharPainel" title="Fechar painel" aria-label="Fechar painel"></button>
+      </div>
+      <div class="pcorpo" id="painelCorpo"></div>
+    </aside>
+  </main>
+
+  <footer id="rodape">
+    <div class="abaswrap"><button class="ib novaaba" id="novaAba" title="Nova planilha (Shift+F11)" aria-label="Nova planilha"></button><div id="abas" role="tablist" aria-label="Planilhas"></div></div>
+    <div id="status" aria-live="polite"></div>
+    <div class="zoom"><button class="ib" data-cmd="zoomMenos" title="Diminuir zoom" aria-label="Diminuir zoom"></button><input type="range" id="zoom" min="50" max="250" step="10" value="100" aria-label="Zoom"><button class="ib" data-cmd="zoomMais" title="Aumentar zoom" aria-label="Aumentar zoom"></button><span id="zoomTxt">100%</span></div>
+  </footer>
+</div>
+
+<div id="menupop" role="menu" hidden></div>
+<div id="modal" hidden></div>
+<div id="autoc" role="listbox" hidden></div>
+<div id="toast" role="status"></div>
+<input type="file" id="arquivo" accept=".xlsx,.xlsm,.xlsb,.xls,.ods,.csv,.tsv,.txt,.xltx,.xltm" hidden>
+
+<noscript><p style="padding:2rem;font-family:sans-serif">O Stardust precisa de JavaScript ativado no navegador.</p></noscript>
+
+<script src="libs/jszip.min.js"></script>
+<script src="libs/xlsx.full.min.js"></script>
+<script src="libs/pdf-lib.min.js"></script>
+<script src="js/nucleo.js"></script>
+<script src="js/formulas.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/arquivos.js"></script>
+<script src="js/grade.js"></script>
+<script src="js/app.js"></script>
+<script>/* [Nebulosa] integração com o Nebulosa Workspace: aviso de alterações não salvas */
+window.__nebulosaDirty = function () { return !!(window.SD && SD.app && SD.app.sujo && SD.app.sujo()); };
+</script>
+</body>
+</html>

@@ -52,13 +52,25 @@
                           'aviso' | 'erro'; duracao em ms). Se o programa está na tela, o aviso
                           vai só para o sino, a menos que sempre = true. Devolve false fora do
                           Workspace — aí o programa mostra o aviso do jeito dele.
+     versao               versão do Nebulosa Workspace (mantenha igual a NEBULOSA_VERSAO em js/apps.js)
    Também disponível como window.Nebulosa (mesmo objeto).
+
+   Identidade visual (feita pela ponte, igual em todos os programas):
+     .nb-by       assinatura "by Nebulosa Workspace" ao lado do nome do programa
+     .nb-rodape   texto de rodapé do Nebulosa Workspace
+   O programa só escreve o elemento (ex.: <small class="nb-by">by Nebulosa Workspace</small>);
+   o estilo é colocado por esta ponte e herda a cor do lugar onde está.
+
+   Contador de acessos: cada vez que o programa abre (uma vez por sessão do
+   navegador), a ponte carrega ../../js/acessos.js, que registra o acesso.
+   Configuração do contador só em js/acessos.js.
    Alterações não salvas: o programa define window.__nebulosaDirty = function () { return true|false; }
    ========================================================================== */
 (function () {
   'use strict';
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
+  var VERSAO = '0.3';
   var me = document.currentScript;
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }
   function has(n) { return !!(me && me.hasAttribute('data-' + n)); }
@@ -122,6 +134,7 @@
 
   var api = window.NebulosaSkin = {
     app: APP,
+    versao: VERSAO,
     name: NAME,
     inWorkspace: inFrame,
     get list() { return publicList(); },
@@ -181,6 +194,35 @@
   }, true);
   post('hello');
   document.addEventListener('DOMContentLoaded', function () { post('hello'); });
+
+  /* ---------- identidade visual: assinatura e rodapé ---------- */
+  (function () {
+    var st = document.createElement('style');
+    st.id = 'nbIdStyle';
+    st.textContent =
+      '.nb-by{display:inline-block;font-size:min(.6em,14px);font-weight:500;letter-spacing:.02em;opacity:.78;margin-left:.5em;white-space:nowrap;vertical-align:baseline;font-style:normal;text-transform:none;line-height:1.1}' +
+      '.nb-by.nb-block{display:block;margin-left:0;margin-top:2px}' +
+      '.nb-rodape{font-size:.92em;opacity:.85}';
+    (document.head || document.documentElement).appendChild(st);
+  })();
+
+  /* ---------- contador de acessos (js/acessos.js) ---------- */
+  // Só quando a ponte é um arquivo de verdade (no site ou no pacote). No HTML
+  // único baixado separadamente a ponte vem embutida e não conta acessos.
+  (function () {
+    var src = me && me.src;
+    if (!src || !/shared\/nebulosa-bridge\.js(\?|#|$)/.test(src)) return;
+    var base = src.replace(/shared\/nebulosa-bridge\.js.*$/, '');
+    window.NEBULOSA_ACESSO_PAGINA = APP;
+    function carregar() {
+      var s = document.createElement('script');
+      s.src = base + 'js/acessos.js';
+      s.async = true;
+      (document.head || document.documentElement).appendChild(s);
+    }
+    if (document.readyState === 'complete') setTimeout(carregar, 400);
+    else window.addEventListener('load', function () { setTimeout(carregar, 400); });
+  })();
 
   /* ---------- janela "Aparência" pronta ---------- */
   // Sempre com as cores da família Nebulosa (a mesma cara do painel do Workspace),

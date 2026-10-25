@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual do EmCanto</title>
+<meta name="description" content="Manual de usuário: EmCanto by Nebulosa Workspace — Importador e Editor de Partituras.">
+<link rel="icon" type="image/png" href="../assets/img/favicon-64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="manual.css">
+<script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
+<style>:root{--c1:#FEFF36;--c2:#FF9C54}</style>
+</head>
+<body>
+<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/emcanto/" target="_blank" rel="noopener">Abrir o EmCanto</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
+<div class="capa"><div class="in"><span class="tag">Arte &amp; Estilo de Vida</span><h1>EmCanto<small>by Nebulosa Workspace</small></h1><p class="funcao">Importador e Editor de Partituras</p><p>O EmCanto lê, toca e transforma partituras: importa PDF, imagens, MusicXML e Guitar Pro, reconhece as notas e a letra, canta cada voz, cria as vozes que faltam e exporta em PDF, MusicXML, MIDI, PNG, MP3 e WAV — sem internet.</p>
+<div class="acoes"><a href="../index.html#app=emcanto">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
+<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. Primeiros passos</a><a href="#s2">2. Reconhecimento da música (OMR) e da letra (OCR)</a><a href="#s3">3. Vozes</a><a href="#s4">4. Reprodução e voz cantada</a><a href="#s5">5. Edição</a><a href="#s6">6. Salvar, imprimir e exportar</a><a href="#s7">7. Perguntas frequentes</a><a href="#s8">8. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Primeiros passos</h2>
+<ol><li>Na tela inicial, arraste o arquivo para a área tracejada ou use <b>Importar partitura</b>. São aceitos PDF, JPG, PNG e TIFF (várias páginas ou vários arquivos, lidos em ordem alfabética), MusicXML (.musicxml, .mxl), Guitar Pro (.gp3, .gp4, .gp5) e projetos .emcanto.</li>
+<li>Para conhecer o programa sem uma partitura à mão, abra uma das <b>demonstrações</b> da tela inicial.</li>
+<li>Confira o que foi lido com o botão <b>Original</b>, ouça com ▶ e corrija o que precisar.</li>
+<li>Salve o projeto com <kbd>Ctrl</kbd>+<kbd>S</kbd>.</li></ol></section><section id="s2"><h2><span class="num">2</span>Reconhecimento da música (OMR) e da letra (OCR)</h2>
+<ul><li>O EmCanto localiza as pautas e identifica claves, armadura, fórmula de compasso, barras, repetições, casas de 1ª e 2ª vez, notas, pausas (inclusive de vários compassos), pontos, acidentes, colchetes, barras de ligação, ligaduras, staccato e fermatas.</li>
+<li>Funciona melhor com partituras impressas, nítidas e retas, a 300 dpi. Para fotos com sombra, marque “É foto de celular” na importação.</li>
+<li>Com “Reconhecer a letra e o título”, o texto sob cada pauta é lido (português, inglês ou latim) e cada sílaba é ligada à sua nota. Várias linhas de letra viram estrofes. Sílabas duvidosas ficam em laranja.</li>
+<li>Compassos que não fecham a conta aparecem com fundo avermelhado; o botão “compassos a revisar” leva de um ao outro.</li>
+<li><b>Ajuda › Autoteste do reconhecimento</b> confere se tudo funciona no seu aparelho.</li></ul>
+<div class="nota">Manuscritos, cópias antigas, fotos tremidas e partituras de piano densas dão mais trabalho de correção. Compare sempre com o original.</div></section><section id="s3"><h2><span class="num">3</span>Vozes</h2>
+<ul><li>Cada pauta vira uma voz; pautas com duas vozes (hastes para cima e para baixo) são separadas. O tipo de voz (soprano, contralto, tenor, baixo…) é deduzido; formações SATB, SAB, SSA e TTBB são reconhecidas.</li>
+<li>No painel de vozes: o olho mostra ou oculta, <b>M</b> silencia, <b>S</b> faz solo.</li>
+<li><b>Criar vozes</b> (tecla <kbd>G</kbd>) abre a Geração Inteligente de Vozes: escolha as que faltam (ou “Completar SATB”, “SAB”, “SSA”, “TTBB”) e ajuste estilo, complexidade harmônica, tessitura e movimento. As vozes geradas podem ser ouvidas, regeneradas, editadas ou excluídas.</li></ul></section><section id="s4"><h2><span class="num">4</span>Reprodução e voz cantada</h2>
+<ul><li>▶ ou <kbd>Espaço</kbd> toca e pausa; laço e trecho; BPM ajustável durante a música; volume por voz; metrônomo.</li>
+<li>Cada voz tem um timbre (soprano, mezzo, contralto, tenor, barítono, baixo, infantil, neutro ou instrumentos) e canta a letra, Ah, Oh, Hum ou Lá.</li>
+<li>A pronúncia segue as regras do idioma (português do Brasil, inglês, latim eclesiástico, italiano ou espanhol), com consoantes antecipadas como fazem os cantores. Serve para ensaiar a própria linha.</li></ul></section><section id="s5"><h2><span class="num">5</span>Edição</h2>
+<ul><li>Ligue o lápis (<kbd>N</kbd>), escolha a figura (<kbd>1</kbd>–<kbd>6</kbd>) e clique na pauta. <kbd>↑</kbd> <kbd>↓</kbd> mudam a altura (com Shift, uma oitava); <kbd>+</kbd> <kbd>−</kbd> <kbd>=</kbd> sustenido, bemol, bequadro; <kbd>.</kbd> ponto; <kbd>R</kbd> nota↔pausa; <kbd>T</kbd> e <kbd>U</kbd> ligaduras.</li>
+<li>Selecione um trecho com Shift+clique e use <b>Agrupar</b> para barras e ligaduras de 2 em 2, 3 em 3, 4 em 4 ou todas.</li>
+<li>Letra: duplo clique na nota (ou Enter) edita a sílaba; <b>Editar › Letra</b> (<kbd>L</kbd>) cola a letra inteira por voz e estrofe.</li>
+<li><b>Transpor</b> por semitons, por intervalo ou escolhendo a tonalidade. Dinâmicas e anotações livres no menu Dinâmica.</li>
+<li>Desfazer e refazer sem limite (<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>).</li></ul></section><section id="s6"><h2><span class="num">6</span>Salvar, imprimir e exportar</h2>
+<ul><li><b>Salvar</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>), <b>Salvar como</b> e <b>Salvar cópia</b> gravam o projeto <code>.emcanto</code> (partitura, vozes, letras, configurações e imagens originais). O EmCanto também guarda cópias de recuperação no navegador.</li>
+<li><b>Imprimir partitura</b> (<kbd>Ctrl</kbd>+<kbd>P</kbd>): A4 em retrato ou paisagem, margens, escolha das vozes, versão original, harmonizada ou transposta; gera PDF vetorial.</li>
+<li><b>Exportar</b> (<kbd>Ctrl</kbd>+<kbd>E</kbd>): PDF, MusicXML (.musicxml ou .mxl), MIDI, PNG (150 ou 300 dpi), MP3 (128 a 320 kbps — ótimo para enviar a guia de ensaio de cada naipe) e WAV.</li></ul></section><section id="s7"><h2><span class="num">7</span>Perguntas frequentes</h2>
+<ul><li><b>“Não encontrei linhas de pauta.”</b> A imagem está pequena, borrada ou torta: digitalize a 300 dpi, com a folha plana.</li>
+<li><b>Notas uma terça ou oitava fora.</b> A clave foi lida errada: clique no nome da voz e troque a clave.</li>
+<li><b>Faltam sustenidos ou bemóis.</b> Corrija a armadura em Editar › Dados da partitura.</li>
+<li><b>Não sai som.</b> O navegador só libera o áudio depois de um clique na página; confira o volume e os botões M e S.</li>
+<li>O manual completo, com todos os detalhes e novidades de cada versão, está em <b>Ajuda › Manual do Usuário</b> (<kbd>F1</kbd>), dentro do programa.</li></ul></section><section id="s8"><h2><span class="num">8</span>Dentro do Nebulosa Workspace</h2>
+<ul>
+<li>Abra o EmCanto pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
+<li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do EmCanto entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
+<li>Ao fechar a aba do EmCanto com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
+<li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
+<li>O EmCanto também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/emcanto/</code>) ou pelo arquivo HTML único.</li>
+</ul></section></main></div>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.3</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p></footer>
+</body>
+</html>
