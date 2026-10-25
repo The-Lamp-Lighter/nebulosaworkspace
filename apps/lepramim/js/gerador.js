@@ -111,7 +111,9 @@
     if (G.gravando) return;
     L.parar();
 
-    const temMp3 = (await LPM.util.carregarScript(LPM.config.LIBS.lame)) && !!window.lamejs;
+    // [Nebulosa] MP3: pasta libs/lamejs ou cópia guardada; senão pode ser baixado na hora de gravar
+    const temMp3 = (await LPM.libsWeb.obter('mp3', { perguntar: false })) && !!window.lamejs;
+    const podeBaixarMp3 = !temMp3 && navigator.onLine !== false;
     const vozes = LPM.voz.filtradas();
     const atual = LPM.voz.escolhida();
 
@@ -126,7 +128,7 @@
     if (!L.dados.capitulos.length) selEscopo.value = 'livro';
     const selFormato = el('select', { id: 'gFormato' }, [
       el('option', { value: 'wav', text: 'WAV (sem compressão, arquivos grandes)' }),
-      el('option', { value: 'mp3', text: temMp3 ? 'MP3 (arquivos pequenos)' : 'MP3 — instale com "Baixar-Bibliotecas"', disabled: !temMp3 })
+      el('option', { value: 'mp3', text: temMp3 ? 'MP3 (arquivos pequenos)' : podeBaixarMp3 ? 'MP3 (arquivos pequenos; baixa um componente de 0,2 MB, uma única vez)' : 'MP3 — precisa de internet uma única vez', disabled: !temMp3 && !podeBaixarMp3 })
     ]);
     if (temMp3) selFormato.value = 'mp3';
     const estimativa = el('p', { class: 'nota' });
@@ -164,10 +166,11 @@
       titulo: 'Gerar audiobook', corpo,
       botoes: [
         { texto: 'Cancelar' },
-        { texto: 'Gravar', classe: 'primario', acao: () => gravar({
-          voz: LPM.voz.porUri(selVoz.value), velocidade: parseFloat(vel.value),
-          partes: montarPartes(selEscopo.value), formato: selFormato.value
-        }) }
+        { texto: 'Gravar', classe: 'primario', acao: async () => {
+          let formato = selFormato.value;
+          if (formato === 'mp3' && !window.lamejs && !(await LPM.libsWeb.obter('mp3', { forcar: true }))) { formato = 'wav'; ui.aviso('Sem o componente de MP3: o audiobook será gravado em WAV.', null, 6000); }
+          gravar({ voz: LPM.voz.porUri(selVoz.value), velocidade: parseFloat(vel.value), partes: montarPartes(selEscopo.value), formato });
+        } }
       ]
     });
   };

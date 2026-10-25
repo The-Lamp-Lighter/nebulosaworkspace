@@ -49,12 +49,15 @@
 <li><b>Estatísticas</b>: tempo de leitura e progresso dos livros.</li>
 <li>No Workspace, o LêPraMim avisa no canto de notificações quando um audiolivro fica pronto e quando a voz Piper termina de baixar.</li>
 </ul></section><section id="s6"><h2><span class="num">6</span>Recursos opcionais: OCR, MP3 e DOCX</h2>
-<p>Três bibliotecas opcionais ampliam o LêPraMim:</p>
-<table><tr><th>Biblioteca</th><th>Para que serve</th><th>Sem ela</th></tr>
-<tr><td><b>Tesseract.js</b> (OCR)</td><td>Ler PDFs digitalizados (fotos de páginas, sem texto selecionável) e imagens.</td><td>PDFs que são só imagem não têm texto para ler.</td></tr>
-<tr><td><b>lamejs</b> (MP3)</td><td>Gerar audiolivro em MP3, arquivos bem menores.</td><td>O audiolivro é gerado em WAV, que funciona igual mas ocupa muito mais espaço.</td></tr>
-<tr><td><b>Mammoth.js</b> (DOCX)</td><td>Um leitor mais completo de documentos do Word.</td><td>Os DOCX abrem pelo leitor interno, que já resolve a maioria dos casos.</td></tr></table>
-<p>No site do Workspace essas bibliotecas não vêm no pacote. Quem mantém o site pode rodar uma vez <code>apps/lepramim/Baixar-Bibliotecas.bat</code> e enviar a pasta <code>apps/lepramim/libs/</code> criada. Usando o LêPraMim no próprio computador, o mesmo Baixar-Bibliotecas instala tudo.</p></section><section id="s7"><h2><span class="num">7</span>Atalhos de teclado</h2>
+<p>Três componentes opcionais ampliam o LêPraMim. Eles <b>baixam sozinhos na primeira vez em que são necessários</b>, do mesmo jeito que a voz Piper: o LêPraMim pede licença, mostra o progresso e guarda o componente neste navegador. Das próximas vezes ele funciona na hora, inclusive sem internet.</p>
+<table><tr><th>Componente</th><th>Quando é baixado</th><th>Tamanho</th><th>Sem ele</th></tr>
+<tr><td><b>Tesseract.js</b> (OCR)</td><td>Ao abrir um PDF digitalizado (páginas que são fotos) e escolher <b>Reconhecer texto</b>.</td><td>cerca de 18 MB, mais o idioma português</td><td>PDFs que são só imagem não têm texto para ler.</td></tr>
+<tr><td><b>lamejs</b> (MP3)</td><td>Ao gerar um audiolivro escolhendo <b>MP3</b>.</td><td>cerca de 0,2 MB</td><td>O audiolivro sai em WAV, que funciona igual mas ocupa muito mais espaço.</td></tr>
+<tr><td><b>Mammoth.js</b> (DOCX)</td><td>Ao abrir o primeiro documento do Word (.docx).</td><td>cerca de 0,7 MB</td><td>Os DOCX abrem pelo leitor interno, que já resolve a maioria dos casos.</td></tr></table>
+<ul><li>Só os arquivos do programa são baixados; o conteúdo dos seus livros nunca sai do computador.</li>
+<li>Em <b>Configurações</b> aparece a situação de cada componente (instalado, guardado neste navegador ou baixa ao usar) e o botão <b>Esquecer componentes baixados</b>, que libera o espaço.</li>
+<li>Se você respondeu “Agora não”, o LêPraMim pergunta de novo na próxima vez (no DOCX, a escolha “Usar o leitor interno” fica lembrada até você esquecer os componentes).</li>
+<li>Quem mantém o site pode ainda rodar <code>apps/lepramim/Baixar-Bibliotecas.bat</code> e enviar a pasta <code>apps/lepramim/libs/</code>: aí nada precisa ser baixado na hora.</li></ul></section><section id="s7"><h2><span class="num">7</span>Atalhos de teclado</h2>
 <table><tr><th>Teclas</th><th>O que faz</th></tr>
 <tr><td><kbd>Espaço</kbd></td><td>Ler ou pausar</td></tr>
 <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Página anterior e seguinte (no audiolivro, 10 segundos)</td></tr>

@@ -81,13 +81,89 @@
       xfs.push(`<xf numFmtId="${nf}" fontId="${fo}" fillId="${fi}" borderId="${bo}" xfId="0"${nf ? ' applyNumberFormat="1"' : ''}${fo ? ' applyFont="1"' : ''}${fi ? ' applyFill="1"' : ''}${bo ? ' applyBorder="1"' : ''}${al ? ' applyAlignment="1">' + al + '</xf>' : '/>'}`);
       xfIds.set(k, xfs.length - 1); return xfs.length - 1;
     }
+    // [Nebulosa] estilos diferenciais (formatação condicional)
+    const dxfs = [], dxfIds = new Map();
+    function dxfId(e) {
+      e = e || {}; const k = JSON.stringify([e.bg, e.fc, !!e.b, !!e.i]);
+      if (dxfIds.has(k)) return dxfIds.get(k);
+      const font = (e.b ? '<b/>' : '') + (e.i ? '<i/>' : '') + (e.fc ? `<color rgb="${argb(e.fc)}"/>` : '');
+      dxfs.push('<dxf>' + (font ? '<font>' + font + '</font>' : '') + (e.bg ? `<fill><patternFill patternType="solid"><fgColor rgb="${argb(e.bg)}"/><bgColor rgb="${argb(e.bg)}"/></patternFill></fill>` : '') + '</dxf>');
+      dxfIds.set(k, dxfs.length - 1); return dxfs.length - 1;
+    }
     wb.sheets.forEach(sh => sh.cells.forEach(c => { if (c.s) xfId(c.s); }));
     const xml = () => '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
       (numFmts.length ? `<numFmts count="${numFmts.length}">${numFmts.join('')}</numFmts>` : '') +
       `<fonts count="${fonts.length}">${fonts.join('')}</fonts><fills count="${fills.length}">${fills.join('')}</fills><borders count="${borders.length}">${borders.join('')}</borders>` +
       '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
-      `<cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/></styleSheet>`;
-    return { xfId, xml };
+      `<cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>${dxfs.length ? `<dxfs count="${dxfs.length}">${dxfs.join('')}</dxfs>` : '<dxfs count="0"/>'}<tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/></styleSheet>`;
+    return { xfId, dxfId, argb, xml };
+  }
+
+  /* ---------- [Nebulosa] formatação condicional, validação e comentários (escrita) ---------- */
+  const OP_CELL = { maior: 'greaterThan', menor: 'lessThan', maiorIgual: 'greaterThanOrEqual', menorIgual: 'lessThanOrEqual', entre: 'between', igual: 'equal', diferente: 'notEqual' };
+  const OP_VAL = { entre: 'between', fora: 'notBetween', igual: 'equal', diferente: 'notEqual', maior: 'greaterThan', menor: 'lessThan', maiorIgual: 'greaterThanOrEqual', menorIgual: 'lessThanOrEqual' };
+  const TIPO_VAL = { lista: 'list', inteiro: 'whole', decimal: 'decimal', data: 'date', texto: 'textLength' };
+  function valorFormula(txt) {
+    const a = SD.R.alvo(txt);
+    if (typeof a === 'number') return String(a);
+    if (typeof a === 'boolean') return a ? 'TRUE' : 'FALSE';
+    return '"' + String(a === null ? '' : a).replace(/"/g, '""') + '"';
+  }
+  const absoluto = f => { const i = f.lastIndexOf('!'); const ab = t => t.replace(/\$?([A-Z]{1,3})\$?(\d+)/g, '$$$1$$$2'); return i < 0 ? ab(f) : f.slice(0, i + 1) + ab(f.slice(i + 1)); };
+  function condXml(sh, st) {
+    let pri = 0, out = '';
+    (sh.condFormats || []).forEach(rg => {
+      const areas = SD.R.areas(rg.range); if (!areas.length) return;
+      pri++;
+      const sq = areas.map(g => SD.R.areaStr(g)).join(' '), tl = SD.addr(areas[0].r1, areas[0].c1);
+      let rule = '';
+      if (OP_CELL[rg.tipo]) rule = `<cfRule type="cellIs" dxfId="${st.dxfId(rg.estilo)}" priority="${pri}" operator="${OP_CELL[rg.tipo]}"><formula>${X(valorFormula(rg.v1))}</formula>${rg.tipo === 'entre' ? `<formula>${X(valorFormula(rg.v2))}</formula>` : ''}</cfRule>`;
+      else if (rg.tipo === 'contem') rule = `<cfRule type="containsText" dxfId="${st.dxfId(rg.estilo)}" priority="${pri}" operator="containsText" text="${X(rg.v1 || '')}"><formula>${X('NOT(ISERROR(SEARCH("' + String(rg.v1 || '').replace(/"/g, '""') + '",' + tl + ')))')}</formula></cfRule>`;
+      else if (rg.tipo === 'duplicados' || rg.tipo === 'unicos') rule = `<cfRule type="${rg.tipo === 'duplicados' ? 'duplicateValues' : 'uniqueValues'}" dxfId="${st.dxfId(rg.estilo)}" priority="${pri}"/>`;
+      else if (rg.tipo === 'acimaMedia' || rg.tipo === 'abaixoMedia') rule = `<cfRule type="aboveAverage" dxfId="${st.dxfId(rg.estilo)}" priority="${pri}"${rg.tipo === 'abaixoMedia' ? ' aboveAverage="0"' : ''}/>`;
+      else if (rg.tipo === 'escala') {
+        const cs = (rg.cores && rg.cores.length >= 2 ? rg.cores : SD.R.ESCALAS[0].cores).slice(0, 3);
+        rule = `<cfRule type="colorScale" priority="${pri}"><colorScale><cfvo type="min"/>${cs.length === 3 ? '<cfvo type="percentile" val="50"/>' : ''}<cfvo type="max"/>${cs.map(c => `<color rgb="${st.argb(c)}"/>`).join('')}</colorScale></cfRule>`;
+      } else if (rg.tipo === 'barras') rule = `<cfRule type="dataBar" priority="${pri}"><dataBar><cfvo type="min"/><cfvo type="max"/><color rgb="${st.argb(rg.cor || SD.R.BARRAS[0])}"/></dataBar></cfRule>`;
+      if (rule) out += `<conditionalFormatting sqref="${sq}">${rule}</conditionalFormatting>`;
+    });
+    return out;
+  }
+  function validXml(sh) {
+    const l = (sh.validations || []).filter(vd => TIPO_VAL[vd.tipo] && SD.R.areas(vd.range).length);
+    if (!l.length) return '';
+    return `<dataValidations count="${l.length}">` + l.map(vd => {
+      const sq = SD.R.areas(vd.range).map(g => SD.R.areaStr(g)).join(' ');
+      let a = `type="${TIPO_VAL[vd.tipo]}"`;
+      if (vd.bloquear === false) a += ' errorStyle="warning"';
+      if (vd.tipo !== 'lista' && vd.op && vd.op !== 'entre') a += ` operator="${OP_VAL[vd.op] || 'between'}"`;
+      a += ' allowBlank="1" showInputMessage="1" showErrorMessage="1"';
+      if (vd.msg) a += ` errorTitle="Stardust" error="${X(vd.msg.slice(0, 225))}"`;
+      let f = '';
+      if (vd.tipo === 'lista') f = `<formula1>${X(vd.fonte ? absoluto(SD.F.toFileFormula(vd.fonte)) : '"' + (vd.lista || []).map(x => String(x).replace(/"/g, '""')).join(',') + '"')}</formula1>`;
+      else {
+        const n = x => { const v = SD.R.alvo(x); return typeof v === 'number' ? String(vd.tipo === 'data' ? Math.floor(v) : v) : '0'; };
+        f = `<formula1>${n(vd.v1)}</formula1>` + (vd.op === 'entre' || vd.op === 'fora' || !vd.op ? `<formula2>${n(vd.v2)}</formula2>` : '');
+      }
+      return `<dataValidation ${a} sqref="${sq}">${f}</dataValidation>`;
+    }).join('') + '</dataValidations>';
+  }
+  function comentariosXml(sh) {
+    const ks = Object.keys(sh.notas || {}).filter(k => sh.notas[k] && sh.notas[k].t);
+    if (!ks.length) return null;
+    ks.sort((a, b) => { const [r1, c1] = SD.unkey(a), [r2, c2] = SD.unkey(b); return r1 - r2 || c1 - c2; });
+    const autores = [];
+    const aut = n => { const a = n.a || 'Stardust'; let i = autores.indexOf(a); if (i < 0) { autores.push(a); i = autores.length - 1; } return i; };
+    const lista = ks.map(k => { const [r, c] = SD.unkey(k), n = sh.notas[k]; return { r, c, n, ai: aut(n) }; });
+    const com = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><authors>' + autores.map(a => `<author>${X(a)}</author>`).join('') + '</authors><commentList>' +
+      lista.map(o => `<comment ref="${SD.addr(o.r, o.c)}" authorId="${o.ai}"><text><r><rPr><sz val="9"/><color indexed="81"/><rFont val="Tahoma"/><family val="2"/></rPr><t xml:space="preserve">${X(o.n.t)}</t></r></text></comment>`).join('') + '</commentList></comments>';
+    return { com, lista };
+  }
+  function vmlXml(lista, idmap) {
+    return '<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">' +
+      `<o:shapelayout v:ext="edit"><o:idmap v:ext="edit" data="${idmap}"/></o:shapelayout>` +
+      '<v:shapetype id="_x0000_t202" coordsize="21600,21600" o:spt="202" path="m,l,21600r21600,l21600,xe"><v:stroke joinstyle="miter"/><v:path gradientshapeok="t" o:connecttype="rect"/></v:shapetype>' +
+      lista.map((o, j) => `<v:shape id="_x0000_s${idmap * 1024 + j + 1}" type="#_x0000_t202" style="position:absolute;margin-left:59.25pt;margin-top:1.5pt;width:144pt;height:72pt;z-index:${j + 1};visibility:hidden" fillcolor="#ffffe1" o:insetmode="auto"><v:fill color2="#ffffe1"/><v:shadow on="t" color="black" obscured="t"/><v:path o:connecttype="none"/><v:textbox style="mso-direction-alt:auto"><div style="text-align:left"></div></v:textbox><x:ClientData ObjectType="Note"><x:MoveWithCells/><x:SizeWithCells/><x:Anchor>${o.c + 1}, 15, ${Math.max(0, o.r - 1)}, 10, ${o.c + 3}, 15, ${o.r + 4}, 4</x:Anchor><x:AutoFill>False</x:AutoFill><x:Row>${o.r}</x:Row><x:Column>${o.c}</x:Column></x:ClientData></v:shape>`).join('') + '</xml>';
   }
 
   function colPx(sh, c) { return sh.colW[c] !== undefined ? sh.colW[c] : SD.DEF_W; }
@@ -162,7 +238,7 @@
       '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>',
       '<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>'];
     const wbRels = [];
-    let chartN = 0, drawN = 0;
+    let chartN = 0, drawN = 0, comN = 0, temVml = false;
     const definedNames = [];
     wb.sheets.forEach((sh, i) => {
       const n = i + 1;
@@ -209,12 +285,13 @@
         autoFilter = `<autoFilter ref="${sh.filter.range}"/>`;
         definedNames.push(`<definedName name="_xlnm._FilterDatabase" localSheetId="${i}" hidden="1">${X("'" + sh.name.replace(/'/g, "''") + "'!" + sh.filter.range.replace(/([A-Z]+)(\d+)/g, '$$$1$$$2'))}</definedName>`);
       }
-      let drawing = '';
+      let drawing = '', legacy = '';
+      const shRels = []; // [Nebulosa] relações da planilha (gráficos e comentários)
       if (sh.charts.length) {
         drawN++;
         const dn = drawN;
         drawing = '<drawing r:id="rId1"/>';
-        zip.file(`xl/worksheets/_rels/sheet${n}.xml.rels`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing${dn}.xml"/></Relationships>`);
+        shRels.push(`<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing${dn}.xml"/>`);
         ct.push(`<Override PartName="/xl/drawings/drawing${dn}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`);
         const anchors = [], drels = [];
         sh.charts.forEach((ch, j) => {
@@ -228,12 +305,26 @@
         zip.file(`xl/drawings/drawing${dn}.xml`, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' + anchors.join('') + '</xdr:wsDr>');
         zip.file(`xl/drawings/_rels/drawing${dn}.xml.rels`, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + drels.join('') + '</Relationships>');
       }
+      // [Nebulosa] comentários (com o desenho VML que o Excel usa para mostrá-los)
+      const cm = comentariosXml(sh);
+      if (cm) {
+        comN++;
+        const rc = 'rId' + (shRels.length + 1), rv = 'rId' + (shRels.length + 2);
+        shRels.push(`<Relationship Id="${rc}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments" Target="../comments${comN}.xml"/>`);
+        shRels.push(`<Relationship Id="${rv}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing" Target="../drawings/vmlDrawing${comN}.vml"/>`);
+        zip.file(`xl/comments${comN}.xml`, cm.com);
+        zip.file(`xl/drawings/vmlDrawing${comN}.vml`, vmlXml(cm.lista, comN));
+        ct.push(`<Override PartName="/xl/comments${comN}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml"/>`);
+        if (!temVml) { temVml = true; ct.push('<Default Extension="vml" ContentType="application/vnd.openxmlformats-officedocument.vmlDrawing"/>'); }
+        legacy = `<legacyDrawing r:id="${rv}"/>`;
+      }
+      if (shRels.length) zip.file(`xl/worksheets/_rels/sheet${n}.xml.rels`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${shRels.join('')}</Relationships>`);
       const dim = `<dimension ref="${maxR || maxC ? 'A1:' + SD.addr(maxR, maxC) : 'A1'}"/>`;
       const sel = `<selection${pane ? ` pane="${fr.r && fr.c ? 'bottomRight' : fr.r ? 'bottomLeft' : 'topRight'}"` : ''} activeCell="${SD.addr(fr.r, fr.c)}" sqref="${SD.addr(fr.r, fr.c)}"/>`;
       zip.file(`xl/worksheets/sheet${n}.xml`, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
         dim + `<sheetViews><sheetView${sh.showGrid === false ? ' showGridLines="0"' : ''}${i === wb.active ? ' tabSelected="1"' : ''}${sh.zoom && sh.zoom !== 1 ? ` zoomScale="${Math.round(sh.zoom * 100)}"` : ''} workbookViewId="0">${pane}${sel}</sheetView></sheetViews>` +
-        `<sheetFormatPr baseColWidth="10" defaultColWidth="${pxToChars(SD.DEF_W)}" defaultRowHeight="${SD.DEF_H * 0.75}" customHeight="1"/>` + cols + `<sheetData>${data}</sheetData>` + autoFilter + merges +
-        '<pageMargins left="0.511811024" right="0.511811024" top="0.787401575" bottom="0.787401575" header="0.31496062" footer="0.31496062"/>' + drawing + '</worksheet>');
+        `<sheetFormatPr baseColWidth="10" defaultColWidth="${pxToChars(SD.DEF_W)}" defaultRowHeight="${SD.DEF_H * 0.75}" customHeight="1"/>` + cols + `<sheetData>${data}</sheetData>` + autoFilter + merges + condXml(sh, st) + validXml(sh) +
+        '<pageMargins left="0.511811024" right="0.511811024" top="0.787401575" bottom="0.787401575" header="0.31496062" footer="0.31496062"/>' + drawing + legacy + '</worksheet>');
     });
     const nS = wb.sheets.length;
     wbRels.push(`<Relationship Id="rId${nS + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>`);
@@ -313,7 +404,7 @@
     const sstRel = Object.values(wbr).find(r => /sharedStrings$/.test(r.type));
     if (sstRel && zip.file(sstRel.target)) sst = childrenNamed(P(await zip.file(sstRel.target).async('string')).documentElement, 'si').map(textOf);
     // estilos
-    let xfStyles = [];
+    let xfStyles = [], dxfStyles = [];
     const stRel = Object.values(wbr).find(r => /styles$/.test(r.type));
     if (stRel && zip.file(stRel.target)) {
       const sd = P(await zip.file(stRel.target).async('string'));
@@ -337,6 +428,14 @@
         [['left', 'l'], ['right', 'r'], ['top', 't'], ['bottom', 'b']].forEach(([tag, k]) => { const e = one(b, tag); const s = attr(e, 'style'); if (s) { o[k] = /medium|thick|double/.test(s) ? (s === 'thick' ? 'thick' : 'medium') : 'thin'; col = col || readColor(one(e, 'color'), theme); } });
         if (!Object.keys(o).length) return null;
         if (col && col !== '#000000') o.c = col;
+        return o;
+      });
+      // [Nebulosa] estilos da formatação condicional
+      dxfStyles = all(one(sd, 'dxfs'), 'dxf').map(x => {
+        const o = {}, f = one(x, 'font');
+        if (f) { if (one(f, 'b') && attr(one(f, 'b'), 'val') !== '0') o.b = true; if (one(f, 'i') && attr(one(f, 'i'), 'val') !== '0') o.i = true; const c = readColor(one(f, 'color'), theme); if (c) o.fc = c; }
+        const pf = one(x, 'patternFill');
+        if (pf && attr(pf, 'patternType') !== 'none') { const c = readColor(one(pf, 'bgColor'), theme) || readColor(one(pf, 'fgColor'), theme); if (c) o.bg = c; }
         return o;
       });
       xfStyles = all(one(sd, 'cellXfs'), 'xf').map(x => {
@@ -431,8 +530,14 @@
       if (Math.abs(defH - SD.DEF_H) > 2) { /* altura padrão diferente: mantém a do Stardust para ficar legível */ }
       all(one(sd, 'mergeCells'), 'mergeCell').forEach(m => { const g = SD.parseRange(attr(m, 'ref')); if (g && (g.r1 !== g.r2 || g.c1 !== g.c2)) sh.merges.push(g); });
       const af = one(sd, 'autoFilter'); if (af && attr(af, 'ref')) sh.filter = { range: attr(af, 'ref'), hidden: {} };
+      // [Nebulosa] formatação condicional, validação de dados e comentários
+      try { lerRegras(sd, sh, dxfStyles, theme); } catch (e) { console.warn('Stardust: regras não lidas', e); }
       // gráficos
       const shRels = await rels(zip, rel.target);
+      try {
+        const cRel = Object.values(shRels).find(r => /\/comments$/.test(r.type));
+        if (cRel && zip.file(cRel.target)) lerComentarios(P(await zip.file(cRel.target).async('string')), sh);
+      } catch (e) { console.warn('Stardust: comentários não lidos', e); }
       const drEl = one(sd, 'drawing');
       if (drEl) {
         const drid = drEl.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') || attr(drEl, 'r:id');
@@ -446,6 +551,79 @@
     if (!wb.sheets.length) wb.sheets.push(SD.newSheet('Planilha1'));
     wb.active = Math.min(actTab, wb.sheets.length - 1);
     return wb;
+  }
+  /* ---------- [Nebulosa] leitura das regras e dos comentários ---------- */
+  const OP_CELL_LER = { greaterThan: 'maior', lessThan: 'menor', greaterThanOrEqual: 'maiorIgual', lessThanOrEqual: 'menorIgual', between: 'entre', equal: 'igual', notEqual: 'diferente' };
+  const OP_VAL_LER = { between: 'entre', notBetween: 'fora', equal: 'igual', notEqual: 'diferente', greaterThan: 'maior', lessThan: 'menor', greaterThanOrEqual: 'maiorIgual', lessThanOrEqual: 'menorIgual' };
+  const TIPO_VAL_LER = { list: 'lista', whole: 'inteiro', decimal: 'decimal', date: 'data', textLength: 'texto' };
+  // texto de uma fórmula simples ("10", "\"abc\"", "TRUE") → como a pessoa digitaria; null se for algo mais complexo
+  function valorDaFormula(f, data) {
+    f = String(f || '').trim();
+    if (/^-?\d+(\.\d+)?(E[+-]?\d+)?$/i.test(f)) { const n = +f; return data ? SD.formatValue(n, 'dd/mm/yyyy').t : String(n).replace('.', ','); }
+    const m = /^"((?:[^"]|"")*)"$/.exec(f); if (m) return m[1].replace(/""/g, '"');
+    if (/^(TRUE|FALSE)$/i.test(f)) return f.toUpperCase() === 'TRUE' ? 'verdadeiro' : 'falso';
+    return null;
+  }
+  function lerRegras(sd, sh, dxf, theme) {
+    const regras = [];
+    all(sd, 'conditionalFormatting').forEach(cfEl => {
+      if (cfEl.parentNode && cfEl.parentNode.localName !== 'worksheet') return; // as do extLst (x14) ficam de fora
+      const sq = attr(cfEl, 'sqref') || (one(cfEl, 'sqref') ? one(cfEl, 'sqref').textContent : '');
+      if (!SD.R.areas(sq).length) return;
+      childrenNamed(cfEl, 'cfRule').forEach(ru => {
+        const t = attr(ru, 'type'), pri = +attr(ru, 'priority') || 999;
+        const est = attr(ru, 'dxfId') !== null ? Object.assign({}, dxf[+attr(ru, 'dxfId')] || {}) : {};
+        const fs = childrenNamed(ru, 'formula').map(x => x.textContent);
+        let rg = null;
+        if (t === 'cellIs' && OP_CELL_LER[attr(ru, 'operator')]) {
+          const tipo = OP_CELL_LER[attr(ru, 'operator')];
+          const v1 = valorDaFormula(fs[0]), v2 = tipo === 'entre' ? valorDaFormula(fs[1]) : '';
+          if (v1 !== null && v2 !== null) rg = { tipo, v1, estilo: est }; if (rg && tipo === 'entre') rg.v2 = v2;
+        } else if (t === 'containsText' && attr(ru, 'text') !== null) rg = { tipo: 'contem', v1: attr(ru, 'text'), estilo: est };
+        else if (t === 'duplicateValues') rg = { tipo: 'duplicados', estilo: est };
+        else if (t === 'uniqueValues') rg = { tipo: 'unicos', estilo: est };
+        else if (t === 'aboveAverage' && !attr(ru, 'stdDev')) rg = { tipo: attr(ru, 'aboveAverage') === '0' ? 'abaixoMedia' : 'acimaMedia', estilo: est };
+        else if (t === 'colorScale') { const cores = all(one(ru, 'colorScale'), 'color').map(c => readColor(c, theme)).filter(Boolean); if (cores.length >= 2) rg = { tipo: 'escala', cores: cores.slice(0, 3) }; }
+        else if (t === 'dataBar') { const c = readColor(one(one(ru, 'dataBar'), 'color'), theme); rg = { tipo: 'barras', cor: c || SD.R.BARRAS[2] }; }
+        if (rg) { rg.range = sq.trim().split(/\s+/).join(' '); if (rg.estilo && !Object.keys(rg.estilo).length) rg.estilo = { b: true }; regras.push({ pri, rg }); }
+      });
+    });
+    regras.sort((a, b) => a.pri - b.pri);
+    sh.condFormats = regras.map(x => x.rg);
+    sh.validations = [];
+    all(one(sd, 'dataValidations'), 'dataValidation').forEach(v => {
+      const tipo = TIPO_VAL_LER[attr(v, 'type')]; if (!tipo) return;
+      const sq = attr(v, 'sqref'); if (!sq || !SD.R.areas(sq).length) return;
+      const f1 = one(v, 'formula1') ? one(v, 'formula1').textContent : '', f2 = one(v, 'formula2') ? one(v, 'formula2').textContent : '';
+      const vd = { range: sq.trim().split(/\s+/).join(' '), tipo, bloquear: !/warning|information/.test(attr(v, 'errorStyle') || '') };
+      if (attr(v, 'error')) vd.msg = attr(v, 'error');
+      if (tipo === 'lista') {
+        const m = /^"((?:[^"]|"")*)"$/.exec(f1.trim());
+        if (m) vd.lista = m[1].replace(/""/g, '"').split(',').map(x => x.trim()).filter(Boolean);
+        else if (f1) vd.fonte = SD.F.fromFileFormula(f1);
+        else return;
+      } else {
+        vd.op = OP_VAL_LER[attr(v, 'operator') || 'between'] || 'entre';
+        vd.v1 = valorDaFormula(f1, tipo === 'data');
+        if (vd.op === 'entre' || vd.op === 'fora') vd.v2 = valorDaFormula(f2, tipo === 'data');
+        if (vd.v1 === null || vd.v2 === null) return; // limites calculados por fórmula: não suportado
+      }
+      sh.validations.push(vd);
+    });
+  }
+  function lerComentarios(doc, sh) {
+    const autores = all(one(doc, 'authors'), 'author').map(a => a.textContent);
+    const notas = {};
+    all(doc, 'comment').forEach(c => {
+      const p = SD.parseAddr(attr(c, 'ref') || ''); if (!p) return;
+      const a = autores[+attr(c, 'authorId') || 0] || '';
+      let t = textOf(one(c, 'text'));
+      if (a && t.startsWith(a + ':')) t = t.slice(a.length + 1).replace(/^\s*\n/, '');
+      t = t.replace(/\r\n?/g, '\n');
+      if (!t.trim()) return;
+      notas[p.r + ',' + p.c] = a && a !== 'Stardust' ? { t, a } : { t };
+    });
+    sh.notas = notas;
   }
   function pxFromAnchor(sh, el) {
     const c = +one(el, 'col').textContent, co = +one(el, 'colOff').textContent, r = +one(el, 'row').textContent, ro = +one(el, 'rowOff').textContent;
@@ -744,9 +922,12 @@
             const m = mergeAt.get(key);
             let cw = colPx(sh, c) * 0.75 * k, ch2 = rh;
             if (m) { cw = 0; for (let cc = m.c1; cc <= m.c2; cc++) if (grp.includes(cc)) cw += colPx(sh, cc) * 0.75 * k; ch2 = 0; for (let rr = m.r1; rr <= m.r2; rr++) if (!sh.hiddenRows.has(rr)) ch2 += rowPx(sh, rr) * 0.75 * k; }
-            const cell = sh.cells.get(key), s = cell && cell.s || {};
+            const cell = sh.cells.get(key);
+            const cf = cell && SD.R ? SD.R.condicional(sh, r, c, cell) : null; // [Nebulosa] formatação condicional
+            const s = cf && cf.s ? Object.assign({}, cell.s, cf.s) : (cell && cell.s || {});
             const x0 = xs[c], yb = yTop - ch2;
             if (s.bg) page.drawRectangle({ x: x0, y: yb, width: cw, height: ch2, color: col(s.bg) });
+            if (cf && cf.barra) page.drawRectangle({ x: x0 + 1.5, y: yb + 1.5, width: Math.max(0.5, (cw - 3) * cf.barra.frac), height: Math.max(0.5, ch2 - 3), color: col(cf.barra.cor), opacity: 0.45, borderColor: col(cf.barra.cor), borderWidth: 0.5 });
             if (opts.grade && sh.showGrid !== false) page.drawRectangle({ x: x0, y: yb, width: cw, height: ch2, borderColor: rgb(.82, .84, .87), borderWidth: 0.4 });
             if (s.bd) {
               const bc = col(s.bd.c || '#000000'), wv = v => v === 'thick' ? 1.6 : v === 'medium' ? 1 : 0.5;

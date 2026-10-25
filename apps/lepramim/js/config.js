@@ -46,6 +46,19 @@ LPM.config = {
     lame: 'libs/lamejs/lame.min.js'
   },
 
+  // [Nebulosa] Componentes opcionais pela internet (js/bibliotecas-web.js): usados quando a
+  // pasta libs não os tem (por exemplo, no site). Mesmos arquivos do "Baixar-Bibliotecas".
+  // São baixados uma única vez, com permissão, e ficam guardados neste navegador.
+  LIBS_WEB: {
+    tesseract: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.0.0/dist/tesseract.min.js',
+    tesseractWorker: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.0.0/dist/worker.min.js',
+    tesseractCore: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.0.0/',
+    tesseractLang: 'https://tessdata.projectnaptha.com/4.0.0',
+    lame: 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js',
+    mammoth: 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js',
+    cache: 'lepramim-libs-v1'
+  },
+
   // Voz neural Piper pela internet: usada quando a pasta libs/piper não tem o motor
   // ou a voz (por exemplo, no site do GitHub Pages). São os mesmos arquivos que o
   // "Baixar-Bibliotecas" instala. Só os arquivos da voz são baixados, uma única vez,

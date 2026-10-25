@@ -5,12 +5,12 @@
    e sem internet. Só atende arquivos da própria pasta do app;
    nenhum dado do usuário passa por aqui.
    ============================================================ */
-const CACHE = 'lepramim-v4';
+const CACHE = 'lepramim-v5'; // [Nebulosa] v5: js/bibliotecas-web.js
 const ESSENCIAIS = [
   './', 'index.html', 'manifest.webmanifest', 'favicon.ico', 'css/estilo.css', 'css/aparencia-nebulosa.css',
   'assets/icone-96.png', 'assets/icone-192.png', 'assets/icone-512.png', 'assets/favicon.png', 'assets/logo-vertical.png',
   'js/config.js', 'js/util.js', 'js/armazenamento.js', 'js/zip.js', 'js/capitulos.js', 'js/limpeza.js', 'js/livro.js',
-  'js/metadados-audio.js', 'js/importadores.js', 'js/voz.js', 'js/piper.js', 'js/piper-worker.js', 'js/interface.js', 'js/estatisticas.js', 'js/temporizador.js',
+  'js/metadados-audio.js', 'js/bibliotecas-web.js', 'js/importadores.js', 'js/voz.js', 'js/piper.js', 'js/piper-worker.js', 'js/interface.js', 'js/estatisticas.js', 'js/temporizador.js',
   'js/marcadores.js', 'js/busca.js', 'js/leitor.js', 'js/audiobook.js', 'js/hibrido.js', 'js/gerador.js', 'js/biblioteca.js',
   'js/configuracoes.js', 'js/ajuda.js', 'js/app.js',
   'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'

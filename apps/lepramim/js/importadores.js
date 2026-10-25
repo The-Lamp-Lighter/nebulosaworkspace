@@ -291,8 +291,8 @@
     }
 
     let blocos = null;
-    // Mammoth.js (recomendado) quando estiver instalado em libs/mammoth
-    await util.carregarScript(cfgLibs.mammoth);
+    // Mammoth.js (recomendado): pasta libs/mammoth, cópia guardada ou internet [Nebulosa]
+    await LPM.libsWeb.obter('docx', { explicacao: 'Para abrir documentos do Word com mais fidelidade (listas, tabelas e estilos),', textoNao: 'Usar o leitor interno', lembrarNao: true });
     if (window.mammoth) {
       try {
         const r = await window.mammoth.convertToHtml({ arrayBuffer: buffer });
@@ -549,10 +549,11 @@
   /* ---------------- OCR (Tesseract.js) ---------------- */
 
   /** Diz por que o OCR não pode ser usado agora (ou '' se puder). */
-  async function motivoSemOcr() {
-    if (!util.viaServidor()) return 'O OCR só funciona quando o LêPraMim é aberto pelo arquivo "Iniciar-LePraMim" (modo servidor local).';
-    const ok = await util.carregarScript(cfgLibs.tesseract);
-    if (!ok || !window.Tesseract) return 'O Tesseract.js ainda não está instalado. Execute "Baixar-Bibliotecas" uma única vez (precisa de internet só nesse momento).';
+  async function motivoSemOcr(perguntar) {
+    if (!util.viaServidor()) return 'O OCR só funciona quando o LêPraMim é aberto por um site ou pelo arquivo "Iniciar-LePraMim" (modo servidor local).';
+    // [Nebulosa] pasta libs, cópia guardada no navegador ou download pela internet (com permissão)
+    const ok = await LPM.libsWeb.obter('ocr', { perguntar, explicacao: 'Para reconhecer o texto de páginas digitalizadas,' });
+    if (!ok || !window.Tesseract) return perguntar === false ? 'O componente de OCR ainda não foi baixado.' : 'O componente de OCR não está disponível agora (sem internet, ou o download não foi aceito).';
     return '';
   }
 
@@ -560,14 +561,15 @@
   async function criarOcr(aoProgresso) {
     const motivo = await motivoSemOcr();
     if (motivo) throw new Error(motivo);
-    return window.Tesseract.createWorker(LPM.dados.cfg.idiomaOcr || 'por', 1, {
+    const web = LPM.libsWeb.opcoesOcr(); // [Nebulosa] componente baixado pela internet
+    return window.Tesseract.createWorker(LPM.dados.cfg.idiomaOcr || 'por', 1, Object.assign({
       workerPath: util.urlAbsoluta(cfgLibs.tesseractWorker),
       corePath: util.urlAbsoluta(cfgLibs.tesseractCore).replace(/\/$/, ''),
       langPath: util.urlAbsoluta(cfgLibs.tesseractLang),
       workerBlobURL: false,
       gzip: true,
       logger: m => { if (aoProgresso && m && m.status === 'recognizing text') aoProgresso(m.progress || 0); }
-    });
+    }, web || {}));
   }
 
   /** Converte o texto devolvido pelo OCR em linhas com pistas de parágrafo. */
@@ -603,7 +605,7 @@
     // PDF digitalizado (imagens no lugar do texto): oferece OCR
     let aviso = '';
     if (semTexto.length >= Math.max(1, n * 0.2)) {
-      const motivo = await motivoSemOcr();
+      const motivo = util.viaServidor() ? '' : await motivoSemOcr(false);
       if (motivo) {
         aviso = `${semTexto.length} de ${n} páginas não têm texto (parecem digitalizadas). ${motivo}`;
       } else if (await ctx.perguntar(

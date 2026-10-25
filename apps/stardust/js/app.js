@@ -45,6 +45,10 @@
     localizar: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6"/>', grade: '<rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
     sol: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>', borracha: '<path d="M20 20H9l-5-5 10-10 7 7-7 7"/><path d="M8 11l6 6"/>',
+    comentario: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>', // [Nebulosa]
+    condicional: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18"/><rect x="5" y="11.5" width="9" height="2" rx=".6" fill="currentColor"/><rect x="5" y="16.5" width="5" height="2" rx=".6" fill="currentColor"/>',
+    validacao: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M14 10l2.5 2.5L14 15M7 12h5"/>',
+    ok: '<path d="M5 12.5l4.5 4.5L19 7"/>',
     ocultar: '<path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.1A10 10 0 0112 5c5 0 9 5 9 7a11 11 0 01-2.2 3.2M6.6 6.6C4.3 8 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 004.2-1"/>'
   };
   const ic = (n, cls) => `<svg class="i ${cls || ''}" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
@@ -123,6 +127,7 @@
   let circularAvisado = false;
   function atualizar() {
     const res = SD.F.recalc(wb);
+    if (SD.R) SD.R.invalidar(); // [Nebulosa] formatação condicional recalculada
     G.refresh(true); G.syncCharts();
     onSelection();
     if (res.circular && !circularAvisado) { circularAvisado = true; toast('Atenção: há uma referência circular (uma fórmula que depende dela mesma). Ela aparece como #CIRC!.', true); }
@@ -169,9 +174,14 @@
     if (typeof p.v === 'string' && txt.includes('\n')) st = Object.assign({}, st || {}, { wrap: true });
     return { v: p.v, s: st };
   }
-  function entrarTexto(r, c, txt, todas) {
+  function entrarTexto(r, c, txt, todas, semValidar) {
     const alvo = todas ? G.boundSel() : { r1: r, c1: c, r2: r, c2: c };
     const res = interpretar(txt, getCell(V.si, r, c));
+    // [Nebulosa] validação de dados
+    if (!res.erro && !res.f && !semValidar && SD.R) {
+      const vd = SD.R.validacaoEm(sheet(), r, c);
+      if (vd && !SD.R.valido(wb, sheet(), vd, res.v, res.s && res.s.z)) { avisoValidacao(vd, r, c, txt, todas); return; }
+    }
     if (res.erro) {
       dialogo({ titulo: 'Há um problema com esta fórmula', corpo: `<p>O Stardust não entendeu a fórmula <code>${esc(txt)}</code>.</p><p style="color:var(--text-dim)">Confira os parênteses, as aspas e se os argumentos estão separados por ponto e vírgula ( ; ). Para escrever um texto que começa com “=”, comece com um apóstrofo: <code>'=texto</code>.</p>`, botoes: [{ t: 'Corrigir', pri: true, acao: () => { G.select(r, c); G.startEdit(txt, 'editar'); } }, { t: 'Guardar como texto', acao: () => entrarTexto(r, c, "'" + txt) }] });
       return;
@@ -187,6 +197,30 @@
     U.fim();
     const cell = getCell(V.si, r, c);
     if (cell && cell.s && cell.s.wrap) autoAjustarLinhas([r], true);
+  }
+
+  /** [Nebulosa] Valor fora da validação: bloqueia ou só avisa. */
+  function avisoValidacao(vd, r, c, txt, todas) {
+    const desc = SD.R.descreverVal(wb, sheet(), vd);
+    const reeditar = () => { G.select(r, c); G.startEdit(txt, 'editar'); };
+    const botoes = vd.bloquear !== false
+      ? [{ t: 'Cancelar' }].concat(vd.tipo === 'lista' ? [{ t: 'Escolher da lista', acao: () => { G.select(r, c); setTimeout(() => menuLista(r, c, G.cellRect(r, c)), 30); } }] : []).concat([{ t: 'Tentar de novo', pri: true, acao: reeditar }])
+      : [{ t: 'Corrigir', acao: reeditar }, { t: 'Manter assim', pri: true, acao: () => entrarTexto(r, c, txt, todas, true) }];
+    dialogo({ titulo: vd.bloquear !== false ? 'Valor não permitido' : 'Confira o valor', corpo: `<p>O valor <b>${esc(txt)}</b> não segue a regra de ${esc(SD.addr(r, c))}.</p><p style="color:var(--text-dim)">${esc(desc)}</p>`, botoes });
+  }
+  /** [Nebulosa] Lista suspensa da validação de dados. */
+  function menuLista(r, c, rect) {
+    const vd = SD.R.validacaoEm(sheet(), r, c); if (!vd) return;
+    const ops = SD.R.opcoes(wb, sheet(), vd);
+    const hr = G.host.getBoundingClientRect();
+    if (!ops.length) { toast('A lista desta célula está vazia. Confira em Dados › Validação de dados.'); return; }
+    const atual = getCell(V.si, r, c), tAtual = atual ? SD.formatValue(atual.f ? atual.val : atual.v, atual.s && atual.s.z).t : '';
+    const itens = ops.map(o => ({ t: o, i: o === tAtual ? 'ok' : '', a: () => entrarTexto(r, c, /^[=+\-']/.test(o) ? "'" + o : o, false, true) }));
+    if (atual && (atual.v !== null || atual.f)) itens.push('-', { t: 'Limpar a célula', i: 'borracha', a: () => { G.select(r, c); limparConteudo(); } });
+    menuItens(itens, hr.left + rect.x, hr.top + rect.y + rect.h + 2);
+    $('#menupop').classList.add('listaval');
+    const fecharClasse = new MutationObserver(() => { if ($('#menupop').hidden) { $('#menupop').classList.remove('listaval'); fecharClasse.disconnect(); } });
+    fecharClasse.observe($('#menupop'), { attributes: true, attributeFilter: ['hidden'] });
   }
 
   /* ======================================================================
@@ -312,9 +346,10 @@
     const sh = sheet(), g = V.sel;
     sh.cells.forEach((cell, k) => { const [r, c] = SD.unkey(k); if (!SD.inRange(g, r, c) || !cell.s) return; const n = SD.cloneCell(cell); delete n.s; setCell(V.si, r, c, n); });
     sh.merges = sh.merges.filter(m => !(m.r1 >= g.r1 && m.r2 <= g.r2 && m.c1 >= g.c1 && m.c2 <= g.c2));
+    if (SD.R) sh.condFormats = SD.R.recortar(sh.condFormats, g); // [Nebulosa] como no Excel, sai também a formatação condicional
     U.fim();
   }
-  function limparTudo() { U.inicio('Limpar tudo'); limparConteudo(); limparFormatacao(); U.fim(); }
+  function limparTudo() { U.inicio('Limpar tudo'); limparConteudo(); limparFormatacao(); excluirComentarios(true); U.fim(); }
 
   function deslocar(axis, at, n) {
     // n > 0 insere, n < 0 exclui (a partir de "at")
@@ -346,6 +381,7 @@
     const ajIntervalo = rg => { const f = SD.F.adjustForInsert(rg, axis, at, n, nome, nome); return /#REF!/.test(f) ? null : f; };
     wb.sheets.forEach(s2 => s2.charts.forEach(ch => { if (s2 === sh && ch.range) { const nr = ajIntervalo(ch.range); if (nr) ch.range = nr; } }));
     if (sh.filter && sh.filter.range) { const nr = ajIntervalo(sh.filter.range); if (nr) sh.filter.range = nr; else sh.filter = null; }
+    if (SD.R) SD.R.deslocar(wb, sh, axis, at, n); // [Nebulosa] regras e comentários acompanham as células
     U.fim();
   }
   function inserirLinhas(acima) { const g = V.sel; const n = g.c1 === 0 && g.c2 >= G.MAX_C - 1 ? g.r2 - g.r1 + 1 : 1; deslocar('r', acima ? g.r1 : g.r2 + 1, n); }
@@ -828,6 +864,7 @@
           U.inicio('Renomear planilha'); U.pasta();
           wb.sheets[i].name = novo;
           wb.sheets.forEach(s => s.cells.forEach(c => { if (c.f) c.f = SD.F.renameSheetRefs(c.f, antigo, novo); }));
+          if (SD.R) SD.R.renomear(wb, antigo, novo); // [Nebulosa] listas de validação que apontam para esta planilha
           U.fim();
         }
       }
@@ -1206,6 +1243,7 @@
     if (ctrl && (e.key === ';' || e.code === 'Semicolon' || e.code === 'Slash' && e.shiftKey)) { e.preventDefault(); const d = new Date(); G.startEdit(e.shiftKey ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('pt-BR'), 'entrar'); return true; }
     if (e.altKey && (e.key === '=' || e.code === 'Equal')) { e.preventDefault(); autoSoma('SUM'); return true; }
     if (e.shiftKey && e.key === 'F11') { e.preventDefault(); novaPlanilha(); return true; }
+    if (e.shiftKey && e.key === 'F2') { e.preventDefault(); dlgComentario(); return true; } // [Nebulosa]
     if (e.altKey && (e.key === 'PageDown' || e.key === 'PageUp')) { e.preventDefault(); irPlanilha(V.si + (e.key === 'PageDown' ? 1 : -1)); return true; }
     if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) { e.preventDefault(); const r = G.cellRect(V.act.r, V.act.c), hr = G.host.getBoundingClientRect(); menuContexto({ clientX: hr.left + r.x + r.w / 2, clientY: hr.top + r.y + r.h / 2 }, { k: 'cell', r: V.act.r, c: V.act.c }); return true; }
     if (ctrl && (k === '+' || k === '=') && e.shiftKey) { e.preventDefault(); inserirLinhas(true); return true; }
@@ -1266,7 +1304,8 @@
       { t: 'Coluna à direita', a: () => inserirColunas(false) }, '-',
       { t: 'Nova planilha', i: 'mais', k: 'Shift+F11', a: novaPlanilha }, '-',
       { t: 'Gráfico…', i: 'grafico', a: () => abrirPainel('grafico') },
-      { t: 'Função…', i: 'manual', a: () => abrirPainel('funcoes') }, '-',
+      { t: 'Função…', i: 'manual', a: () => abrirPainel('funcoes') },
+      { t: temNota() ? 'Editar comentário…' : 'Comentário…', i: 'comentario', k: 'Shift+F2', a: dlgComentario }, '-',
       { t: 'Data de hoje', k: 'Ctrl+;', a: () => G.startEdit(new Date().toLocaleDateString('pt-BR'), 'entrar') },
       { t: 'AutoSoma', k: 'Alt+=', a: () => autoSoma('SUM') }
     ],
@@ -1277,6 +1316,8 @@
       { t: 'Sublinhado', k: 'Ctrl+U', a: () => alternar('u', 'Sublinhado') }, '-',
       { t: 'Mesclar e centralizar', i: 'mesclar', a: mesclar },
       { t: 'Quebrar texto', i: 'quebra', a: () => alternar('wrap', 'Quebrar texto') }, '-',
+      { t: 'Formatação condicional…', i: 'condicional', a: dlgCondicional },
+      { t: 'Tirar formatação condicional da seleção', a: () => limparCondicional(G.boundSel()), off: !(sheet().condFormats || []).length }, '-',
       { t: 'Largura da coluna…', a: dlgLargura },
       { t: 'Ajustar largura ao conteúdo', a: () => autoAjustarColunas(colunasSel()) },
       { t: 'Altura da linha…', a: dlgAltura },
@@ -1290,6 +1331,8 @@
       { t: 'Classificar…', a: dlgClassificar }, '-',
       { t: sheet().filter ? 'Tirar filtro' : 'Filtro', i: 'filtro', a: alternarFiltro },
       { t: 'Limpar filtros', a: () => { const sh = sheet(); if (!sh.filter) return; U.inicio('Limpar filtros'); U.planilha(V.si); sh.filter.hidden = {}; aplicarFiltros(sh); U.fim(); }, off: !sheet().filter }, '-',
+      { t: 'Validação de dados…', i: 'validacao', a: dlgValidacao },
+      { t: 'Tirar validação da seleção', a: () => removerValidacao([G.boundSel()]), off: !(sheet().validations || []).length }, '-',
       { t: 'Remover duplicadas…', a: dlgDuplicadas },
       { t: 'Recalcular tudo', k: 'F9', a: () => { atualizar(); toast('Fórmulas recalculadas.'); } }
     ],
@@ -1350,6 +1393,9 @@
       { t: 'Inserir linha acima', i: 'linhaIns', a: () => inserirLinhas(true) }, { t: 'Inserir coluna à esquerda', a: () => inserirColunas(true) },
       { t: 'Excluir linha', i: 'lixo', a: excluirLinhas }, { t: 'Excluir coluna', a: excluirColunas }, '-',
       { t: 'Limpar conteúdo', i: 'borracha', k: 'Delete', a: limparConteudo }, { t: 'Formatar células…', i: 'paleta', k: 'Ctrl+1', a: dlgFormatar }, '-',
+      { t: temNota() ? 'Editar comentário…' : 'Inserir comentário…', i: 'comentario', k: 'Shift+F2', a: dlgComentario },
+      ...(notasNaSel() ? [{ t: 'Excluir comentário', a: () => excluirComentarios() }] : []),
+      { t: 'Formatação condicional…', i: 'condicional', a: dlgCondicional }, { t: 'Validação de dados…', i: 'validacao', a: dlgValidacao }, '-',
       { t: 'Classificar de A a Z', i: 'ordemAZ', a: () => ordenarRapido(false) }, { t: 'Filtro', i: 'filtro', a: alternarFiltro },
       { t: 'Inserir gráfico', i: 'grafico', a: () => inserirGrafico('colunas') }, { t: 'Inserir função…', i: 'manual', a: () => abrirPainel('funcoes') }
     ], x, y);
@@ -1486,17 +1532,186 @@
     $$('.abasdlg [role=tab]', d).forEach(b => b.onclick = () => { aba = b.dataset.aba; render(); });
     render();
   }
+  /* ======================================================================
+     [Nebulosa] Comentários, formatação condicional e validação de dados
+     ====================================================================== */
+  const celulaBase = () => { const m = G.mergeAt(V.act.r, V.act.c); return m ? { r: m.r1, c: m.c1 } : { r: V.act.r, c: V.act.c }; };
+  const temNota = () => { const b = celulaBase(); return !!SD.R.nota(sheet(), b.r, b.c); };
+  const notasNaSel = () => Object.keys(sheet().notas || {}).some(k => { const [r, c] = SD.unkey(k); return SD.inRange(V.sel, r, c); });
+  function excluirComentarios(silencioso) {
+    const sh = sheet(); if (!sh.notas || !notasNaSel()) { if (!silencioso) toast('Não há comentário na seleção.'); return; }
+    U.inicio('Excluir comentário'); U.planilha(V.si);
+    const n = {}; Object.keys(sh.notas).forEach(k => { const [r, c] = SD.unkey(k); if (!SD.inRange(V.sel, r, c)) n[k] = sh.notas[k]; });
+    sh.notas = n; U.fim();
+  }
+  function dlgComentario() {
+    const b = celulaBase(), k = b.r + ',' + b.c, atual = SD.R.nota(sheet(), b.r, b.c);
+    const salvar = () => {
+      const t = $('#cmTxt').value.replace(/\s+$/, '');
+      const sh = sheet();
+      U.inicio(atual ? 'Editar comentário' : 'Inserir comentário'); U.planilha(V.si);
+      const n = Object.assign({}, sh.notas || {});
+      if (t) n[k] = Object.assign({}, atual || {}, { t }); else delete n[k];
+      sh.notas = n; U.fim();
+    };
+    const botoes = (atual ? [{ t: 'Excluir', perigo: true, esq: true, acao: () => { U.inicio('Excluir comentário'); U.planilha(V.si); const n = Object.assign({}, sheet().notas); delete n[k]; sheet().notas = n; U.fim(); } }] : []).concat([{ t: 'Cancelar' }, { t: 'Salvar', pri: true, acao: salvar }]);
+    const d = dialogo({ titulo: 'Comentário em ' + SD.addr(b.r, b.c), corpo: `<div class="campo"><span>Escreva uma observação sobre esta célula. Ela aparece quando o mouse passa por cima (a célula ganha um triângulo vermelho no canto).</span><textarea class="in" id="cmTxt" rows="5" style="resize:vertical;min-height:100px">${esc(atual ? atual.t : '')}</textarea></div>${atual && atual.a ? `<p style="font-size:12px;color:var(--text-faint)">Autor: ${esc(atual.a)}</p>` : ''}`, botoes });
+    const ta = $('#cmTxt', d);
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 30);
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); salvar(); d.fechar(); } });
+  }
+
+  function lerAreas(txt) {
+    const a = SD.R.areas(String(txt).replace(/^=/, ''));
+    if (!a.length) toast('Intervalo inválido. Use algo como A1:A20 (ou várias áreas separadas por espaço).', true);
+    return a;
+  }
+  function limparCondicional(g) {
+    const sh = sheet(); const antes = (sh.condFormats || []).length;
+    U.inicio('Tirar formatação condicional'); U.planilha(V.si);
+    sh.condFormats = SD.R.recortar(sh.condFormats, g); U.fim();
+    if (!antes) toast('Esta planilha não tem formatação condicional.');
+  }
+  function amostraCond(rg) {
+    if (rg.tipo === 'escala') return `<span class="amostra" style="background:linear-gradient(90deg,${(rg.cores || []).join(',')})"></span>`;
+    if (rg.tipo === 'barras') return `<span class="amostra" style="background:linear-gradient(90deg,${rg.cor} 0 65%,transparent 65%)"></span>`;
+    const e = rg.estilo || {};
+    return `<span class="amostra" style="background:${e.bg || 'var(--sheet)'};color:${e.fc || 'var(--sheet-ink)'};font-weight:${e.b ? 700 : 500};font-style:${e.i ? 'italic' : 'normal'}">AaBb</span>`;
+  }
+  function dlgCondicional() {
+    const R = SD.R, g0 = G.boundSel();
+    let estiloId = 'vermelho', escalaId = 'vav', cor = R.BARRAS[0];
+    const custom = { bg: '#e6dbff', fc: '#4b2a99', b: false };
+    const d = dialogo({
+      titulo: 'Formatação condicional', larga: true,
+      corpo: `<p style="margin-top:0;color:var(--text-dim)">Muda a aparência das células automaticamente, de acordo com o valor de cada uma.</p>
+        <div class="grade2"><div class="campo"><span>Aplicar a</span><input class="in" id="cfArea" value="${esc(R.areaStr(g0))}" spellcheck="false"></div>
+        <div class="campo"><span>Formatar as células com</span><select class="in" id="cfTipo">${R.TIPOS_COND.map(t => `<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select></div></div>
+        <div class="linha" id="cfVal" style="margin:8px 0"></div>
+        <div class="campo"><span id="cfEstT">Aparência</span><div class="amostras" id="cfEst"></div></div>
+        <div class="linha" id="cfCustom" hidden style="margin-top:6px"><label class="chk">Fundo <input type="color" id="cfBg" value="${custom.bg}"></label><label class="chk">Texto <input type="color" id="cfFc" value="${custom.fc}"></label><label class="chk"><input type="checkbox" id="cfB"> Negrito</label></div>
+        <div class="campo" style="margin-top:14px"><span>Regras desta planilha (a de cima tem prioridade)</span><ul class="regras" id="cfLista"></ul></div>`,
+      botoes: [{ t: 'Tirar regras da área', esq: true, manter: true, acao: () => { lerAreas($('#cfArea', d).value).forEach(limparCondicional); lista(); } }, { t: 'Fechar' }, { t: 'Aplicar', pri: true, acao: () => adicionar() }]
+    });
+    const tipoSel = $('#cfTipo', d);
+    function campos() {
+      const t = R.TIPOS_COND.find(x => x.id === tipoSel.value);
+      const v = $('#cfVal', d);
+      v.innerHTML = t.n === 0 ? '' : t.n === 1 ? `<input class="in" id="cfV1" style="max-width:240px" placeholder="${t.id === 'contem' ? 'texto procurado' : 'valor (ex.: 100 ou 01/01/2026)'}">` : `<input class="in" id="cfV1" style="max-width:160px" placeholder="de"><span>e</span><input class="in" id="cfV2" style="max-width:160px" placeholder="até">`;
+      v.hidden = t.n === 0;
+      const e = $('#cfEst', d);
+      $('#cfCustom', d).hidden = true;
+      if (t.id === 'escala') {
+        $('#cfEstT', d).textContent = 'Cores (do menor para o maior valor)';
+        e.innerHTML = R.ESCALAS.map(x => `<button type="button" data-esc="${x.id}" aria-pressed="${x.id === escalaId}" style="background:linear-gradient(90deg,${x.cores.join(',')});color:#1b1d24">${esc(x.nome)}</button>`).join('');
+        $$('[data-esc]', e).forEach(b => b.onclick = () => { escalaId = b.dataset.esc; campos(); });
+      } else if (t.id === 'barras') {
+        $('#cfEstT', d).textContent = 'Cor da barra';
+        e.innerHTML = R.BARRAS.map(x => `<button type="button" data-cor="${x}" aria-pressed="${x === cor}" style="background:linear-gradient(90deg,${x} 0 60%,${x}33 60%);min-width:64px">&nbsp;</button>`).join('');
+        $$('[data-cor]', e).forEach(b => b.onclick = () => { cor = b.dataset.cor; campos(); });
+      } else {
+        $('#cfEstT', d).textContent = 'Aparência';
+        e.innerHTML = R.ESTILOS.map(x => `<button type="button" data-est="${x.id}" aria-pressed="${x.id === estiloId}" title="${esc(x.nome)}" style="background:${x.bg || 'var(--sheet)'};color:${x.fc || 'var(--sheet-ink)'};font-weight:${x.b ? 700 : 600}">${esc(x.nome.split(' com ')[0])}</button>`).join('') + `<button type="button" data-est="custom" aria-pressed="${estiloId === 'custom'}" style="background:var(--bg2);color:var(--text)">Personalizado…</button>`;
+        $$('[data-est]', e).forEach(b => b.onclick = () => { estiloId = b.dataset.est; campos(); });
+        $('#cfCustom', d).hidden = estiloId !== 'custom';
+      }
+    }
+    $('#cfBg', d).oninput = ev => { custom.bg = ev.target.value; };
+    $('#cfFc', d).oninput = ev => { custom.fc = ev.target.value; };
+    $('#cfB', d).onchange = ev => { custom.b = ev.target.checked; };
+    tipoSel.onchange = campos;
+    function lista() {
+      const l = $('#cfLista', d), regras = sheet().condFormats || [];
+      l.innerHTML = regras.length ? regras.map((rg, i) => `<li>${amostraCond(rg)}<span class="txt">${esc(R.descreverCond(rg))}<small>${esc(rg.range)}</small></span><button class="ib" data-del="${i}" title="Excluir esta regra" aria-label="Excluir esta regra">${ic('lixo')}</button></li>`).join('') : '<li class="vazio">Nenhuma regra ainda.</li>';
+      $$('[data-del]', l).forEach(b => b.onclick = () => { U.inicio('Excluir regra condicional'); U.planilha(V.si); const n = (sheet().condFormats || []).slice(); n.splice(+b.dataset.del, 1); sheet().condFormats = n; U.fim(); lista(); });
+    }
+    function adicionar() {
+      const areas = lerAreas($('#cfArea', d).value); if (!areas.length) return false;
+      const t = R.TIPOS_COND.find(x => x.id === tipoSel.value);
+      const rg = { range: R.rangeStr(areas), tipo: t.id };
+      if (t.n >= 1) { rg.v1 = $('#cfV1', d).value.trim(); if (!rg.v1) { toast('Escreva o valor da regra.', true); $('#cfV1', d).focus(); return false; } }
+      if (t.n === 2) { rg.v2 = $('#cfV2', d).value.trim(); if (!rg.v2) { toast('Escreva os dois valores.', true); $('#cfV2', d).focus(); return false; } }
+      if (t.id === 'escala') rg.cores = R.ESCALAS.find(x => x.id === escalaId).cores.slice();
+      else if (t.id === 'barras') rg.cor = cor;
+      else { const e = estiloId === 'custom' ? custom : R.ESTILOS.find(x => x.id === estiloId); rg.estilo = {}; ['bg', 'fc', 'b', 'i'].forEach(k => { if (e[k]) rg.estilo[k] = e[k]; }); }
+      U.inicio('Formatação condicional'); U.planilha(V.si);
+      sheet().condFormats = [rg].concat(sheet().condFormats || []);
+      U.fim();
+      toast('Formatação condicional aplicada em ' + rg.range + '.');
+    }
+    campos(); lista();
+  }
+
+  function removerValidacao(areas) {
+    const sh = sheet(); if (!(sh.validations || []).length) { toast('Esta planilha não tem validação de dados.'); return; }
+    U.inicio('Tirar validação'); U.planilha(V.si);
+    areas.forEach(g => { sh.validations = SD.R.recortar(sh.validations, g); });
+    U.fim();
+  }
+  function dlgValidacao() {
+    const R = SD.R, g0 = G.boundSel();
+    const atual = R.validacaoEm(sheet(), V.act.r, V.act.c);
+    const area0 = atual && R.areas(atual.range).length === 1 && SD.inRange(R.areas(atual.range)[0], g0.r1, g0.c1) && g0.r1 === g0.r2 && g0.c1 === g0.c2 ? atual.range : R.areaStr(g0);
+    const vd = atual ? JSON.parse(JSON.stringify(atual)) : { tipo: 'lista', op: 'entre', bloquear: true };
+    const opcoesTxt = vd.fonte ? '=' + SD.F.toDisplay(vd.fonte) : (vd.lista || []).join('; ');
+    const d = dialogo({
+      titulo: 'Validação de dados', larga: true,
+      corpo: `<p style="margin-top:0;color:var(--text-dim)">Limita o que pode ser digitado nas células. Com uma lista de opções, a célula ganha uma setinha que abre a lista (ou use Alt+↓).</p>
+        <div class="grade2"><div class="campo"><span>Aplicar a</span><input class="in" id="vdArea" value="${esc(area0)}" spellcheck="false"></div>
+        <div class="campo"><span>Permitir</span><select class="in" id="vdTipo">${R.TIPOS_VAL.map(t => `<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select></div></div>
+        <div id="vdLista" class="campo" style="margin-top:8px"><span>Opções, separadas por ponto e vírgula — ou um intervalo começando com “=”, como =E1:E10 ou =Listas!A1:A20</span><input class="in" id="vdOps" value="${esc(opcoesTxt)}" placeholder="Sim; Não; Talvez" spellcheck="false"></div>
+        <div id="vdNum" class="linha" style="margin-top:8px"><select class="in" id="vdOp" style="max-width:200px">${R.OPS.map(o => `<option value="${o.id}">${esc(o.nome)}</option>`).join('')}</select><input class="in" id="vdV1" style="max-width:150px" value="${esc(vd.v1 || '')}"><span id="vdE">e</span><input class="in" id="vdV2" style="max-width:150px" value="${esc(vd.v2 || '')}"></div>
+        <div class="grade2" style="margin-top:10px"><div class="campo"><span>Quando digitarem um valor fora da regra</span><select class="in" id="vdBloq"><option value="1">Não aceitar (pedir outro valor)</option><option value="0">Só avisar (deixar a pessoa decidir)</option></select></div>
+        <div class="campo"><span>Mensagem de erro (opcional)</span><input class="in" id="vdMsg" value="${esc(vd.msg || '')}" placeholder="Ex.: escolha um dos setores da lista"></div></div>`,
+      botoes: [{ t: 'Tirar validação', esq: true, acao: () => { const a = lerAreas($('#vdArea', d).value); if (!a.length) return false; removerValidacao(a); } }, { t: 'Cancelar' }, { t: 'OK', pri: true, acao: () => aplicar() }]
+    });
+    $('#vdTipo', d).value = vd.tipo; $('#vdOp', d).value = vd.op || 'entre'; $('#vdBloq', d).value = vd.bloquear === false ? '0' : '1';
+    function campos() {
+      const t = $('#vdTipo', d).value, op = R.OPS.find(o => o.id === $('#vdOp', d).value);
+      $('#vdLista', d).hidden = t !== 'lista'; $('#vdNum', d).hidden = t === 'lista';
+      $('#vdV2', d).hidden = $('#vdE', d).hidden = op.n !== 2;
+      $('#vdV1', d).placeholder = t === 'data' ? 'dd/mm/aaaa' : t === 'texto' ? 'nº de letras' : 'valor';
+      $('#vdV2', d).placeholder = $('#vdV1', d).placeholder;
+    }
+    $('#vdTipo', d).onchange = campos; $('#vdOp', d).onchange = campos; campos();
+    function aplicar() {
+      const areas = lerAreas($('#vdArea', d).value); if (!areas.length) return false;
+      const n = { range: R.rangeStr(areas), tipo: $('#vdTipo', d).value, bloquear: $('#vdBloq', d).value === '1' };
+      const msg = $('#vdMsg', d).value.trim(); if (msg) n.msg = msg;
+      if (n.tipo === 'lista') {
+        const t = $('#vdOps', d).value.trim();
+        if (!t) { toast('Escreva as opções da lista.', true); return false; }
+        if (t[0] === '=') {
+          n.fonte = SD.F.toCanonical(t.slice(1).trim());
+          if (!R.opcoes(wb, sheet(), n).length && !/^(?:'(?:[^']|'')+'|[^!]+)!/.test(n.fonte) && !SD.R.areas(n.fonte).length) { toast('Não entendi o intervalo da lista. Use algo como =E1:E10.', true); return false; }
+        } else n.lista = t.split(t.includes(';') ? ';' : ',').map(x => x.trim()).filter(Boolean);
+      } else {
+        n.op = $('#vdOp', d).value; n.v1 = $('#vdV1', d).value.trim();
+        const op = R.OPS.find(o => o.id === n.op);
+        if (op.n === 2) n.v2 = $('#vdV2', d).value.trim();
+        const num = x => typeof R.alvo(x) === 'number';
+        if (!num(n.v1) || (op.n === 2 && !num(n.v2))) { toast(n.tipo === 'data' ? 'Escreva datas válidas, como 01/01/2026.' : 'Escreva números válidos nos limites.', true); return false; }
+      }
+      U.inicio('Validação de dados'); U.planilha(V.si);
+      let l = sheet().validations || [];
+      areas.forEach(g => { l = R.recortar(l, g); });
+      sheet().validations = l.concat([n]);
+      U.fim();
+      toast('Validação aplicada em ' + n.range + '.');
+    }
+  }
+
   function dlgAtalhos() {
     const L = [['Ctrl+S', 'Salvar'], ['Ctrl+Shift+S', 'Salvar como'], ['Ctrl+O', 'Abrir'], ['Ctrl+P', 'Exportar PDF / imprimir'], ['Ctrl+Z / Ctrl+Y', 'Desfazer / refazer'], ['Ctrl+C / X / V', 'Copiar / recortar / colar'],
       ['F2', 'Editar a célula'], ['Enter / Tab', 'Confirmar e ir para baixo / direita'], ['Alt+Enter', 'Nova linha dentro da célula'], ['Ctrl+Enter', 'Escrever o mesmo valor em toda a seleção'], ['Esc', 'Cancelar a edição'],
       ['F4', 'Alternar $ (referência absoluta) ao escrever fórmulas'], ['Tab (na lista)', 'Aceitar a função sugerida'], ['Ctrl+setas', 'Ir até o fim dos dados'], ['Shift+setas', 'Ampliar a seleção'], ['Ctrl+A', 'Selecionar tudo'],
       ['Ctrl+Espaço / Shift+Espaço', 'Selecionar coluna / linha'], ['Ctrl+B / I / U', 'Negrito / itálico / sublinhado'], ['Ctrl+1', 'Formatar células'], ['Ctrl+D / Ctrl+R', 'Preencher abaixo / à direita'], ['Alt+=', 'AutoSoma'],
-      ['Ctrl+;', 'Data de hoje'], ['Ctrl+F / Ctrl+H', 'Localizar / substituir'], ['Delete', 'Limpar conteúdo'], ['Shift+F11', 'Nova planilha'], ['Alt+PageUp / PageDown', 'Planilha anterior / seguinte'], ['Ctrl+roda do mouse', 'Zoom']];
+      ['Ctrl+;', 'Data de hoje'], ['Shift+F2', 'Inserir ou editar comentário'], ['Alt+↓', 'Abrir a lista suspensa da célula'], ['Ctrl+F / Ctrl+H', 'Localizar / substituir'], ['Delete', 'Limpar conteúdo'], ['Shift+F11', 'Nova planilha'], ['Alt+PageUp / PageDown', 'Planilha anterior / seguinte'], ['Ctrl+roda do mouse', 'Zoom']];
     dialogo({ titulo: 'Atalhos de teclado', corpo: `<div class="kbds">${L.map(([k, t]) => `<span><kbd>${esc(k)}</kbd></span><span>${esc(t)}</span>`).join('')}</div>` });
   }
   function dlgSobre() {
     const v = (NS && NS.versao) || '0.3';
-    dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual', acao: () => window.open('../../manuais/stardust.html', '_blank', 'noopener') }, { t: 'Fechar', pri: true }] });
+    dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual', acao: () => window.open('../../manuais/stardust.html', '_blank', 'noopener') }, { t: 'Fechar', pri: true }] });
   }
 
   /* ======================================================================
@@ -1814,7 +2029,7 @@
 
   SD.app = {
     entrarTexto, limparConteudo, setColWidth, setRowHeight, autoAjustarColunas, autoAjustarLinhas, preencher, preencherAteFim, colar,
-    menuContexto, menuFiltro, menuGrafico, excluirGrafico, antesGrafico, depoisGrafico, painelGrafico: () => abrirPainel('grafico'),
+    menuContexto, menuFiltro, menuGrafico, excluirGrafico, menuLista, antesGrafico, depoisGrafico, painelGrafico: () => abrirPainel('grafico'),
     onSelection, onEditText, onSheetChange: renderAbas, onZoom, onPick, onChartSelect: id => { onSelection(); if (id && !$('#painel').hidden) { painelAba = 'grafico'; renderPainel(); } else if (!id && painelAba === 'grafico') renderPainel(); },
     teclaGlobal, teclaAutocompletar, status, toast,
     sujo: () => sujo, get wb() { return wb; }, carregar, montarModelo, U, atualizar, gravar

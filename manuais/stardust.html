@@ -14,9 +14,9 @@
 </head>
 <body>
 <header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/stardust/" target="_blank" rel="noopener">Abrir o Stardust</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
-<div class="capa"><div class="in"><span class="tag">Produtividade &amp; Dados</span><h1>Stardust<small>by Nebulosa Workspace</small></h1><p class="funcao">Planilhas de Cálculo e Gráficos</p><p>O Stardust é a planilha do Nebulosa Workspace: tabelas, fórmulas em português, formatação, classificação, filtros e gráficos, com arquivos que abrem no Excel e no LibreOffice. Tudo roda no seu navegador; nenhum dado sai do computador.</p>
+<div class="capa"><div class="in"><span class="tag">Produtividade &amp; Dados</span><h1>Stardust<small>by Nebulosa Workspace</small></h1><p class="funcao">Planilhas de Cálculo e Gráficos</p><p>O Stardust é a planilha do Nebulosa Workspace: tabelas, fórmulas em português, formatação, formatação condicional, listas suspensas, comentários, classificação, filtros e gráficos, com arquivos que abrem no Excel e no LibreOffice. Tudo roda no seu navegador; nenhum dado sai do computador.</p>
 <div class="acoes"><a href="../index.html#app=stardust">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
-<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. A tela</a><a href="#s2">2. Primeiros passos</a><a href="#s3">3. Selecionar e mover-se</a><a href="#s4">4. Fórmulas e funções</a><a href="#s5">5. Copiar, colar e preencher</a><a href="#s6">6. Formatar</a><a href="#s7">7. Linhas, colunas e planilhas</a><a href="#s8">8. Dados: classificar, filtrar, localizar</a><a href="#s9">9. Gráficos</a><a href="#s10">10. Abrir arquivos</a><a href="#s11">11. Salvar e exportar</a><a href="#s12">12. Atalhos de teclado</a><a href="#s13">13. Perguntas frequentes</a><a href="#s14">14. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>A tela</h2>
+<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. A tela</a><a href="#s2">2. Primeiros passos</a><a href="#s3">3. Selecionar e mover-se</a><a href="#s4">4. Fórmulas e funções</a><a href="#s5">5. Copiar, colar e preencher</a><a href="#s6">6. Formatar</a><a href="#s7">7. Linhas, colunas e planilhas</a><a href="#s8">8. Dados: classificar, filtrar, localizar</a><a href="#s9">9. Formatação condicional</a><a href="#s10">10. Validação de dados e listas suspensas</a><a href="#s11">11. Comentários</a><a href="#s12">12. Gráficos</a><a href="#s13">13. Abrir arquivos</a><a href="#s14">14. Salvar e exportar</a><a href="#s15">15. Atalhos de teclado</a><a href="#s16">16. Perguntas frequentes</a><a href="#s17">17. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>A tela</h2>
 <table><tr><th>Área</th><th>Para que serve</th></tr>
 <tr><td>Barra de cima</td><td>Menus (Arquivo, Editar, Inserir, Formatar, Dados, Exibir, Ajuda), nome da pasta de trabalho, desfazer/refazer, Abrir, <b>Salvar</b> e Aparência.</td></tr>
 <tr><td>Ferramentas (cápsulas)</td><td>Fonte e tamanho · N I S (negrito, itálico, sublinhado) · cor do texto, preenchimento e bordas · alinhamentos, quebrar texto e mesclar · formato de número (R$, %, 000, casas decimais) · Σ AutoSoma, classificar e filtro · <b>Gráfico</b> · painel lateral.</td></tr>
@@ -89,7 +89,27 @@
 <li><b>Filtro</b>: liga setinhas no cabeçalho da tabela. Em cada uma, marque os valores que quer ver, procure, classifique ou limpe o filtro.</li>
 <li><b>Remover duplicadas</b>: apaga linhas repetidas, mantendo a primeira.</li>
 <li><b>Localizar</b> (<kbd>Ctrl</kbd> + <kbd>F</kbd>) e <b>Localizar e substituir</b> (<kbd>Ctrl</kbd> + <kbd>H</kbd>), nesta planilha ou em todas.</li>
-</ul></section><section id="s9"><h2><span class="num">9</span>Gráficos</h2>
+</ul></section><section id="s9"><h2><span class="num">9</span>Formatação condicional</h2>
+<p>Muda a aparência das células sozinha, conforme o valor de cada uma — por exemplo, deixar em vermelho as notas abaixo de 5.</p>
+<ol><li>Selecione as células e use <b>Formatar › Formatação condicional…</b> (ou o botão direito na célula).</li>
+<li>Em <b>Formatar as células com</b>, escolha a regra: maior que, menor que, maior ou igual, menor ou igual, entre, igual a, diferente de, texto que contém, valores repetidos, valores que não se repetem, acima da média, abaixo da média, <b>escala de cores</b> ou <b>barras de dados</b>.</li>
+<li>Escreva o valor (quando a regra pede) — números, datas como <code>01/01/2026</code> ou textos.</li>
+<li>Escolha a aparência: vermelho, amarelo, verde, roxo Nebulosa, laranja Nebulosa, só negrito, só texto vermelho ou <b>Personalizado</b> (fundo, cor do texto e negrito). Na escala de cores e nas barras, escolha as cores.</li>
+<li>Clique em <b>Aplicar</b>.</li></ol>
+<p>A janela mostra as regras da planilha; a de cima tem prioridade. A lixeira exclui uma regra e <b>Tirar regras da área</b> limpa um intervalo. <b>Formatar › Tirar formatação condicional da seleção</b> e <b>Limpar formatação</b> também removem.</p>
+<p>As regras acompanham inserções e exclusões de linhas e colunas, aparecem no PDF e no JPG e são gravadas no .xlsx como formatação condicional do Excel.</p></section><section id="s10"><h2><span class="num">10</span>Validação de dados e listas suspensas</h2>
+<p>Limita o que pode ser digitado. O uso mais comum é a <b>lista suspensa</b>: a célula ganha uma setinha com as opções.</p>
+<ol><li>Selecione as células e use <b>Dados › Validação de dados…</b>.</li>
+<li>Em <b>Permitir</b>, escolha:
+<ul><li><b>Lista de opções</b> — escreva as opções separadas por ponto e vírgula (<code>Sim; Não; Talvez</code>) ou aponte um intervalo começando com “=” (<code>=E1:E10</code> ou <code>=Listas!A1:A20</code>). Mudou o intervalo, a lista muda junto.</li>
+<li><b>Número inteiro</b>, <b>Número</b>, <b>Data</b> ou <b>Tamanho do texto</b> — com entre, fora do intervalo, igual, diferente, maior, menor, maior ou igual, menor ou igual.</li></ul></li>
+<li>Decida o que acontece com um valor fora da regra: <b>Não aceitar</b> (pede outro valor) ou <b>Só avisar</b> (a pessoa decide se mantém). Se quiser, escreva uma mensagem de erro própria.</li></ol>
+<p>Na célula com lista, clique na setinha ao lado ou aperte <kbd>Alt</kbd>+<kbd>↓</kbd> para abrir as opções. <b>Tirar validação</b> (na janela ou em <b>Dados › Tirar validação da seleção</b>) remove a regra.</p>
+<div class="nota">Como no Excel, a validação confere o que é digitado; o que é colado ou calculado por fórmula não é bloqueado.</div></section><section id="s11"><h2><span class="num">11</span>Comentários</h2>
+<ul><li>Para comentar uma célula: botão direito › <b>Inserir comentário…</b>, <b>Inserir › Comentário…</b> ou <kbd>Shift</kbd>+<kbd>F2</kbd>. Escreva e clique em <b>Salvar</b> (ou <kbd>Ctrl</kbd>+<kbd>Enter</kbd>).</li>
+<li>A célula ganha um <b>triângulo vermelho</b> no canto. Passe o mouse por cima para ler.</li>
+<li>Para mudar, repita o comando (<b>Editar comentário…</b>). Para apagar, use <b>Excluir</b> na janela ou botão direito › <b>Excluir comentário</b>. <b>Limpar tudo</b> também apaga os comentários da seleção.</li>
+<li>Os comentários vão para o .xlsx como comentários (notas) do Excel e do LibreOffice, e voltam ao abrir.</li></ul></section><section id="s12"><h2><span class="num">12</span>Gráficos</h2>
 <ol>
 <li>Selecione os dados <b>com os títulos</b> (por exemplo, meses na primeira coluna e os valores ao lado).</li>
 <li>Clique em <b>Gráfico</b> e escolha o tipo: Colunas, Barras, Linhas, Área, Pizza, Rosca ou Dispersão.</li>
@@ -97,14 +117,14 @@
 <li>Arraste o gráfico para mover; as bolinhas mudam o tamanho. <kbd>Delete</kbd> exclui o gráfico selecionado.</li>
 <li>Botão direito no gráfico › <b>Baixar imagem (PNG)</b>.</li>
 </ol>
-<p>Os gráficos acompanham os dados: mudou um número, o gráfico muda junto. No arquivo .xlsx eles são gravados como <b>gráficos nativos do Excel</b>, editáveis no Excel e no LibreOffice.</p></section><section id="s10"><h2><span class="num">10</span>Abrir arquivos</h2>
+<p>Os gráficos acompanham os dados: mudou um número, o gráfico muda junto. No arquivo .xlsx eles são gravados como <b>gráficos nativos do Excel</b>, editáveis no Excel e no LibreOffice.</p></section><section id="s13"><h2><span class="num">13</span>Abrir arquivos</h2>
 <p><b>Abrir</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) ou arrastar o arquivo para a janela. Formatos aceitos: <code>.xlsx</code>, <code>.xlsm</code>, <code>.xlsb</code>, <code>.xls</code>, <code>.ods</code>, <code>.csv</code> (separado por ponto e vírgula, vírgula ou tabulação), <code>.tsv</code> e <code>.txt</code>.</p>
-<ul><li>Do .xlsx/.xlsm vêm valores, fórmulas, formatação, larguras, células mescladas, painéis congelados e gráficos.</li>
+<ul><li>Do .xlsx/.xlsm vêm valores, fórmulas, formatação, larguras, células mescladas, painéis congelados, gráficos, formatação condicional, validação de dados e comentários. (Regras condicionais feitas com fórmulas próprias do Excel ainda não são lidas.)</li>
 <li>Do .xls, .xlsb e .ods vêm valores, fórmulas, formatos de número, larguras e células mescladas.</li>
-<li>Arquivos protegidos por senha não abrem.</li></ul></section><section id="s11"><h2><span class="num">11</span>Salvar e exportar</h2>
+<li>Arquivos protegidos por senha não abrem.</li></ul></section><section id="s14"><h2><span class="num">14</span>Salvar e exportar</h2>
 <p><b>Salvar</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) e <b>Salvar como</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>) mostram os formatos:</p>
 <table><tr><th>Formato</th><th>O que guarda</th></tr>
-<tr><td><b>.xlsx</b> — Excel</td><td>Tudo: valores, fórmulas, formatação, mescladas, painéis congelados e gráficos. <b>Recomendado.</b></td></tr>
+<tr><td><b>.xlsx</b> — Excel</td><td>Tudo: valores, fórmulas, formatação, mescladas, painéis congelados, gráficos, formatação condicional, validação de dados e comentários. <b>Recomendado.</b></td></tr>
 <tr><td><b>.xlsm</b> — Excel habilitado para macro</td><td>O mesmo que o .xlsx (o Stardust não cria macros).</td></tr>
 <tr><td><b>.xlsb</b> — Excel binário</td><td>Valores, fórmulas, formatos de número e larguras. Sem cores e sem gráficos.</td></tr>
 <tr><td><b>.xls</b> — Excel 97-2003</td><td>Valores calculados, formatos de número e larguras. Sem cores e sem gráficos.</td></tr>
@@ -114,7 +134,7 @@
 <tr><td><b>.jpg</b></td><td>Uma imagem da planilha aberta, com os gráficos no lugar.</td></tr></table>
 <p>No Chrome e no Edge abre-se a janela do sistema para escolher a pasta e o nome; depois, <kbd>Ctrl</kbd>+<kbd>S</kbd> grava no mesmo arquivo. Nos outros navegadores o arquivo vai para a pasta de downloads.</p>
 <p><b>Arquivo › Imprimir</b> gera o PDF e abre a impressão do navegador.</p>
-<div class="dica">O Stardust guarda uma cópia de recuperação neste navegador enquanto você trabalha. Se a janela fechar sem salvar, ao abrir de novo ele oferece <b>Recuperar</b>. Mesmo assim, salve em arquivo.</div></section><section id="s12"><h2><span class="num">12</span>Atalhos de teclado</h2>
+<div class="dica">O Stardust guarda uma cópia de recuperação neste navegador enquanto você trabalha. Se a janela fechar sem salvar, ao abrir de novo ele oferece <b>Recuperar</b>. Mesmo assim, salve em arquivo.</div></section><section id="s15"><h2><span class="num">15</span>Atalhos de teclado</h2>
 <table><tr><th>Teclas</th><th>O que faz</th></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd> · <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td>Salvar · Salvar como</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd> · <kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Abrir · PDF/imprimir</td></tr>
@@ -129,17 +149,20 @@
 <tr><td><kbd>Ctrl</kbd> + <kbd>D</kbd> · <kbd>Ctrl</kbd> + <kbd>R</kbd></td><td>Preencher abaixo · à direita</td></tr>
 <tr><td><kbd>Alt</kbd> + <kbd>=</kbd></td><td>AutoSoma</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>;</kbd></td><td>Data de hoje</td></tr>
+<tr><td><kbd>Shift</kbd> + <kbd>F2</kbd></td><td>Inserir ou editar comentário</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>↓</kbd></td><td>Abrir a lista suspensa da célula</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd> · <kbd>Ctrl</kbd> + <kbd>H</kbd></td><td>Localizar · Substituir</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd> · <kbd>Ctrl</kbd> + <kbd>Espaço</kbd> · <kbd>Shift</kbd> + <kbd>Espaço</kbd></td><td>Selecionar tudo · coluna · linha</td></tr>
 <tr><td><kbd>Delete</kbd></td><td>Limpar o conteúdo</td></tr>
 <tr><td><kbd>Shift</kbd> + <kbd>F11</kbd> · <kbd>Alt</kbd> + <kbd>PageUp/PageDown</kbd></td><td>Nova planilha · trocar de planilha</td></tr>
 <tr><td><kbd>F9</kbd></td><td>Recalcular tudo</td></tr></table>
-<p>A lista também está em <b>Ajuda › Atalhos de teclado</b>.</p></section><section id="s13"><h2><span class="num">13</span>Perguntas frequentes</h2>
+<p>A lista também está em <b>Ajuda › Atalhos de teclado</b>.</p></section><section id="s16"><h2><span class="num">16</span>Perguntas frequentes</h2>
 <h3>Abri um .xls e salvei de novo: sumiram as cores.</h3><p>Os formatos .xls, .xlsb e .ods são salvos sem cores e sem gráficos. Salve em .xlsx para manter tudo.</p>
 <h3>Aparece ######## na célula.</h3><p>O número não cabe na largura da coluna. Dê dois cliques na divisa da coluna, no cabeçalho, para ajustar.</p>
 <h3>Minha fórmula com vírgula não funciona.</h3><p>No Stardust, como no Excel brasileiro, o separador de argumentos é o ponto e vírgula: <code>=SOMA(A1;B1)</code>. A vírgula é o decimal: <code>=A1*1,5</code>.</p>
 <h3>Os gráficos aparecem no Excel?</h3><p>Sim, quando salvos em .xlsx ou .xlsm: são gráficos nativos, que você pode editar no Excel ou no LibreOffice.</p>
-<h3>O que não existe (ainda)?</h3><p>Macros, tabelas dinâmicas, formatação condicional, validação de dados e comentários.</p></section><section id="s14"><h2><span class="num">14</span>Dentro do Nebulosa Workspace</h2>
+<h3>Salvei em .xls/.ods: sumiram as regras e os comentários.</h3><p>Formatação condicional, validação de dados e comentários são gravados no .xlsx e no .xlsm. Use um desses formatos para guardá-los.</p>
+<h3>O que não existe (ainda)?</h3><p>Macros e tabelas dinâmicas.</p></section><section id="s17"><h2><span class="num">17</span>Dentro do Nebulosa Workspace</h2>
 <ul>
 <li>Abra o Stardust pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Stardust entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>

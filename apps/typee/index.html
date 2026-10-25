@@ -305,7 +305,7 @@ body.focus .main{grid-template-columns:1fr}
       <button data-tpl="tarefas">Lista de tarefas</button>
     </div>
   </details>
-  <button class="btn" id="btnOpen" title="Abrir .docx, .md ou .txt">Abrir</button>
+  <button class="btn" id="btnOpen" title="Abrir .docx, .pdf, .md ou .txt">Abrir</button><!-- [Nebulosa] PDF -->
   <button class="btn" id="btnTab" title="Abrir o Typee em outra aba do navegador, para consultar ou copiar de outro texto">Nova aba</button>
   <details class="menu" id="saveMenu">
     <summary class="btn primary">Salvar</summary>
@@ -319,7 +319,7 @@ body.focus .main{grid-template-columns:1fr}
   <button class="btn" id="btnSkin" title="Trocar a aparência do Typee">Aparência</button><!-- [Nebulosa] -->
   <button class="btn" id="btnFocus" title="Esconder painéis e escrever sem distração">Foco</button>
   <button class="btn" id="btnTheme" title="Alternar claro e escuro" aria-label="Alternar tema">◐</button>
-  <input type="file" id="fileOpen" hidden accept=".docx,.md,.markdown,.txt">
+  <input type="file" id="fileOpen" hidden accept=".docx,.pdf,.md,.markdown,.txt"><!-- [Nebulosa] PDF -->
   <input type="file" id="fileImg" hidden accept="image/*" multiple>
 </header>
 
@@ -999,10 +999,72 @@ async function openFile(file){
       if(!window.mammoth) return toast('A biblioteca de Word não carregou.');
       const r=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});
       setDoc(name.replace(/\.docx$/i,''),r.value); toast('Documento do Word aberto. Cores, alinhamentos e margens podem ter mudado.');
+    }else if(low.endsWith('.pdf')){ /* [Nebulosa] abrir PDF */
+      await openPdf(file);
     }else if(/\.(md|markdown|txt)$/.test(low)){
       const txt=await file.text(); imgStore=[]; setDoc(name.replace(/\.\w+$/,''),renderMd(txt)); toast('Texto aberto.');
-    }else toast('Formato não reconhecido. Use .docx, .md ou .txt.');
-  }catch(e){console.error(e);toast('Não consegui abrir esse arquivo.')}
+    }else toast('Formato não reconhecido. Use .docx, .pdf, .md ou .txt.');
+  }catch(e){console.error(e);toast(e&&e.name==='PasswordException'?'Este PDF é protegido por senha.':'Não consegui abrir esse arquivo.')}
+}
+
+/* ---------- [Nebulosa] abrir PDF: lê o texto com o PDF.js (pasta libs/pdfjs) e monta um documento editável ---------- */
+function loadScriptOnce(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Não carregou: '+src));document.head.appendChild(s)})}
+async function getPdfJs(){
+  if(window.pdfjsLib) return window.pdfjsLib;
+  // o "worker" do PDF.js roda na própria página: funciona no site e abrindo o arquivo do disco
+  const wk=window.__typeePdfWorker||'libs/pdfjs/pdf.worker.js', lib=window.__typeePdfLib||'libs/pdfjs/pdf.js';
+  if(!(globalThis.pdfjsWorker&&globalThis.pdfjsWorker.WorkerMessageHandler)) await loadScriptOnce(wk);
+  await loadScriptOnce(lib);
+  if(!window.pdfjsLib) throw new Error('PDF.js não carregou');
+  pdfjsLib.GlobalWorkerOptions.workerSrc=new URL(wk,document.baseURI).href;
+  return pdfjsLib;
+}
+async function openPdf(file){
+  toast('Lendo o PDF…');
+  const lib=await getPdfJs();
+  const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,verbosity:0}).promise;
+  const linhas=[]; let total=0;
+  for(let n=1;n<=pdf.numPages;n++){
+    const pg=await pdf.getPage(n), tc=await pg.getTextContent(), vp=pg.getViewport({scale:1});
+    const its=tc.items.filter(i=>i.str!==undefined).map(i=>({s:i.str,x:i.transform[4],y:i.transform[5],h:Math.hypot(i.transform[2],i.transform[3])||i.height||10,w:i.width,eol:i.hasEOL}));
+    total+=its.reduce((t,i)=>t+i.s.trim().length,0);
+    // agrupa em linhas pela altura (y), de cima para baixo
+    its.sort((a,b)=>b.y-a.y||a.x-b.x);
+    let cur=null;
+    for(const it of its){
+      if(!it.s) { if(it.eol&&cur) cur.fim=true; continue; }
+      if(cur&&Math.abs(cur.y-it.y)<=Math.max(2,cur.h*.45)){ const gap=it.x-cur.xf; cur.t+=(gap>cur.h*.15&&!/\s$/.test(cur.t)&&!/^\s/.test(it.s)?' ':'')+it.s; cur.xf=it.x+it.w; cur.h=Math.max(cur.h,it.h); }
+      else { cur={t:it.s,x:it.x,xf:it.x+it.w,y:it.y,h:it.h,pg:n,pw:vp.width}; linhas.push(cur); }
+    }
+  }
+  if(total<20){ toast('Este PDF parece ser só imagem (páginas escaneadas), sem texto para editar. Para ouvir com reconhecimento de texto (OCR), use o LêPraMim.'); return; }
+  // tamanho do texto comum = o mais frequente
+  const freq={}; linhas.forEach(l=>{const k=Math.round(l.h);freq[k]=(freq[k]||0)+l.t.length}); const base=+Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0]||11;
+  // tira cabeçalhos/rodapés repetidos e números de página soltos
+  const rep={}; linhas.forEach(l=>{const k=l.t.trim().replace(/\d+/g,'#'); rep[k]=(rep[k]||new Set()).add(l.pg)});
+  const nPag=Math.max(...linhas.map(l=>l.pg));
+  const util=linhas.filter(l=>{const t=l.t.trim(); if(!t) return false; if(/^(p[áa]gina\s*)?\d+(\s*(de|\/)\s*\d+)?$/i.test(t)) return false; const k=t.replace(/\d+/g,'#'); return !(nPag>=3&&rep[k].size>=Math.max(3,nPag*.6)&&t.length<90); });
+  // monta blocos: títulos, itens de lista e parágrafos
+  const out=[]; let par=null, lista=null;
+  const fechaPar=()=>{ if(par){ out.push('<p>'+esc(par.t)+'</p>'); par=null; } };
+  const fechaLista=()=>{ if(lista){ out.push('<'+lista.tag+'>'+lista.itens.map(i=>'<li>'+esc(i)+'</li>').join('')+'</'+lista.tag+'>'); lista=null; } };
+  util.forEach((l,i)=>{
+    const t=l.t.replace(/\s+/g,' ').trim(), prev=util[i-1];
+    const gap=prev&&prev.pg===l.pg?prev.y-l.y:999;
+    const titulo=l.h>=base*1.25&&t.length<=120;
+    const marc=/^([•●▪◦·\-–—*]|\d{1,3}[.)]|[a-z][.)])\s+/.exec(t);
+    if(titulo){ fechaPar(); fechaLista(); const tag=l.h>=base*1.7?'h1':l.h>=base*1.4?'h2':'h3'; const ult=out[out.length-1]; if(ult&&ult.startsWith('<'+tag+'>')&&gap<l.h*1.6) out[out.length-1]=ult.replace('</'+tag+'>',' '+esc(t)+'</'+tag+'>'); else out.push('<'+tag+'>'+esc(t)+'</'+tag+'>'); return; }
+    if(marc){ fechaPar(); const tag=/^\d/.test(marc[1])||/^[a-z]/.test(marc[1])?'ol':'ul'; if(!lista||lista.tag!==tag){ fechaLista(); lista={tag,itens:[]}; } lista.itens.push(t.slice(marc[0].length)); return; }
+    const novo=!par||gap>l.h*1.75||gap<0||(l.x-prev.x>l.h*1.2&&prev.xf<prev.pw*.8)||/[.:!?…]$/.test(par.t)&&prev.xf<prev.pw*.62;
+    if(lista&&!novo&&gap<l.h*1.75&&l.x>(prev?prev.x:0)){ lista.itens[lista.itens.length-1]+=' '+t; return; }
+    fechaLista();
+    if(novo){ fechaPar(); par={t}; }
+    else par.t=/[A-Za-zÀ-ú]-$/.test(par.t)&&/^[a-zà-ú]/.test(t)?par.t.slice(0,-1)+t:par.t+' '+t;
+  });
+  fechaPar(); fechaLista();
+  imgStore=[];
+  setDoc(file.name.replace(/\.pdf$/i,''),out.join(''));
+  toast('PDF aberto como documento editável ('+pdf.numPages+(pdf.numPages>1?' páginas':' página')+'). Imagens e colunas lado a lado podem precisar de ajuste.');
 }
 
 /* ---------- paginação ---------- */

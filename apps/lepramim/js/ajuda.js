@@ -45,7 +45,7 @@
         <li><b>Modo híbrido:</b> na Biblioteca, abra o menu <b>⋯</b> do livro e vincule o audiobook correspondente. No leitor, o botão <b>Modo híbrido</b> toca o áudio e acompanha o texto. A sincronia é aproximada; use <b>Acertar sincronia</b> para corrigir.</li>
         <li><b>Gerar audiobook:</b> transforma o livro em arquivos de áudio. O navegador pede para compartilhar a tela com o áudio do sistema, e a gravação leva o tempo da leitura.</li>
         <li><b>Voz neural Cadu:</b> depois do <b>Baixar-Bibliotecas</b>, abra pelo <b>Iniciar-LePraMim</b> e a voz "Cadu — Piper" já estará escolhida em Configurações. Funciona sem internet; a primeira frase demora alguns segundos.</li>
-        <li><b>PDF digitalizado:</b> ao adicionar um PDF sem texto, o LêPraMim oferece o reconhecimento por OCR.</li>
+        <li><b>PDF digitalizado:</b> ao adicionar um PDF sem texto (ou uma imagem), o LêPraMim oferece o reconhecimento por OCR. No site, o componente de OCR é baixado na primeira vez, com a sua permissão, e fica guardado no navegador.</li>
         <li><b>Limpeza automática:</b> cabeçalhos, rodapés, números de página, sumários e propagandas não são lidos. Em Configurações você liga e desliga cada item.</li>
       </ol>
 
@@ -53,7 +53,7 @@
       <p><kbd>Espaço</kbd> ler ou pausar &nbsp; <kbd>←</kbd> <kbd>→</kbd> página anterior e seguinte (no audiobook, 10 segundos) &nbsp; <kbd>M</kbd> marcar &nbsp; <kbd>Esc</kbd> fechar janela</p>
 
       <h3>Sobre a instalação</h3>
-      <p>Abrindo pelo arquivo <b>Iniciar-LePraMim</b>, todos os recursos ficam disponíveis e o navegador oferece <b>Instalar aplicativo</b>. A voz neural, o OCR e a exportação em MP3 pedem que você execute o <b>Baixar-Bibliotecas</b> uma única vez, com internet. Depois disso, tudo funciona offline.</p>
+      <p>Pelo site, tudo funciona sem instalar nada: a voz neural, o OCR, o MP3 e o leitor completo de DOCX são baixados pela internet na primeira vez em que você os usa (com a sua permissão) e ficam guardados no navegador. No computador, abrindo pelo arquivo <b>Iniciar-LePraMim</b>, o navegador oferece <b>Instalar aplicativo</b>, e o <b>Baixar-Bibliotecas</b> instala tudo de uma vez na pasta libs; depois disso tudo funciona offline.</p>
     ` });
     ui.modal({ titulo: 'Como usar o LêPraMim', corpo, largo: true, botoes: [
       { texto: 'Créditos', acao: () => ajuda.creditos() },

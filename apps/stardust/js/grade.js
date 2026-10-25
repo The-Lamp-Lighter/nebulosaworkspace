@@ -147,16 +147,26 @@
     const merges = s.merges.filter(m => m.r2 >= r1 && m.r1 <= r2 && m.c2 >= c1 && m.c1 <= c2);
     const covered = (r, c) => { for (const m of merges) if (r >= m.r1 && r <= m.r2 && c >= m.c1 && c <= m.c2 && !(r === m.r1 && c === m.c1)) return m; return null; };
     const X = geo.x, Y = geo.y, CW = geo.w, RH = geo.h;
+    // [Nebulosa] formatação condicional: calculada uma vez por célula neste desenho
+    const temCond = SD.R && s.condFormats && s.condFormats.length, condMemo = new Map();
+    const cond = (r, c, cell) => { if (!temCond || !cell) return null; const k = r + ',' + c; if (!condMemo.has(k)) condMemo.set(k, SD.R.condicional(s, r, c, cell)); return condMemo.get(k); };
+    const bgDe = (r, c, cell) => { const cf = cond(r, c, cell); return (cf && cf.s && cf.s.bg) || (cell && cell.s && cell.s.bg) || null; };
     // 1. fundos
     for (let r = r1; r <= r2; r++) {
       const rh = RH(r); if (rh <= 0) continue;
       for (let c = c1; c <= c2; c++) {
         const cell = s.cells.get(r + ',' + c);
-        if (cell && cell.s && cell.s.bg && !covered(r, c)) {
-          const m = merges.find(mm => mm.r1 === r && mm.c1 === c);
-          c2d.fillStyle = cell.s.bg;
-          if (m) c2d.fillRect(X(c), Y(r), geoSpan(geo, m.c1, m.c2, 'c'), geoSpan(geo, m.r1, m.r2, 'r'));
-          else c2d.fillRect(X(c), Y(r), CW(c), rh);
+        if (!cell || covered(r, c)) continue;
+        const bg = bgDe(r, c, cell), cf = cond(r, c, cell);
+        if (!bg && !(cf && cf.barra)) continue;
+        const m = merges.find(mm => mm.r1 === r && mm.c1 === c);
+        const w = m ? geoSpan(geo, m.c1, m.c2, 'c') : CW(c), h = m ? geoSpan(geo, m.r1, m.r2, 'r') : rh;
+        if (bg) { c2d.fillStyle = bg; c2d.fillRect(X(c), Y(r), w, h); }
+        if (cf && cf.barra) { // [Nebulosa] barra de dados
+          const bx = X(c) + 2, by = Y(r) + 2, bw = Math.max(1, (w - 4) * cf.barra.frac), bh = Math.max(1, h - 4);
+          const gr = c2d.createLinearGradient(bx, 0, bx + bw, 0); gr.addColorStop(0, cf.barra.cor + 'e6'); gr.addColorStop(1, cf.barra.cor + '33');
+          c2d.fillStyle = gr; c2d.fillRect(bx, by, bw, bh);
+          c2d.strokeStyle = cf.barra.cor; c2d.lineWidth = 1; c2d.strokeRect(Math.round(bx) + .5, Math.round(by) + .5, Math.round(bw) - 1, Math.round(bh) - 1);
         }
       }
     }
@@ -170,7 +180,7 @@
       // tira a grade de dentro das mescladas
       merges.forEach(m => {
         const top = s.cells.get(m.r1 + ',' + m.c1);
-        c2d.fillStyle = top && top.s && top.s.bg ? top.s.bg : T.fundo;
+        c2d.fillStyle = bgDe(m.r1, m.c1, top) || T.fundo; // [Nebulosa]
         c2d.fillRect(X(m.c1) + 1, Y(m.r1) + 1, geoSpan(geo, m.c1, m.c2, 'c') - 1, geoSpan(geo, m.r1, m.r2, 'r') - 1);
       });
     }
@@ -183,7 +193,8 @@
         if (!cell || covered(r, c)) continue;
         const v = valOf(cell);
         if (v === null || v === undefined || v === '') continue;
-        const st = cell.s || {};
+        const cfx = cond(r, c, cell); // [Nebulosa]
+        const st = cfx && cfx.s ? Object.assign({}, cell.s, cfx.s) : (cell.s || {});
         const fv = SD.formatValue(v, st.z);
         let t = fv.t; if (!t) continue;
         const m = merges.find(mm => mm.r1 === r && mm.c1 === c);
@@ -274,6 +285,7 @@
     panes.forEach(p => {
       ctx.save(); ctx.beginPath(); ctx.rect(p.clip[0], p.clip[1], p.clip[2] - p.clip[0], p.clip[3] - p.clip[1]); ctx.clip();
       paintCells(ctx, s, geo, p.r1, p.r2, p.c1, p.c2, { grade: s.showGrid !== false, tema: T });
+      drawNotas(s, p); // [Nebulosa]
       drawOverlays(p);
       ctx.restore();
     });
@@ -284,6 +296,29 @@
     drawHeaders(vr);
     positionEditor();
     positionCharts();
+  }
+  /** [Nebulosa] Triângulo vermelho no canto das células com comentário. */
+  function drawNotas(s, p) {
+    if (!s.notas) return;
+    const ks = Object.keys(s.notas); if (!ks.length) return;
+    ctx.fillStyle = '#e5484d';
+    ks.forEach(k => {
+      const [r, c] = SD.unkey(k);
+      const m = mergeAt(r, c), rr = m ? m.r1 : r, cc = m ? m.c2 : c;
+      if (rr < p.r1 || rr > p.r2 || cc < p.c1 || cc > p.c2) return;
+      if (rows.size(rr) <= 0 || cols.size(cc) <= 0) return;
+      const x = colX(cc) + cols.size(cc) * z(), y = rowY(rr), t = Math.max(5, 6 * z());
+      ctx.beginPath(); ctx.moveTo(x - t - 1, y + 1); ctx.lineTo(x - 1, y + 1); ctx.lineTo(x - 1, y + t + 1); ctx.closePath(); ctx.fill();
+    });
+  }
+  /** [Nebulosa] Botão da lista suspensa (validação de dados) ao lado da célula ativa. */
+  function setaLista() {
+    if (V.edit || V.pickRange || !SD.R) return null;
+    const vd = SD.R.validacaoEm(sh(), V.act.r, V.act.c);
+    if (!vd || vd.tipo !== 'lista') return null;
+    const a = cellRect(V.act.r, V.act.c);
+    const h = Math.max(12, Math.min(a.h - 6, 18 * z()));
+    return { x: a.x + a.w + 2, y: a.y + 1, w: Math.max(14, 16 * z()), h, cell: a };
   }
   function drawOverlays() {
     const T = V.tema;
@@ -314,6 +349,14 @@
       if (!V.edit) { ctx.fillStyle = T.sel; ctx.fillRect(R.x + R.w - 4, R.y + R.h - 4, 7, 7); ctx.strokeStyle = T.fundo; ctx.lineWidth = 1; ctx.strokeRect(R.x + R.w - 4.5, R.y + R.h - 4.5, 8, 8); }
     } else {
       ctx.strokeStyle = T.sel; ctx.lineWidth = 2; ctx.setLineDash([6, 3]); ctx.strokeRect(R.x + 1, R.y + 1, R.w - 2, R.h - 2); ctx.setLineDash([]);
+    }
+    // [Nebulosa] seta da lista suspensa
+    const sl = setaLista();
+    if (sl) {
+      ctx.fillStyle = T.fundo; ctx.fillRect(sl.x, sl.y, sl.w, sl.h);
+      ctx.strokeStyle = T.sel; ctx.lineWidth = 1; ctx.strokeRect(sl.x + .5, sl.y + .5, sl.w - 1, sl.h - 1);
+      const cx = sl.x + sl.w / 2, cy = sl.y + sl.h / 2, t = Math.min(4, sl.w / 4);
+      ctx.fillStyle = T.sel; ctx.beginPath(); ctx.moveTo(cx - t, cy - t / 2); ctx.lineTo(cx + t, cy - t / 2); ctx.lineTo(cx, cy + t / 2 + 1); ctx.closePath(); ctx.fill();
     }
     // preenchimento sendo arrastado
     if (V.fillDrag && V.fillDrag.alvo) {
@@ -394,7 +437,7 @@
      Rolagem e visibilidade
      ====================================================================== */
   function onScroll() {
-    V.sx = scroller.scrollLeft; V.sy = scroller.scrollTop;
+    V.sx = scroller.scrollLeft; V.sy = scroller.scrollTop; esconderNota(); // [Nebulosa]
     const needR = rows.at((V.sy + H * 2) / z()), needC = cols.at((V.sx + W * 2) / z());
     if (needR > V.nRows - 50 || needC > V.nCols - 10) { V.nRows = Math.min(MAX_R, Math.max(V.nRows, needR + 300)); V.nCols = Math.min(MAX_C, Math.max(V.nCols, needC + 20)); updateSizer(); }
     draw();
@@ -605,6 +648,8 @@
       return { k: 'rowhdr', r };
     }
     const r = rowAt(p.y), c = colAt(p.x);
+    const sl = setaLista(); // [Nebulosa]
+    if (sl && p.x >= sl.x && p.x <= sl.x + sl.w && p.y >= sl.y && p.y <= sl.y + sl.h) return { k: 'lista', r: V.act.r, c: V.act.c, rect: sl.cell };
     if (!V.edit && !V.pickRange) {
       const R = rangeRect(V.sel);
       if (Math.abs(p.x - (R.x + R.w)) <= 5 && Math.abs(p.y - (R.y + R.h)) <= 5) return { k: 'fill', r, c };
@@ -618,10 +663,32 @@
     return { k: 'cell', r, c };
   }
   function onMouseMove(e) {
-    if (drag) return;
+    if (drag) { esconderNota(); return; }
     const h = hit(local(e));
-    scroller.style.cursor = h.k === 'colsize' ? 'col-resize' : h.k === 'rowsize' ? 'row-resize' : h.k === 'fill' ? 'crosshair' : h.k === 'colhdr' ? 's-resize' : h.k === 'rowhdr' ? 'e-resize' : h.k === 'filter' ? 'pointer' : 'cell';
+    scroller.style.cursor = h.k === 'colsize' ? 'col-resize' : h.k === 'rowsize' ? 'row-resize' : h.k === 'fill' ? 'crosshair' : h.k === 'colhdr' ? 's-resize' : h.k === 'rowhdr' ? 'e-resize' : h.k === 'filter' || h.k === 'lista' ? 'pointer' : 'cell';
+    // [Nebulosa] comentário ao passar o mouse
+    const m = h.k === 'cell' ? mergeAt(h.r, h.c) : null;
+    const n = h.k === 'cell' && SD.R ? SD.R.nota(sh(), m ? m.r1 : h.r, m ? m.c1 : h.c) : null;
+    if (n && !V.edit) mostrarNota(m ? m.r1 : h.r, m ? m.c1 : h.c, n); else esconderNota();
   }
+  let notaEl = null, notaK = null;
+  function mostrarNota(r, c, n) {
+    const k = V.si + '|' + r + ',' + c;
+    if (notaK === k && notaEl && !notaEl.hidden) return;
+    if (!notaEl) { notaEl = document.createElement('div'); notaEl.className = 'notapop'; notaEl.setAttribute('role', 'tooltip'); host.appendChild(notaEl); }
+    notaK = k;
+    notaEl.innerHTML = (n.a ? '<b></b>' : '') + '<span></span>';
+    if (n.a) notaEl.querySelector('b').textContent = n.a + ':';
+    notaEl.querySelector('span').textContent = n.t;
+    const a = cellRect(r, c);
+    notaEl.hidden = false;
+    const w = notaEl.offsetWidth, hh = notaEl.offsetHeight;
+    let x = a.x + a.w + 8, y = a.y;
+    if (x + w > W - 4) x = Math.max(HDR_W, a.x - w - 8);
+    if (y + hh > H - 4) y = Math.max(HDR_H, H - hh - 4);
+    notaEl.style.left = x + 'px'; notaEl.style.top = y + 'px';
+  }
+  function esconderNota() { if (notaEl && !notaEl.hidden) { notaEl.hidden = true; notaK = null; } }
   function onMouseDown(e) {
     if (e.button === 2) {
       const h = hit(local(e));
@@ -652,6 +719,7 @@
         drag = { k: 'rowsel', r0: V.anchor.r }; selectChart(null); changed();
       } else if (h.k === 'fill') { drag = { k: 'fill' }; V.fillDrag = { orig: Object.assign({}, V.sel), alvo: null }; }
       else if (h.k === 'filter') { if (SD.app && SD.app.menuFiltro) SD.app.menuFiltro(h.c, h.rect); return; }
+      else if (h.k === 'lista') { if (SD.app && SD.app.menuLista) SD.app.menuLista(h.r, h.c, h.rect); return; } // [Nebulosa]
       else if (h.k === 'cell') {
         if (e.shiftKey) select(h.r, h.c, true); else select(h.r, h.c);
         drag = { k: 'sel' };
@@ -736,6 +804,7 @@
       return; // digitação normal no editor
     }
     if (V.chartSel && (k === 'Delete' || k === 'Backspace')) { e.preventDefault(); SD.app.excluirGrafico(V.chartSel); return; }
+    if (e.altKey && k === 'ArrowDown') { const sl = setaLista(); if (sl && SD.app && SD.app.menuLista) { e.preventDefault(); SD.app.menuLista(V.act.r, V.act.c, sl.cell); return; } } // [Nebulosa]
     const arrows = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
     if (arrows[k]) { e.preventDefault(); moveAct(arrows[k][0], arrows[k][1], e.shiftKey, ctrl); return; }
     if (k === 'Enter') { e.preventDefault(); moveInSel(e.shiftKey ? -1 : 1, 'r'); return; }
@@ -898,6 +967,7 @@
     scroller.addEventListener('scroll', onScroll, { passive: true });
     scroller.addEventListener('mousedown', onMouseDown);
     scroller.addEventListener('mousemove', onMouseMove);
+    scroller.addEventListener('mouseleave', () => esconderNota()); // [Nebulosa]
     scroller.addEventListener('dblclick', onDblClick);
     scroller.addEventListener('contextmenu', e => { e.preventDefault(); const h = hit(local(e)); if (SD.app && SD.app.menuContexto) SD.app.menuContexto(e, h); });
     layer.addEventListener('wheel', e => { scroller.scrollLeft += e.deltaX; scroller.scrollTop += e.deltaY; }, { passive: true });

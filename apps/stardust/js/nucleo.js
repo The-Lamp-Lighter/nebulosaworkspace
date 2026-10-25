@@ -281,7 +281,8 @@
   const DEF_W = 100, DEF_H = 24;
   let uid = 1;
   function newSheet(name) {
-    return { id: uid++, name: name || 'Planilha1', cells: new Map(), colW: {}, rowH: {}, merges: [], charts: [], freeze: { r: 0, c: 0 }, hiddenRows: new Set(), filter: null, showGrid: true, zoom: 1 };
+    return { id: uid++, name: name || 'Planilha1', cells: new Map(), colW: {}, rowH: {}, merges: [], charts: [], freeze: { r: 0, c: 0 }, hiddenRows: new Set(), filter: null, showGrid: true, zoom: 1,
+      condFormats: [], validations: [], notas: {} }; // [Nebulosa] regras e comentários (js/regras.js)
   }
   function newWorkbook() {
     return { sheets: [newSheet('Planilha1')], active: 0, name: 'Planilha sem nome', format: 'xlsx', props: {} };
@@ -330,15 +331,18 @@
     if (o.s) c.s = o.s;
     return c;
   }
+  const copia = x => JSON.parse(JSON.stringify(x)); // [Nebulosa]
   function sheetToJSON(sh) {
     const cells = [];
     sh.cells.forEach((c, k) => { const o = cellToJSON(c); if (Object.keys(o).length) cells.push([k, o]); });
-    return { name: sh.name, cells, colW: sh.colW, rowH: sh.rowH, merges: sh.merges, charts: sh.charts, freeze: sh.freeze, hiddenRows: [...sh.hiddenRows], filter: sh.filter, showGrid: sh.showGrid, zoom: sh.zoom };
+    return { name: sh.name, cells, colW: sh.colW, rowH: sh.rowH, merges: sh.merges, charts: sh.charts, freeze: sh.freeze, hiddenRows: [...sh.hiddenRows], filter: sh.filter, showGrid: sh.showGrid, zoom: sh.zoom,
+      condFormats: copia(sh.condFormats || []), validations: copia(sh.validations || []), notas: copia(sh.notas || {}) }; // [Nebulosa] cópia (o desfazer guarda isto)
   }
   function sheetFromJSON(o) {
     const sh = newSheet(o.name);
     (o.cells || []).forEach(([k, c]) => sh.cells.set(k, cellFromJSON(c)));
-    Object.assign(sh, { colW: o.colW || {}, rowH: o.rowH || {}, merges: o.merges || [], charts: o.charts || [], freeze: o.freeze || { r: 0, c: 0 }, hiddenRows: new Set(o.hiddenRows || []), filter: o.filter || null, showGrid: o.showGrid !== false, zoom: o.zoom || 1 });
+    Object.assign(sh, { colW: o.colW || {}, rowH: o.rowH || {}, merges: o.merges || [], charts: o.charts || [], freeze: o.freeze || { r: 0, c: 0 }, hiddenRows: new Set(o.hiddenRows || []), filter: o.filter || null, showGrid: o.showGrid !== false, zoom: o.zoom || 1,
+      condFormats: copia(o.condFormats || []), validations: copia(o.validations || []), notas: copia(o.notas || {}) }); // [Nebulosa]
     return sh;
   }
   const wbToJSON = wb => ({ app: 'Stardust', v: 1, name: wb.name, format: wb.format, active: wb.active, sheets: wb.sheets.map(sheetToJSON) });

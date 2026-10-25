@@ -154,22 +154,30 @@
     const L = LPM.config.LIBS;
     const linhaLib = (nome, funcao, verificar) => {
       const selo = el('span', { class: 'selo', text: 'verificando…' });
-      verificar().then(ok => { selo.textContent = ok ? 'instalada' : 'não instalada'; selo.classList.add(ok ? 'ok' : 'falta'); });
+      verificar().then(ok => { const txt = typeof ok === 'string' ? ok : ok ? 'instalada' : 'não instalada'; selo.textContent = txt; selo.classList.add(txt === 'não instalada' ? 'falta' : 'ok'); });
       return el('div', { class: 'estado-lib' }, [el('b', { text: nome }), el('span', { text: funcao, style: { flex: '1' } }), selo]);
     };
     const servidor = LPM.util.viaServidor();
+    // [Nebulosa] estado de um componente opcional: pasta libs > guardado no navegador > baixa ao usar
+    const estadoOpcional = async (nome, local) => (await local()) ? 'instalada' : (await LPM.libsWeb.guardada(nome)) ? 'guardada neste navegador' : servidor ? 'baixa ao usar' : 'não instalada';
     const libs = el('div', { class: 'secao' }, [
       el('h3', { text: 'Componentes' }),
       linhaLib('PDF.js', 'abrir PDFs', () => LPM.importar.carregarPdfJs().then(() => true, () => false)),
       linhaLib('Piper', LPM.piper.motor === 'web' ? 'voz neural (baixada pela internet, uma vez)' : 'voz neural offline (Cadu)', async () => (await LPM.piper.detectar()).length > 0),
-      linhaLib('Tesseract.js', 'OCR', async () => (await existe(L.tesseract)) && (!servidor || await existe(L.tesseractLang + '/por.traineddata.gz'))),
-      linhaLib('lamejs', 'exportar MP3', () => existe(L.lame)),
-      linhaLib('Mammoth.js', 'DOCX (opcional)', () => existe(L.mammoth)),
+      // [Nebulosa] componentes opcionais: pasta libs, guardados neste navegador ou baixados ao usar
+      linhaLib('Tesseract.js', 'OCR', () => estadoOpcional('ocr', async () => (await existe(L.tesseract)) && (!servidor || await existe(L.tesseractLang + '/por.traineddata.gz')))),
+      linhaLib('lamejs', 'exportar MP3', () => estadoOpcional('mp3', () => existe(L.lame))),
+      linhaLib('Mammoth.js', 'DOCX (opcional)', () => estadoOpcional('docx', () => existe(L.mammoth))),
       el('p', { class: 'nota', text: (servidor
         ? 'Aberto pelo servidor local ou por um site: todos os recursos estão disponíveis, inclusive OCR e instalação como aplicativo. ' +
-          (LPM.piper.motor === 'web' ? 'A voz Piper é baixada pela internet na primeira leitura e fica guardada neste navegador. ' : '')
-        : 'Aberto direto do arquivo: OCR, voz Piper e instalação como aplicativo exigem abrir pelo "Iniciar-LePraMim". ') +
-        'Componentes "não instalados" são baixados uma única vez com o "Baixar-Bibliotecas"; depois disso tudo funciona sem internet.' })
+          (LPM.piper.motor === 'web' ? 'A voz Piper é baixada pela internet na primeira leitura e fica guardada neste navegador. ' : '') +
+          'OCR, MP3 e o leitor completo de DOCX também são baixados pela internet na primeira vez em que você os usa (com a sua permissão) e ficam guardados neste navegador. '
+        : 'Aberto direto do arquivo: OCR, voz Piper e instalação como aplicativo exigem abrir por um site ou pelo "Iniciar-LePraMim". ') +
+        'No computador, o "Baixar-Bibliotecas" instala tudo de uma vez na pasta libs; depois disso tudo funciona sem internet.' }),
+      el('button', { class: 'bt', type: 'button', onclick: async () => {
+        if (!await ui.perguntar('Esquecer componentes baixados', 'Apaga deste navegador as cópias de OCR, MP3 e DOCX baixadas pela internet. Elas são baixadas de novo quando você usar o recurso. Continuar?', 'Esquecer', 'Cancelar')) return;
+        await LPM.libsWeb.apagar(); LPM.dados.cfg.libsWeb = {}; LPM.dados.salvarCfg(); ui.aviso('Componentes esquecidos.');
+      } }, 'Esquecer componentes baixados')
     ]);
 
     /* ---------- Dados ---------- */
