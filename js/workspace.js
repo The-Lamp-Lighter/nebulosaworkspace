@@ -35,7 +35,7 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-  const VERSION = window.NEBULOSA_VERSAO || '0.3';
+  const VERSION = window.NEBULOSA_VERSAO || '0.4';
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
   const RODAPE = 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + VERSION;
@@ -145,6 +145,8 @@
     if (h < 24) return 'há ' + h + ' h';
     return 'há ' + Math.round(h / 24) + ' d';
   }
+  // (0.4) termos de uso, privacidade e créditos (pasta legal/)
+  const LEGAL_LINKS = '<a href="legal/termos.html" target="_blank" rel="noopener">Termos de uso</a><span aria-hidden="true">·</span><a href="legal/privacidade.html" target="_blank" rel="noopener">Privacidade</a><span aria-hidden="true">·</span><a href="legal/creditos.html" target="_blank" rel="noopener">Créditos e licenças</a>';
   const manualUrl = id => 'manuais/' + (id && byId[id] ? id + '.html' : 'index.html');
   function cardHtml(a, i) {
     const nome = a.nomeCartao || a.name;
@@ -163,7 +165,8 @@
     if (resto.length) grupos.push({ t: grupos.length ? 'Outros programas' : 'Seus programas', apps: resto });
     let h = `<div class="wrap"><p class="greet">${gr}!</p><h1 class="big">O que vamos <em>criar</em> hoje?</h1>
   <button class="search" id="homeSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Buscar um programa ou uma ação…</span><kbd>Alt K</kbd></button>`;
-    h += `<div class="mfwrap">${manifestoHtml()}<nav class="temas" aria-label="Temáticas">${grupos.map((g, i) => `<button class="tema" data-tema="${i}"><b>${esc(g.t)}</b><small>${g.apps.map(a => esc(a.nomeCartao || a.name)).join(' · ')}</small><i>→</i></button>`).join('')}</nav></div>`;
+    // (0.4) o logotipo com os ícones dos programas ocupa o lugar dos atalhos das temáticas
+    h += `<div class="mfwrap">${manifestoHtml()}<div class="nlogo" role="img" aria-label="Logotipo do Nebulosa Workspace: uma nebulosa com os ícones dos ${APPS.length} programas em órbita"></div></div>`;
     if (rec.length) {
       h += `<h2 class="sec">Continue de onde parou</h2><div class="recent">${rec.map(([id, ts]) => `<button class="rchip" data-open="${id}">${ric(byId[id])}<span><b>${esc(byId[id].name)}</b><small>${ST[id].open ? 'aberto agora' : ago(ts)}</small></span></button>`).join('')}</div>`;
     }
@@ -173,7 +176,7 @@
     });
     h += `<div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div>
   <p class="rodape">${esc(RODAPE)}</p>
-  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Número de acessos da página inicial e de cada programa">Acessos</button></div></div></div>`;
+  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Número de acessos da página inicial e de cada programa">Acessos</button><span aria-hidden="true">·</span>${LEGAL_LINKS}</div></div></div>`;
     $('#home').innerHTML = h;
   }
   $('#home').addEventListener('click', e => {
@@ -449,7 +452,7 @@
   }
 
   /* ---------- painéis e janelas ---------- */
-  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos'];
+  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel'];
   function openPop(el) {
     const sc = $('#scrim');
     sc.classList.add('show');
@@ -499,11 +502,60 @@
       $('#cYes').onclick = () => { confirmRes = null; closePops(); res(true); };
     });
   }
+  // (0.4) contato por e-mail: botão do cabeçalho e fim da janela "Sobre"
+  const CONTATO_EMAIL = 'nebulosaworkspace@gmail.com';
+  const MAILTO = 'mailto:' + CONTATO_EMAIL + '?subject=' + encodeURIComponent('Contato pelo Nebulosa Workspace');
+  // (0.4.1) "Fale conosco": o mailto: sozinho não faz nada quando o computador não tem um
+  // programa de e-mail configurado (comum no Windows com Gmail/Outlook no navegador). Por isso o
+  // envelope abre um painel com Gmail, Outlook, o programa de e-mail e "copiar endereço".
+  function openMail() {
+    const p = $('#mailPanel');
+    const su = encodeURIComponent('Contato pelo Nebulosa Workspace');
+    const to = encodeURIComponent(CONTATO_EMAIL);
+    p.innerHTML = `<h3>Fale conosco</h3><p class="mtxt">Dúvidas, sugestões, ideias ou algum problema? Escreva para:</p>
+<div class="maddr"><b>${CONTATO_EMAIL}</b><button class="chip" id="mCopy">${ICONS.copy}<span>Copiar</span></button></div>
+<div class="mopts">
+<a class="mopt" href="https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}" target="_blank" rel="noopener"><b>Gmail</b><small>abre no navegador</small></a>
+<a class="mopt" href="https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}" target="_blank" rel="noopener"><b>Outlook / Hotmail</b><small>abre no navegador</small></a>
+<a class="mopt" href="${MAILTO}"><b>Programa de e-mail</b><small>do computador ou celular</small></a>
+</div>`;
+    closeOthers('mailPanel'); openPop(p);
+    $('#mCopy').onclick = async () => {
+      let ok = false;
+      try { await navigator.clipboard.writeText(CONTATO_EMAIL); ok = true; } catch (e) {
+        try { const t = document.createElement('textarea'); t.value = CONTATO_EMAIL; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); } catch (e2) { /* sem cópia */ }
+      }
+      const b = $('#mCopy span'); if (b) b.textContent = ok ? 'Copiado!' : 'Selecione e copie';
+    };
+    p.querySelectorAll('a.mopt').forEach(a => a.addEventListener('click', () => setTimeout(closePops, 150)));
+  }
+  $('#btnMail').addEventListener('click', openMail);
+
   function openAbout() {
     const a = $('#about');
-    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><button class="chip prim" id="abOk">Fechar</button></div>`;
+    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${LEGAL_LINKS} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
     closeOthers('about'); openPop(a);
     $('#abOk').onclick = closePops;
+    $('#abMail').onclick = openMail;
+  }
+
+  /* ---------- (0.4) aviso de termos e privacidade: faixa discreta no rodapé, sem popup ----------
+     Aparece na primeira visita (e de novo quando TERMOS_VERSAO muda). Não bloqueia nada:
+     usar o site já vale como concordância; "Entendi" só esconde a faixa. */
+  const TERMOS_VERSAO = '2026-10-26', TERMOS_KEY = 'nebulosa.termos';
+  function avisoTermos() {
+    let visto = null;
+    try { visto = localStorage.getItem(TERMOS_KEY); } catch (e) { /* sem armazenamento */ }
+    if (visto === TERMOS_VERSAO) return;
+    const bar = document.createElement('div');
+    bar.id = 'termosBar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Termos de uso e privacidade');
+    bar.innerHTML = `<p><b>Programas gratuitos, de código aberto e sem cadastro.</b> Seus arquivos ficam no seu computador. Ao usar o Nebulosa Workspace, você concorda com os <a href="legal/termos.html" target="_blank" rel="noopener">Termos de uso</a> e a <a href="legal/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="chip prim" id="termosOk">Entendi</button>`;
+    document.body.appendChild(bar);
+    requestAnimationFrame(() => bar.classList.add('on'));
+    $('#termosOk').onclick = () => {
+      try { localStorage.setItem(TERMOS_KEY, TERMOS_VERSAO); } catch (e) { /* sem armazenamento */ }
+      bar.classList.remove('on'); setTimeout(() => bar.remove(), 400);
+    };
   }
 
   /* ---------- acessos (botão discreto no rodapé da página inicial) ---------- */
@@ -744,6 +796,7 @@
 
   /* ---------- partida ---------- */
   renderRail(); renderTabs(); renderHome(); atualizarSino();
+  avisoTermos();
   if (ACESSOS) ACESSOS.registrar('inicio'); // contador de acessos da página inicial
   // Link direto para um programa: index.html#app=typee  (h=... vira o #... do programa)
   (function bootHash() {

@@ -70,7 +70,7 @@
   'use strict';
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
-  var VERSAO = '0.3';
+  var VERSAO = '0.4';
   var me = document.currentScript;
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }
   function has(n) { return !!(me && me.hasAttribute('data-' + n)); }

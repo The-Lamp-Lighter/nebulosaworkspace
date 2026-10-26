@@ -63,6 +63,7 @@ th { color: var(--ink2); font-size: 13px; text-transform: uppercase; letter-spac
 .tema-tit { font: 700 13px var(--ui); text-transform: uppercase; letter-spacing: .8px; color: var(--ink3); margin: 14px 0 4px; }
 footer.rodape { text-align: center; color: var(--ink3); font-size: 13.5px; padding: 26px 16px 36px; border-top: 1px solid var(--line); }
 footer.rodape a { color: var(--ink2); }
-@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } nav.indice { position: static; max-height: none; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; } }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } nav.indice { position: static; max-height: none; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; } }
 @media print { .topo, nav.indice, .capa .acoes { display: none; } .layout { display: block; } main section { break-inside: avoid; border: 0; padding: 0 0 12px; } body { background: #fff; } }
-@media (max-width: 640px) { .topo .bt { display: none; } .topo .marca small { display: none; } }
+@media (max-width: 640px) { .topo a.bt, .topo button.bt { display: none; } .topo .marca small { display: none; } }
+@media (max-width: 640px) { main table { display: block; overflow-x: auto; max-width: 100%; } }

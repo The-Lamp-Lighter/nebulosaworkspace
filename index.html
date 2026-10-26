@@ -3,13 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nebulosa Workspace</title>
-<meta name="description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, FotoFlow, EmCanto, Paz no Bolso e #pratododia.">
+<title>Nebulosa Workspace — programas gratuitos que funcionam no navegador</title>
+<meta name="description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, FotoFlow, Fluxo, EmCanto, Paz no Bolso e #pratododia.">
+<!-- seo -->
+<link rel="canonical" href="https://nebulosaworkspace.com.br/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nebulosa Workspace">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://nebulosaworkspace.com.br/">
+<meta property="og:title" content="Nebulosa Workspace — 10 programas gratuitos que funcionam direto no navegador">
+<meta property="og:description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, FotoFlow, Fluxo, EmCanto, Paz no Bolso e #pratododia.">
+<meta property="og:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Nebulosa Workspace: 10 programas gratuitos que funcionam direto no navegador">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nebulosa Workspace — 10 programas gratuitos que funcionam direto no navegador">
+<meta name="twitter:description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, FotoFlow, Fluxo, EmCanto, Paz no Bolso e #pratododia.">
+<meta name="twitter:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
+<meta name="theme-color" content="#323559">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Nebulosa Workspace","url":"https://nebulosaworkspace.com.br/","inLanguage":"pt-BR"},{"@type":"Organization","name":"Nebulosa Workspace","url":"https://nebulosaworkspace.com.br/","logo":"https://nebulosaworkspace.com.br/assets/img/nebulosa-workspace-logo.png","email":"nebulosaworkspace@gmail.com"},{"@type":"SoftwareApplication","name":"Nebulosa Workspace","applicationCategory":"ProductivityApplication","operatingSystem":"Navegador (Chrome, Edge, Firefox, Safari)","url":"https://nebulosaworkspace.com.br/","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"description":"Suíte de aplicativos web gratuitos e de código aberto: editor de texto e conversor de PDF, planilhas, leitor em voz alta, slides, editor de imagens, editor de vídeo, partituras, finanças pessoais e receitas."}]}</script>
+<!-- /seo -->
 <link rel="icon" type="image/png" href="assets/img/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/img/logo-320.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="canonical" href="https://the-lamp-lighter.github.io/nebulosaworkspace/" />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/workspace.css">
 <script src="js/theme.js"></script>
@@ -23,6 +41,7 @@
       <div id="crumb"><span id="crumbT">Início</span></div>
       <div id="tabs" role="tablist" aria-label="Programas abertos"></div>
       <button class="chip doe-top" id="btnDoeTop" title="Doe com Pix" aria-label="Doe com Pix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.4-9.2-9.3C1.7 7.4 3.8 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.3 2.9 4.2 6.2C19.5 15.6 12 20 12 20z"/></svg></button>
+      <button class="chip mail" id="btnMail" title="Fale conosco por e-mail: nebulosaworkspace@gmail.com" aria-label="Fale conosco por e-mail (nebulosaworkspace@gmail.com)" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></button>
       <button class="chip sino" id="btnNotif" title="Notificações" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg><span class="nbadge" id="nbadge" hidden>0</span></button>
       <button class="chip" id="btnPal" title="Buscar programas e ações (Alt+K)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="t">Buscar</span><kbd>Alt K</kbd></button>
       <button class="chip prim" id="btnSkin" title="Trocar a aparência do programa que você está usando"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 100 18c1.4 0 2-1 1.6-2.2-.4-1.2.3-2.3 1.6-2.3H17a4 4 0 004-4c0-5-4-9.5-9-9.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg><span class="t">Aparência</span></button>
@@ -43,6 +62,7 @@
 <div class="pop modal doar" id="donate" role="dialog" aria-label="Apoie o Nebulosa Workspace"></div>
 <div class="pop modal acessos" id="acessos" role="dialog" aria-label="Acessos"></div>
 <div class="pop" id="notifPanel" role="dialog" aria-label="Notificações"></div>
+<div class="pop" id="mailPanel" role="dialog" aria-label="Fale conosco"></div>
 <div id="notifs" role="region" aria-label="Notificações" aria-live="polite"></div>
 <div id="toast" role="status"></div>
 

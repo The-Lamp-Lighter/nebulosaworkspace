@@ -26,7 +26,7 @@
 
 /* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
    Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
-window.NEBULOSA_VERSAO = '0.3';
+window.NEBULOSA_VERSAO = '0.4';
 
 /* Temáticas da página inicial, na ordem em que aparecem. */
 window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];
@@ -158,5 +158,19 @@ window.NEBULOSA_APPS = [
     defaultSkin: 'default',
     tema: 'Mídia & Criatividade',
     funcao: 'Criador de Apresentações de Fotos e Vídeo'
+  },
+  {
+    id: 'fluxo',
+    name: 'Fluxo',
+    path: 'apps/fluxo/',
+    group: 'Imagens e vídeo',
+    tag: 'Edição de vídeo',
+    desc: 'Edite vídeos como no CapCut e no After Effects: cortes, efeitos, títulos, câmera 3D, partículas e exportação em MP4, MOV, MKV, WebM e AVI.',
+    keywords: 'video editar editor capcut premiere after effects motion corte efeito transicao titulo legenda tiktok reels youtube mp4 mov prores mkv webm avi drone camera 3d particulas',
+    icon: 'clapper',
+    colors: ['#A778FF', '#323559'],
+    defaultSkin: 'default',
+    tema: 'Mídia & Criatividade',
+    funcao: 'Editor de Vídeo e Motion Design'
   }
 ];
