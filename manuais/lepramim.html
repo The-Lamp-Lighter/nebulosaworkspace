@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Nebulosa Workspace: 10 programas gratuitos que funcionam direto no navegador">
+<meta property="og:image:alt" content="Nebulosa Workspace: 9 programas gratuitos que funcionam direto no navegador">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="LêPraMim — Leitor de Textos e Audiolivros grátis no navegador | Manual">
 <meta name="twitter:description" content="O LêPraMim lê em voz alta livros, documentos e textos, e toca audiolivros. A biblioteca, o ponto de leitura, os marcadores e as estatísticas ficam no seu navegador; nenhum texto é enviado para a internet.">
@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="manual.css">
 <script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
 <style>:root{--c1:#A778FF;--c2:#FEFF36}</style>
+<script>/* (0.5) aberto dentro de um programa (menu Ajuda): sem a barra de cima; links para fora abrem em outra janela */
+if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
 </head>
 <body>
 <header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/lepramim/" target="_blank" rel="noopener">Abrir o LêPraMim</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
@@ -55,6 +57,8 @@
 <li><b>Vozes do sistema</b>: as vozes instaladas no computador (no Windows: Configurações › Hora e idioma › Fala). As vozes “online” do Edge enviam o texto ao provedor e por isso ficam desligadas até você liberar em Configurações.</li>
 <li><b>Vozes neurais Piper</b> (Cadu, Faber, Jeff e Edresson), em português do Brasil e de alta qualidade. No site, na primeira leitura o LêPraMim pede permissão e baixa a voz escolhida (cerca de 60 MB, mais uns 25 MB do motor, uma única vez). A voz fica guardada no navegador; depois funciona sem internet. A primeira frase demora alguns segundos para começar.</li>
 <li>Se você recusar ou cancelar o download, o LêPraMim usa a voz do sistema.</li>
+<li><b>Baixar Vozes</b> (botão no alto, depois de Estatísticas): volta quando quiser à opção “Baixar a voz…?”. Mostra as quatro vozes neurais, quais já estão guardadas neste navegador e quanto cada uma ocupa; <b>Baixar</b> faz a pergunta e baixa a voz, e <b>Usar esta voz</b> passa a ler com ela.</li>
+<li><b>Trocar Voz</b> (ao lado): abre as <b>Configurações</b>, como sempre, já na parte <b>Voz da leitura</b>, para escolher outra voz, a velocidade, o volume e o tom. O botão <b>Configurações</b> continua no mesmo lugar.</li>
 </ul></section><section id="s4"><h2><span class="num">4</span>Ouvindo um audiolivro</h2>
 <ul><li>Abra um arquivo MP3, M4A, M4B, AAC, OGG, WAV ou FLAC.</li>
 <li>Tocar, pausar, parar, voltar e avançar 10 segundos; velocidade de 0,5× a 3×.</li>
@@ -82,12 +86,14 @@
 <tr><td><kbd>M</kbd></td><td>Marcar o ponto atual</td></tr>
 <tr><td><kbd>Esc</kbd></td><td>Fechar janela</td></tr></table></section><section id="s8"><h2><span class="num">8</span>Privacidade</h2><p>Nenhum documento, áudio ou dado de uso é enviado para a internet. A biblioteca, o progresso, os marcadores e as estatísticas ficam guardados no navegador. Se você apagar os dados de navegação do site, a biblioteca é apagada junto (os arquivos originais não são afetados).</p></section><section id="s9"><h2><span class="num">9</span>Dentro do Nebulosa Workspace</h2>
 <ul>
+<li><b>Menu Ajuda</b>: O botão <b>Ajuda</b>, no alto, tem: <b>Manual do usuário</b>, <b>Como usar</b> (guia rápido), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b>, <b>Créditos e licenças</b> e <b>Sobre o LêPraMim</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</li>
 <li>Abra o LêPraMim pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do LêPraMim entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
 <li>Ao fechar a aba do LêPraMim com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
 <li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
 <li>O LêPraMim também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/lepramim/</code>) ou pelo arquivo HTML único.</li>
 </ul></section></main></div>
-<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.4</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.5</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

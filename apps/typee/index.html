@@ -317,6 +317,17 @@ body.focus .main{grid-template-columns:1fr}
     </div>
   </details>
   <button class="btn" id="btnSkin" title="Trocar a aparência do Typee">Aparência</button><!-- [Nebulosa] -->
+  <details class="menu" id="helpMenu"><!-- [Nebulosa] Manual do usuário e Sobre (0.5) -->
+    <summary class="btn">Ajuda</summary>
+    <div class="drop">
+      <button data-help="manual">Manual do usuário</button>
+      <button data-help="keys">Atalhos do teclado</button>
+      <button data-help="termos">Termos de uso</button>
+      <button data-help="privacidade">Privacidade</button>
+      <button data-help="creditos">Créditos e licenças</button>
+      <button data-help="about">Sobre o Typee</button>
+    </div>
+  </details>
   <button class="btn" id="btnFocus" title="Esconder painéis e escrever sem distração">Foco</button>
   <button class="btn" id="btnTheme" title="Alternar claro e escuro" aria-label="Alternar tema">◐</button>
   <input type="file" id="fileOpen" hidden accept=".docx,.pdf,.md,.markdown,.txt"><!-- [Nebulosa] PDF -->
@@ -518,6 +529,8 @@ body.focus .main{grid-template-columns:1fr}
   <div id="aboutArt" style="width:150px;height:150px"></div>
   <h4 style="font-size:22px">Typee</h4>
   <p class="hint">Um editor de documentos simples e sem pressa, da família Nebulosa.<br>Quem acompanha você por aqui é o Nebi, o mascote da Nebulosa.</p>
+  <p class="hint" style="font-size:12.5px"><!-- [Nebulosa] créditos -->Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade<br>Equipe de Produção Lamp Lighter</p>
+  <p class="hint" style="font-size:12.5px"><a href="#" data-help="termos">Termos de uso</a> · <a href="#" data-help="privacidade">Privacidade</a> · <a href="#" data-help="creditos">Créditos e licenças</a></p>
   <div class="row"><button class="btn primary" id="aboutOk">Fechar</button></div>
 </div></div>
 <div class="modal" id="printModal"><div class="box">
@@ -1783,6 +1796,12 @@ if(window.claude&&claude.use){claude.use('downloads').then(d=>{downloads=d}).cat
 if(!window.docx||!window.marked||!window.mammoth||!window.TurndownService) setTimeout(()=>{ if(!window.docx||!window.marked||!window.mammoth||!window.TurndownService) toast('Algumas ferramentas não carregaram. Importar e exportar podem falhar.') },2500);
 /* [Nebulosa] integração com o Nebulosa Workspace: aviso de alterações não salvas e botão Aparência */
 window.__nebulosaDirty=function(){return dirty&&hasContent()};
+/* [Nebulosa] menu Ajuda (0.5): Manual do usuário, Atalhos, Termos de uso, Privacidade, Créditos e licenças — o conteúdo abre aqui mesmo, numa janela */
+function nbAjuda(k){ const N=window.NebulosaSkin; if(N&&N.abrirAjuda) return N.abrirAjuda(k); const P={manual:'manuais/typee.html',termos:'legal/termos.html',privacidade:'legal/privacidade.html',creditos:'legal/creditos.html'}; window.open('https://nebulosaworkspace.com.br/'+(P[k]||P.manual),'_blank'); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-help]'); if(!b) return; e.preventDefault(); const hm=$('#helpMenu'); if(hm) hm.open=false; const k=b.dataset.help;
+  if(k==='keys'){ $('#keysModal').classList.add('show'); return } if(k==='about'){ openAbout(); return }
+  $('#aboutModal').classList.remove('show'); nbAjuda(k); });
+document.addEventListener('mousedown',e=>{ const hm=$('#helpMenu'); if(hm&&!e.target.closest('#helpMenu')) hm.open=false; });
 { const nb=$('#btnSkin'); if(nb){ if(window.NebulosaSkin) nb.addEventListener('click',()=>NebulosaSkin.openDialog()); else nb.remove(); } }
 window.__typee={get hist(){return [hist.length,hi]},preparePrint,endPrint,paginate,get pages(){return pages},get PG(){return PG},dims,undo,redo,setLayout,exportDocx:async()=>buildDocx()};
 })();

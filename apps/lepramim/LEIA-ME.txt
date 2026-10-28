@@ -1,5 +1,5 @@
 ﻿LêPraMim — Software de Leitura e Audiolivros para Computador
-Versão 1.1.0 — Autor: Márcio Willians Barreto de Andrade — Uso doméstico
+Versão 1.1.0 — Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade — Equipe de Produção Lamp Lighter — Uso doméstico
 =====================================================================
 
 COMO ABRIR

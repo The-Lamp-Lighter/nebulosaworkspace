@@ -1351,9 +1351,12 @@
       { t: temaEscuro() ? 'Modo claro' : 'Modo escuro', i: 'sol', a: alternarModo }
     ],
     ajuda: () => [
-      { t: 'Manual do Stardust', i: 'manual', a: () => window.open('../../manuais/stardust.html', '_blank', 'noopener') },
+      { t: 'Manual do usuário', i: 'manual', a: () => nbAjuda('manual') }, // [Nebulosa] 0.5
       { t: 'Atalhos de teclado', i: 'teclado', a: dlgAtalhos },
       { t: 'Lista de funções', i: 'manual', a: () => abrirPainel('funcoes') }, '-',
+      { t: 'Termos de uso', a: () => nbAjuda('termos') },          // [Nebulosa] 0.5
+      { t: 'Privacidade', a: () => nbAjuda('privacidade') },
+      { t: 'Créditos e licenças', a: () => nbAjuda('creditos') }, '-',
       { t: 'Sobre o Stardust', i: 'info', a: dlgSobre }
     ]
   };
@@ -1709,9 +1712,15 @@
       ['Ctrl+;', 'Data de hoje'], ['Shift+F2', 'Inserir ou editar comentário'], ['Alt+↓', 'Abrir a lista suspensa da célula'], ['Ctrl+F / Ctrl+H', 'Localizar / substituir'], ['Delete', 'Limpar conteúdo'], ['Shift+F11', 'Nova planilha'], ['Alt+PageUp / PageDown', 'Planilha anterior / seguinte'], ['Ctrl+roda do mouse', 'Zoom']];
     dialogo({ titulo: 'Atalhos de teclado', corpo: `<div class="kbds">${L.map(([k, t]) => `<span><kbd>${esc(k)}</kbd></span><span>${esc(t)}</span>`).join('')}</div>` });
   }
+  /* [Nebulosa] menu Ajuda (0.5): Manual do usuário, Termos de uso, Privacidade, Créditos e licenças */
+  function nbAjuda(k) {
+    if (NS && NS.abrirAjuda) return NS.abrirAjuda(k); // o conteúdo abre aqui mesmo, numa janela
+    const P = { manual: 'manuais/stardust.html', termos: 'legal/termos.html', privacidade: 'legal/privacidade.html', creditos: 'legal/creditos.html' };
+    window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank');
+  }
   function dlgSobre() {
     const v = (NS && NS.versao) || '0.3';
-    dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual', acao: () => window.open('../../manuais/stardust.html', '_blank', 'noopener') }, { t: 'Fechar', pri: true }] });
+    dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p style="font-size:12px">Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade<br>Equipe de Produção Lamp Lighter</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual do usuário', acao: () => nbAjuda('manual') }, { t: 'Créditos e licenças', acao: () => nbAjuda('creditos') }, { t: 'Fechar', pri: true }] });
   }
 
   /* ======================================================================

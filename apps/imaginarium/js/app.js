@@ -261,7 +261,13 @@
 
     /* ---------- Ajuda ---------- */
     C('help.manual', 'Manual do Imaginarium', () => UI.openHelp('manual'), { keys: ['f1'] });
-    C('help.credits', 'Créditos', () => UI.openHelp('credits'));
+    C('help.credits', 'Sobre o Imaginarium', () => UI.openHelp('credits'));
+    // [Nebulosa] menu Ajuda (0.5): Manual do usuário, Termos de uso, Privacidade, Créditos e licenças — abrem aqui mesmo, numa janela
+    const nbAjuda = (k) => { const N = window.NebulosaSkin; if (N && N.abrirAjuda) return N.abrirAjuda(k); const P = { manual: 'manuais/imaginarium.html', termos: 'legal/termos.html', privacidade: 'legal/privacidade.html', creditos: 'legal/creditos.html' }; window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank'); };
+    C('help.nbManual', 'Manual do usuário', () => nbAjuda('manual'));
+    C('help.nbTermos', 'Termos de uso', () => nbAjuda('termos'));
+    C('help.nbPrivacidade', 'Privacidade', () => nbAjuda('privacidade'));
+    C('help.nbCreditos', 'Créditos e licenças', () => nbAjuda('creditos'));
 
     /* ---------- módulos ---------- */
     IMG.onInit.forEach((fn) => { try { fn(C, IMG.cmdHelpers); } catch (err) { console.error(err); } });
@@ -314,7 +320,7 @@
         'view.rulers', '-', 'view.snap', { label: 'Encaixar em', items: ['view.snapGuides', 'view.snapLayers', 'view.snapBounds', 'view.snapGrid'] }, '-',
         'view.lockGuides', 'view.clearGuides', 'view.newGuide', 'view.newGuideLayout', 'view.guidesFromShape', '-', 'view.lockSlices', 'view.clearSlices', '-', 'view.printSize', 'view.fullscreen', 'view.hideUI'] },
       { label: 'Janela', items: () => UI.panelOrder.slice().sort((a, b) => UI.panels[a].title.localeCompare(UI.panels[b].title)).map((id) => 'window.' + id).concat(['-', 'window.dock', 'window.reset']) },
-      { label: 'Ajuda', items: ['help.manual', 'help.shortcuts', 'help.credits'] }
+      { label: 'Ajuda', items: ['help.nbManual', 'help.manual', 'help.shortcuts', '-', 'help.nbTermos', 'help.nbPrivacidade', 'help.nbCreditos', '-', 'help.credits'] } // [Nebulosa] menu Ajuda (0.5)
     ];
   }
   IMG.buildMenus = menus;

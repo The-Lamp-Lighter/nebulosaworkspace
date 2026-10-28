@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LêPraMim</title>
   <meta name="description" content="LêPraMim — leitor de ebooks, documentos e audiobooks que lê em voz alta, 100% offline.">
-  <meta name="author" content="Márcio Willians Barreto de Andrade">
+  <meta name="author" content="Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter">
   <meta name="theme-color" content="#2563EB">
   <!-- Bloqueia conexões externas: o app só carrega arquivos da própria pasta. Única exceção:
        o motor e as vozes Piper (jsDelivr e Hugging Face), baixados uma vez quando a pasta
@@ -52,6 +52,7 @@
   <symbol id="i-microfone" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.500 11.500a6.500 6.500 0 0 0 13 0M12 18v3"/></symbol>
   <symbol id="i-mais" viewBox="0 0 24 24"><circle cx="5.500" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18.500" cy="12" r="1.4" fill="currentColor"/></symbol>
   <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.500v5h3.500l4.500 4v-13l-4.500 4zM15.500 9a4 4 0 0 1 0 6M18 6.500a7.500 7.500 0 0 1 0 11"/></symbol>
+  <symbol id="i-baixar" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol><!-- [Nebulosa] 0.5 -->
   <symbol id="i-vel" viewBox="0 0 24 24"><path d="M4.500 17a8.500 8.500 0 1 1 15 0M12 14l4-5"/><circle cx="12" cy="14.500" r="1.300" fill="currentColor"/></symbol>
 </svg>
 
@@ -67,8 +68,10 @@
     <button class="bt primario" id="btAbrir"><svg class="ic"><use href="#i-abrir"/></svg><span>Abrir arquivo</span></button>
     <button class="bt fantasma" id="btBiblioteca"><svg class="ic"><use href="#i-estante"/></svg><span>Biblioteca</span></button>
     <button class="bt fantasma" id="btEstatisticas"><svg class="ic"><use href="#i-grafico"/></svg><span>Estatísticas</span></button>
+    <button class="bt fantasma" id="btBaixarVozes" title="Baixar as vozes neurais (Cadu, Faber, Jeff e Edresson)"><svg class="ic"><use href="#i-baixar"/></svg><span>Baixar Vozes</span></button><!-- [Nebulosa] 0.5 -->
+    <button class="bt fantasma" id="btTrocarVoz" title="Escolher outra voz (abre as Configurações)"><svg class="ic"><use href="#i-microfone"/></svg><span>Trocar Voz</span></button><!-- [Nebulosa] 0.5 -->
     <button class="bt fantasma" id="btConfig"><svg class="ic"><use href="#i-config"/></svg><span>Configurações</span></button>
-    <button class="bt fantasma" id="btAjuda"><svg class="ic"><use href="#i-ajuda"/></svg><span>Ajuda</span></button>
+    <button class="bt fantasma" id="btAjuda" aria-haspopup="menu" title="Como usar, Manual do usuário, Sobre e Créditos"><svg class="ic"><use href="#i-ajuda"/></svg><span>Ajuda</span></button><!-- [Nebulosa] menu Ajuda (0.5) -->
   </nav>
 
   <label class="busca" title="Pesquisar palavras ou frases no livro aberto">
@@ -257,6 +260,7 @@
 <script src="js/biblioteca.js"></script>
 <script src="js/configuracoes.js"></script>
 <script src="js/ajuda.js"></script>
+<script src="js/nebulosa-vozes.js"></script><!-- [Nebulosa] Baixar Vozes, Trocar Voz e menu Ajuda (0.5) -->
 <script src="js/app.js"></script>
 </body>
 </html>

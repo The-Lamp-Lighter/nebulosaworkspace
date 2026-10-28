@@ -80,3 +80,27 @@
 :root[data-skin="nebulosa"][data-tema="escuro"] .aviso { background: #F3F1FF; color: #1B1D38; }
 :root[data-skin="nebulosa"] .aviso.erro { background: #9B1C1C; color: #FFFFFF; }
 :root[data-skin="nebulosa"] ::selection { background: rgba(167, 120, 255, .40); }
+
+/* [Nebulosa] 0.5 — janela "Baixar vozes" e menu "Ajuda" (valem para os dois visuais) */
+.nbvozes-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.nbvoz { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 12px; background: var(--superficie-2); }
+.nbvoz.pronta { border-color: color-mix(in srgb, var(--azul) 45%, var(--linha)); }
+.nbvoz-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.nbvoz-nome b { font-size: 16px; }
+.nbvoz-nome small { color: var(--tinta-suave); font-size: 13px; }
+.nbmenu { position: fixed; z-index: 400; min-width: 260px; max-width: calc(100vw - 16px); padding: 6px; border-radius: 12px; border: 1px solid var(--linha); background: var(--superficie); color: var(--tinta); box-shadow: 0 16px 40px rgba(0,0,0,.28); display: flex; flex-direction: column; }
+.nbmenu button { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; border: 0; background: none; color: inherit; padding: 9px 11px; border-radius: 8px; cursor: pointer; font: inherit; }
+.nbmenu button:hover, .nbmenu button:focus-visible { background: var(--superficie-2); outline: none; }
+.nbmenu small { color: var(--tinta-suave); font-size: 12.5px; }
+/* [Nebulosa] 0.5 — barra de cima com "Baixar Vozes" e "Trocar Voz": a busca encolhe para caber tudo */
+@media (min-width: 601px) {
+  .topo .busca { width: auto; flex: 1 1 200px; min-width: 110px; max-width: 260px; }
+  .topo-acoes { flex: 0 0 auto; }
+}
+@media (max-width: 1520px) and (min-width: 1181px) {
+  .topo-acoes .bt.fantasma:not(#btBaixarVozes):not(#btTrocarVoz) span { display: none; }
+  .topo-acoes .bt.fantasma:not(#btBaixarVozes):not(#btTrocarVoz) { padding: 0 9px; }
+}
+.nbatalhos { display: flex; flex-direction: column; gap: 8px; }
+.nbatalhos div { display: flex; gap: 12px; align-items: center; }
+.nbatalhos kbd { min-width: 64px; text-align: center; padding: 2px 8px; border: 1px solid var(--linha); border-bottom-width: 2px; border-radius: 6px; background: var(--superficie-2); font: 600 13px inherit; }

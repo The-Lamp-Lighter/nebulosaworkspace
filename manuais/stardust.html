@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Nebulosa Workspace: 10 programas gratuitos que funcionam direto no navegador">
+<meta property="og:image:alt" content="Nebulosa Workspace: 9 programas gratuitos que funcionam direto no navegador">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stardust — Planilhas de Cálculo e Gráficos grátis no navegador | Manual">
 <meta name="twitter:description" content="O Stardust é a planilha do Nebulosa Workspace: tabelas, fórmulas em português, formatação, formatação condicional, listas suspensas, comentários, classificação, filtros e gráficos, com arquivos que abrem no Excel e no LibreOffice. Tudo roda no seu navegador; nenhum dado sai do computador.">
@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="manual.css">
 <script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
 <style>:root{--c1:#4d8fd6;--c2:#a244f5}</style>
+<script>/* (0.5) aberto dentro de um programa (menu Ajuda): sem a barra de cima; links para fora abrem em outra janela */
+if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
 </head>
 <body>
 <header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/stardust/" target="_blank" rel="noopener">Abrir o Stardust</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
@@ -182,12 +184,14 @@
 <h3>Salvei em .xls/.ods: sumiram as regras e os comentários.</h3><p>Formatação condicional, validação de dados e comentários são gravados no .xlsx e no .xlsm. Use um desses formatos para guardá-los.</p>
 <h3>O que não existe (ainda)?</h3><p>Macros e tabelas dinâmicas.</p></section><section id="s17"><h2><span class="num">17</span>Dentro do Nebulosa Workspace</h2>
 <ul>
+<li><b>Menu Ajuda</b>: O menu <b>Ajuda</b> tem: <b>Manual do usuário</b>, <b>Atalhos de teclado</b>, <b>Lista de funções</b>, <b>Termos de uso</b>, <b>Privacidade</b>, <b>Créditos e licenças</b> e <b>Sobre o Stardust</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</li>
 <li>Abra o Stardust pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Stardust entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
 <li>Ao fechar a aba do Stardust com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
 <li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
 <li>O Stardust também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/stardust/</code>) ou pelo arquivo HTML único.</li>
 </ul></section></main></div>
-<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.4</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.5</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

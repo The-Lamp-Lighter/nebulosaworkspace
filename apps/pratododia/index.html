@@ -13,7 +13,8 @@
 <!--
   ============================================================================
    #pratododia · gerenciador de receitas culinárias pessoais
-   Autor: Márcio Willians Barreto de Andrade
+   Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade
+   Equipe de Produção Lamp Lighter
   ············································································
    ARQUIVO ÚNICO: tudo o que o aplicativo precisa está aqui dentro.
    Funciona sem internet. Nenhum dado sai deste dispositivo.
@@ -153,6 +154,7 @@ a { color: var(--destaque); text-underline-offset: 2px; }
 .menu a:hover { background: rgba(255, 255, 255, .08); }
 .menu a[aria-current="page"] { background: var(--sobre-esmalte); color: var(--esmalte); font-weight: 700; }
 .menu .sep { height: 1px; background: rgba(255, 255, 255, .14); margin: 10px 8px; }
+.menu .menu-grupo { margin: 0 12px 4px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; } /* [Nebulosa] 0.5 */
 .lateral-pe { margin-top: auto; padding: 14px 8px 0; font-size: .78rem; color: var(--sobre-esmalte-2); line-height: 1.4; }
 
 .topo {
@@ -812,7 +814,8 @@ progress { width: 100%; height: 10px; accent-color: var(--folha); }
 
 var PD = (typeof window !== 'undefined' ? window : globalThis).PD = {
   APP_VERSAO: '1.0.0',
-  AUTOR: 'Márcio Willians Barreto de Andrade',
+  AUTOR: 'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade', // [Nebulosa] autores e idealizadores (0.5)
+  EQUIPE: 'Equipe de Produção Lamp Lighter',
   NOME: '#pratododia',
   telas: {},     // PD.telas.nome = { titulo, render(parametros) }
   acao: {},      // PD.acao.nome(elemento, evento)  ← data-a="nome"
@@ -3652,9 +3655,17 @@ PD.ui = (function () {
     { id: 'categorias', rotulo: 'Categorias', icone: 'categorias' },
     { sep: true },
     { id: 'ajustes', rotulo: 'Configurações', icone: 'ajustes' },
-    { id: 'manual', rotulo: 'Manual do usuário', icone: 'manual' },
-    { id: 'sobre', rotulo: 'Sobre', icone: 'sobre' },
+    { grupo: 'Ajuda' },                                                    // [Nebulosa] menu Ajuda (0.5): abre aqui mesmo, numa janela
+    { externo: 'manual', rotulo: 'Manual do usuário', icone: 'manual' },
+    { id: 'manual', rotulo: 'Guia no programa', icone: 'manual' },
+    { externo: 'termos', rotulo: 'Termos de uso', icone: 'sobre' },
+    { externo: 'privacidade', rotulo: 'Privacidade', icone: 'sobre' },
+    { externo: 'creditos', rotulo: 'Créditos e licenças', icone: 'sobre' },
+    { id: 'sobre', rotulo: 'Sobre o #pratododia', icone: 'sobre' },
   ];
+  /* [Nebulosa] menu Ajuda: manual e páginas legais abrem aqui mesmo, numa janela (ponte) */
+  UI.nbAjuda = (k) => { const N = window.NebulosaSkin; if (N && N.abrirAjuda) return N.abrirAjuda(k); const P = { manual: 'manuais/pratododia.html', termos: 'legal/termos.html', privacidade: 'legal/privacidade.html', creditos: 'legal/creditos.html' }; window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank'); };
+  PD.acao.nbAjuda = (el) => UI.nbAjuda(el.dataset.k);
   const SEM_CADASTRO = new Set(['inicio', 'manual', 'sobre']);     // telas que funcionam sem cadastro aberto
   /** A marca escrita como no logotipo. */
   UI.nomeMarca = (classe) => h`<span class="marca-nome ${classe || 'tri'}"><span class="a">#prato</span><span class="b">do</span><span class="c">dia</span></span>`;
@@ -3710,7 +3721,7 @@ PD.ui = (function () {
     const atual = (id) => (rota.tela === id || (id === 'receitas' && (rota.tela === 'receita' || rota.tela === 'editor')) ? PD.cru('aria-current="page"') : '');
     document.getElementById('lateral').innerHTML = h`
       <a class="marca" href="#/receitas">${logo ? h`<img src="${logo}" alt="">` : ''}${UI.nomeMarca()}<small class="nb-by">by Nebulosa Workspace</small></a><!-- [Nebulosa] assinatura -->
-      <nav class="menu">${UI.MENU.map((m) => (m.sep ? h`<div class="sep"></div>` : h`<a href="#/${m.id}" ${atual(m.id)}>${ic(m.icone)}<span>${m.rotulo}</span></a>`))}</nav>
+      <nav class="menu">${UI.MENU.map((m) => (m.sep ? h`<div class="sep"></div>` : m.grupo ? h`<div class="sep"></div><p class="menu-grupo">${m.grupo}</p>` : m.externo ? h`<a href="#" data-a="nbAjuda" data-k="${m.externo}">${ic(m.icone)}<span>${m.rotulo}</span></a>` : h`<a href="#/${m.id}" ${atual(m.id)}>${ic(m.icone)}<span>${m.rotulo}</span></a>`))}</nav>
       <div class="lateral-pe">${e ? h`<div>${e.nome}</div><div>${e.receitas.length} ${u.plural(e.receitas.length, 'receita', 'receitas')}</div>` : ''}</div>`;
     const tela = PD.telas[rota.tela] || {};
     const titulo = typeof tela.titulo === 'function' ? tela.titulo(rota.partes) : tela.titulo || PD.NOME;
@@ -3724,7 +3735,7 @@ PD.ui = (function () {
         <button class="bt bt-icone bt-pequeno" data-a="tema" aria-label="${escuro ? 'Usar tema claro' : 'Usar tema escuro'}" title="${escuro ? 'Tema claro' : 'Tema escuro'}">${ic(escuro ? 'sol' : 'lua')}</button>
       </div>`;
     document.getElementById('rodape').innerHTML = h`<b class="tri-claro"><span class="a">#prato</span><span class="b">do</span><span class="c">dia</span></b>
-      <span>versão ${e ? e.config.versao : PD.APP_VERSAO}</span><span>por ${PD.AUTOR}</span><span>Seus dados ficam somente neste dispositivo.</span>`;
+      <span>versão ${e ? e.config.versao : PD.APP_VERSAO}</span><span>por ${PD.AUTOR} · ${PD.EQUIPE}</span><span>Seus dados ficam somente neste dispositivo.</span>`;
     const naBarra = UI.MENU.filter((m) => m.barra);
     const foraDaBarra = !naBarra.some((m) => rota.tela === m.id || (m.id === 'receitas' && (rota.tela === 'receita' || rota.tela === 'editor')));
     document.getElementById('barra').innerHTML = h`${naBarra.map((m) => h`<a href="#/${m.id}" ${atual(m.id)}>${ic(m.icone)}<span>${m.rotulo}</span></a>`)}
@@ -3960,7 +3971,7 @@ PD.ui = (function () {
     { rotulo: 'Abrir outro cadastro', icone: 'abrir', fn: PD.acao.abrirCadastro },
     { rotulo: 'Fechar e voltar à tela inicial', icone: 'inicio', fn: PD.acao.fecharCadastro },
   ], D.arquivoNome ? 'Arquivo em uso: ' + D.arquivoNome : 'Este cadastro ainda não foi salvo em arquivo.');
-  PD.acao.menuMais = () => UI.opcoes('Mais', UI.MENU.filter((m) => !m.sep && !m.barra).map((m) => ({ rotulo: m.rotulo, icone: m.icone, fn: () => UI.ir(m.id) })));
+  PD.acao.menuMais = () => UI.opcoes('Mais', UI.MENU.filter((m) => !m.sep && !m.grupo && !m.barra).map((m) => ({ rotulo: m.rotulo, icone: m.icone, fn: () => (m.externo ? UI.nbAjuda(m.externo) : UI.ir(m.id)) })));
 
   /* ---------- Ligações com a página -------------------------------------------------------- */
   UI.iniciar = () => {
@@ -4039,7 +4050,7 @@ PD.telas.inicio = {
         <img src="${R.mascote}" alt="" width="417" height="640">
       </figure>
 
-      <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR}. Funciona sem internet: seus dados ficam somente neste dispositivo.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${(window.NebulosaSkin && NebulosaSkin.versao) || '0.3'}</span></p><!-- [Nebulosa] rodapé -->
+      <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR} · ${PD.EQUIPE}. Funciona sem internet: seus dados ficam somente neste dispositivo.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${(window.NebulosaSkin && NebulosaSkin.versao) || '0.3'}</span></p><!-- [Nebulosa] rodapé -->
     </div>`;
   },
   depois(raiz) {
@@ -6080,7 +6091,8 @@ PD.livro = (function () {
             <p class="sobre-lema">Suas receitas. Mais sabor para todos os dias.</p>
             <dl class="sobre-dados">
               <div><dt>Programa</dt><dd>${PD.NOME}</dd></div>
-              <div><dt>Autor</dt><dd>${PD.AUTOR}</dd></div>
+              <div><dt>Autores e idealizadores</dt><dd>${PD.AUTOR}</dd></div>
+              <div><dt>Equipe de produção</dt><dd>${PD.EQUIPE}</dd></div>
               <div><dt>Versão</dt><dd>${e ? h`<label><span class="so-leitor">Versão</span><input type="text" value="${e.config.versao}" data-i="sobreVersao" class="sobre-versao"></label>` : PD.APP_VERSAO}</dd></div>
             </dl>
             ${e ? h`<p class="dica">O campo Versão é seu: mude quando quiser. Ele aparece no rodapé e fica guardado no cadastro.</p>` : ''}

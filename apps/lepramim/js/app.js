@@ -25,7 +25,11 @@
     $('#btInicio').addEventListener('click', () => LPM.biblioteca.mostrar());
     $('#btEstatisticas').addEventListener('click', () => LPM.estat.abrir());
     $('#btConfig').addEventListener('click', () => LPM.configuracoes.abrir());
-    $('#btAjuda').addEventListener('click', () => LPM.ajuda.tutorial());
+    $('#btAjuda').addEventListener('click', e => LPM.nebulosaVozes ? LPM.nebulosaVozes.menuAjuda(e.currentTarget) : LPM.ajuda.tutorial()); // [Nebulosa] menu Ajuda
+    if (LPM.nebulosaVozes) { // [Nebulosa] 0.5: Baixar Vozes e Trocar Voz
+      $('#btBaixarVozes').addEventListener('click', () => LPM.nebulosaVozes.abrirBaixar());
+      $('#btTrocarVoz').addEventListener('click', () => LPM.nebulosaVozes.trocarVoz());
+    }
     $('#btTema').addEventListener('click', () => ui.alternarTema());
     $('#btSono').addEventListener('click', () => LPM.sono.abrir());
     $('#btMenu').addEventListener('click', () => ui.abrirLateral());

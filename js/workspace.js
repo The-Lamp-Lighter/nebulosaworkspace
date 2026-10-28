@@ -35,9 +35,11 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-  const VERSION = window.NEBULOSA_VERSAO || '0.4';
+  const VERSION = window.NEBULOSA_VERSAO || '0.5';
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
+  // (0.5) créditos: os mesmos em todos os programas (a ponte tem a mesma informação)
+  const CREDITOS = { autores: 'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade', equipe: 'Equipe de Produção Lamp Lighter' };
   const RODAPE = 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + VERSION;
   const MANIFESTO = {
     titulo: 'Bem-vindo ao Nebulosa Workspace',
@@ -176,7 +178,7 @@
     });
     h += `<div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div>
   <p class="rodape">${esc(RODAPE)}</p>
-  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Número de acessos da página inicial e de cada programa">Acessos</button><span aria-hidden="true">·</span>${LEGAL_LINKS}</div></div></div>`;
+  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Estatística de acessos do site: domínio, página inicial e cada programa">Acessos</button><span aria-hidden="true">·</span>${LEGAL_LINKS}</div></div></div>`;
     $('#home').innerHTML = h;
   }
   $('#home').addEventListener('click', e => {
@@ -533,7 +535,7 @@
 
   function openAbout() {
     const a = $('#about');
-    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${LEGAL_LINKS} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
+    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><p class="creditos"><b>Autores e idealizadores:</b> ${esc(CREDITOS.autores)}<br><b>Equipe de produção:</b> ${esc(CREDITOS.equipe)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${LEGAL_LINKS} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
     closeOthers('about'); openPop(a);
     $('#abOk').onclick = closePops;
     $('#abMail').onclick = openMail;
@@ -542,7 +544,7 @@
   /* ---------- (0.4) aviso de termos e privacidade: faixa discreta no rodapé, sem popup ----------
      Aparece na primeira visita (e de novo quando TERMOS_VERSAO muda). Não bloqueia nada:
      usar o site já vale como concordância; "Entendi" só esconde a faixa. */
-  const TERMOS_VERSAO = '2026-10-26', TERMOS_KEY = 'nebulosa.termos';
+  const TERMOS_VERSAO = '2026-10-28', TERMOS_KEY = 'nebulosa.termos';
   function avisoTermos() {
     let visto = null;
     try { visto = localStorage.getItem(TERMOS_KEY); } catch (e) { /* sem armazenamento */ }
@@ -560,6 +562,8 @@
 
   /* ---------- acessos (botão discreto no rodapé da página inicial) ---------- */
   // Contagem feita por js/acessos.js (página inicial aqui; cada programa pela ponte).
+  // (0.5) Estatística do site na fonte: acessos ao domínio + separação por página.
+  // Não mostra nada "deste navegador": os números são sempre os do contador do site.
   function openAcessos() {
     const el = $('#acessos');
     const linhas = [{ id: 'inicio', nome: 'Página inicial do Workspace', icone: `<span class="ric" style="background:linear-gradient(135deg,var(--p),var(--o));color:#1b1d38">${ICONS.home}</span>` }]
@@ -567,19 +571,20 @@
     const fmt = v => v == null ? '—' : Number(v).toLocaleString('pt-BR');
     const desenhar = (dados, carregando) => {
       const online = dados && dados._online;
-      const val = l => !dados ? null : online ? dados[l.id] : (dados._local || {})[l.id];
-      const total = dados ? linhas.reduce((t, l) => t + (+val(l) || 0), 0) : null;
-      el.innerHTML = `<h3>Acessos</h3><p class="sub">${carregando ? 'Buscando os números atualizados…' : online ? 'Número de vezes que cada página foi aberta, somando todos os visitantes.' : 'Não foi possível falar com o serviço de contagem agora. Mostrando só os acessos feitos neste navegador.'}</p>
-        <ol class="aclist">${linhas.map(l => `<li>${l.icone}<span>${esc(l.nome)}</span><b>${carregando ? '<i class="ld"></i>' : fmt(val(l))}</b></li>`).join('')}</ol>
-        ${dados ? `<p class="actot">Total: <b>${fmt(total)}</b>${online ? '' : ' <small>(neste navegador)</small>'}</p>` : ''}
+      const val = id => !dados || !online ? null : dados[id];
+      const soma = online ? linhas.reduce((t, l) => t + (+val(l.id) || 0), 0) : null;
+      el.innerHTML = `<h3>Acessos</h3><p class="sub">${carregando ? 'Buscando os números atualizados…' : online ? 'Estatística do Nebulosa Workspace: acessos ao domínio nebulosaworkspace.com.br, somando todos os visitantes, e quantas vezes cada página foi aberta.' : 'Não foi possível consultar o contador do site agora. Tente de novo em alguns instantes.'}</p>
+        <p class="acdom"><span>Acessos ao domínio</span><b>${carregando ? '<i class="ld"></i>' : fmt(val('dominio'))}</b></p>
+        <ol class="aclist">${linhas.map(l => `<li>${l.icone}<span>${esc(l.nome)}</span><b>${carregando ? '<i class="ld"></i>' : fmt(val(l.id))}</b></li>`).join('')}</ol>
+        ${online ? `<p class="actot">Aberturas de páginas (soma da lista): <b>${fmt(soma)}</b></p>` : ''}
         <div class="ra"><button class="chip" id="acAtual"${carregando ? ' disabled' : ''}>Atualizar</button><button class="chip prim" id="acOk">Fechar</button></div>`;
       $('#acOk').onclick = closePops;
       $('#acAtual').onclick = carregar;
     };
     function carregar() {
       desenhar(null, true);
-      if (!ACESSOS) { desenhar({ _online: false, _local: {} }, false); return; }
-      ACESSOS.ler(linhas.map(l => l.id)).then(d => { if (el.classList.contains('show')) desenhar(d, false); });
+      if (!ACESSOS) { desenhar({ _online: false }, false); return; }
+      ACESSOS.ler(['dominio'].concat(linhas.map(l => l.id))).then(d => { if (el.classList.contains('show')) desenhar(d, false); });
     }
     closeOthers('acessos'); openPop(el);
     carregar();
@@ -654,7 +659,7 @@
     }
   }
 
-  /* ---------- lembrete de doação (2 min depois de abrir, depois a cada 30 min) ---------- */
+  /* ---------- lembrete de doação (20 min depois de abrir, depois a cada 60 min) ---------- */
   // Tempos em js/doacao.js → lembretes (primeiroAposMinutos, intervaloMinutos).
   const LEMB = (DOA && DOA.lembretes) || {};
   const LEMB_KEY = 'nebulosa.lembrete';
@@ -664,13 +669,13 @@
   const salvarLemb = () => { try { localStorage.setItem(LEMB_KEY, JSON.stringify(lemb)); } catch (e) { /* sem armazenamento */ } };
   const intervalo = () => {
     const v = Math.min(50, Math.max(0, +LEMB.variacaoPorcento || 0)) / 100;
-    return Math.max(1, +LEMB.intervaloMinutos || 30) * 60000 * (1 - v + Math.random() * 2 * v);
+    return Math.max(1, +LEMB.intervaloMinutos || 60) * 60000 * (1 - v + Math.random() * 2 * v);
   };
   function adiarLembrete() { lemb.proximo = Date.now() + intervalo(); salvarLemb(); }
   function pausarLembretes() { lemb.pausaAte = Date.now() + Math.max(0, +LEMB.pausaDepoisDeCopiarHoras || 0) * 3600000; adiarLembrete(); }
   // A cada vez que a página abre, o primeiro lembrete vem depois de "primeiroAposMinutos"
   // (a pausa de quem copiou o Pix continua valendo).
-  lemb.proximo = abertoEm + Math.max(0, LEMB.primeiroAposMinutos == null ? 2 : +LEMB.primeiroAposMinutos) * 60000;
+  lemb.proximo = abertoEm + Math.max(0, LEMB.primeiroAposMinutos == null ? 20 : +LEMB.primeiroAposMinutos) * 60000;
   salvarLemb();
   function conferirLembrete() {
     const msgs = LEMB.mensagens || [];
@@ -748,7 +753,7 @@
     L.push({ t: 'Sobre o Workspace', s: 'Apresentação, versão e créditos', kw: 'sobre ajuda creditos autor manifesto', icon: plainRic(ICONS.info), run: () => { closePops(); setTimeout(openAbout, 180); } });
     L.push({ t: 'Manual do Nebulosa Workspace', s: 'Como usar o Workspace e cada programa', kw: 'manual ajuda guia como usar tutorial', icon: plainRic(ICONS.manual), run: () => { closePops(); window.open(manualUrl(), '_blank', 'noopener'); } });
     APPS.filter(a => !a.soon).forEach(a => L.push({ t: 'Manual de ' + a.name, s: a.funcao || a.tag, kw: 'manual ajuda guia como usar ' + a.name + ' ' + a.keywords, icon: ric(a), run: () => { closePops(); window.open(manualUrl(a.id), '_blank', 'noopener'); } }));
-    L.push({ t: 'Acessos', s: 'Quantas vezes o Workspace e cada programa foram abertos', kw: 'acessos visitas contador estatisticas', icon: plainRic(ICONS.chart), run: () => { closePops(); setTimeout(openAcessos, 180); } });
+    L.push({ t: 'Acessos', s: 'Estatística do site: acessos ao domínio e a cada programa', kw: 'acessos visitas contador estatisticas', icon: plainRic(ICONS.chart), run: () => { closePops(); setTimeout(openAcessos, 180); } });
     return L;
   }
   function renderPalette() {
@@ -797,7 +802,7 @@
   /* ---------- partida ---------- */
   renderRail(); renderTabs(); renderHome(); atualizarSino();
   avisoTermos();
-  if (ACESSOS) ACESSOS.registrar('inicio'); // contador de acessos da página inicial
+  if (ACESSOS) ACESSOS.registrar('inicio'); // contador de acessos: domínio + página inicial
   // Link direto para um programa: index.html#app=typee  (h=... vira o #... do programa)
   (function bootHash() {
     const p = new URLSearchParams(location.hash.slice(1));

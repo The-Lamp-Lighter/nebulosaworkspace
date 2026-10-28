@@ -101,7 +101,7 @@
   IMG.onInit = IMG.onInit || [];
   IMG.onInit.push((C) => {
     C('edit.shortcuts', 'Atalhos do teclado…', () => Shortcuts.dialog(false), { keys: ['ctrl+alt+shift+k'] });
-    C('help.shortcuts', 'Lista de atalhos', () => Shortcuts.dialog(true), { keys: ['shift+?', '?'] });
+    C('help.shortcuts', 'Atalhos do teclado', () => Shortcuts.dialog(true), { keys: ['shift+?', '?'] });
   });
   IMG.bus.on('app:ready', () => Shortcuts.apply());
 })();

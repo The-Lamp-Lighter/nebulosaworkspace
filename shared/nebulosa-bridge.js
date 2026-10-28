@@ -53,6 +53,13 @@
                           vai só para o sino, a menos que sempre = true. Devolve false fora do
                           Workspace — aí o programa mostra o aviso do jeito dele.
      versao               versão do Nebulosa Workspace (mantenha igual a NEBULOSA_VERSAO em js/apps.js)
+     links                endereços do site para este programa: { manual, termos, privacidade, creditos }
+     abrirAjuda(tipo)     (0.5) abre, NA MESMA PÁGINA, uma janela com o conteúdo pedido:
+                          'manual' (manuais/<app>.html), 'termos', 'privacidade' ou 'creditos'
+                          (legal/*.html). É o que os itens do menu Ajuda de cada programa chamam.
+                          No HTML único usa as páginas embutidas (window.__nbPaginas), se houver.
+     itensAjuda           [{id, texto}] os quatro itens padrão do menu Ajuda, na ordem
+     creditos             { autores, equipe } — autores e idealizadores e equipe de produção
    Também disponível como window.Nebulosa (mesmo objeto).
 
    Identidade visual (feita pela ponte, igual em todos os programas):
@@ -70,7 +77,7 @@
   'use strict';
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
-  var VERSAO = '0.4';
+  var VERSAO = '0.5';
   var me = document.currentScript;
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }
   function has(n) { return !!(me && me.hasAttribute('data-' + n)); }
@@ -111,6 +118,77 @@
 
   var provider = null, subs = [];
 
+  /* ---------- (0.5) menu Ajuda: Manual do usuário, Termos de uso, Privacidade, Créditos e licenças ----------
+     O conteúdo abre numa janela dentro do próprio programa (não em outra aba).
+     No site os endereços são os do próprio site; no HTML único (aberto do computador)
+     usa as páginas embutidas nele ou, sem elas, o domínio oficial. */
+  var SITE = 'https://nebulosaworkspace.com.br/';
+  var BASE = (function () {
+    var src = me && me.src;
+    if (src && /^https?:/.test(src) && /shared\/nebulosa-bridge\.js(\?|#|$)/.test(src)) return src.replace(/shared\/nebulosa-bridge\.js.*$/, '');
+    return SITE;
+  })();
+  var LINKS = {
+    manual: BASE + 'manuais/' + APP + '.html',
+    termos: BASE + 'legal/termos.html',
+    privacidade: BASE + 'legal/privacidade.html',
+    creditos: BASE + 'legal/creditos.html#' + APP
+  };
+  var TITULOS = { manual: 'Manual do usuário', termos: 'Termos de uso', privacidade: 'Privacidade', creditos: 'Créditos e licenças' };
+  var CREDITOS = {
+    autores: 'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade',
+    equipe: 'Equipe de Produção Lamp Lighter'
+  };
+  var AJ_CSS =
+    '#nbAjudaOv{position:fixed;inset:0;z-index:2147483001;background:rgba(10,11,28,.62);display:grid;place-items:center;padding:16px;box-sizing:border-box;font:14px/1.4 Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}' +
+    '#nbAjudaOv *{box-sizing:border-box}' +
+    '#nbAjudaOv .nbA{width:min(1100px,100%);height:min(92vh,100%);background:#2d3053;color:#f3f1ff;border:1px solid rgba(190,185,255,.2);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden}' +
+    '#nbAjudaOv .nbAh{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 18px;border-bottom:1px solid rgba(190,185,255,.18)}' +
+    '#nbAjudaOv .nbAh b{flex:1;font-size:16px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '#nbAjudaOv .nbAt{display:flex;gap:4px;flex-wrap:wrap}' +
+    '#nbAjudaOv .nbAt button{background:transparent;color:#c9c6ee;border:1px solid transparent;border-radius:9px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}' +
+    '#nbAjudaOv .nbAt button:hover{border-color:rgba(190,185,255,.3);color:#fff}#nbAjudaOv .nbAt button.on{background:#A778FF;color:#1b1d38;font-weight:700}' +
+    '#nbAjudaOv .nbAx{background:#A778FF;color:#1b1d38;border:0;border-radius:9px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}' +
+    '#nbAjudaOv iframe{flex:1;width:100%;border:0;background:#f4f1fc}' +
+    '#nbAjudaOv button:focus-visible{outline:2px solid #FEFF36;outline-offset:2px}' +
+    '@media (max-width:700px){#nbAjudaOv{padding:0}#nbAjudaOv .nbA{height:100%;border-radius:0}#nbAjudaOv .nbAh{flex-wrap:wrap}}';
+  function urlAjuda(tipo) {
+    var emb = window.__nbPaginas && window.__nbPaginas[tipo];
+    if (emb) return emb;
+    var u = LINKS[tipo] || LINKS.manual, h = u.indexOf('#');
+    return h < 0 ? u + '?embed=1' : u.slice(0, h) + '?embed=1' + u.slice(h);
+  }
+  function fecharAjuda() {
+    var o = document.getElementById('nbAjudaOv'); if (o) o.remove();
+    document.removeEventListener('keydown', teclaAjuda, true);
+  }
+  function teclaAjuda(e) { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); fecharAjuda(); } }
+  function abrirAjuda(tipo) {
+    if (!TITULOS[tipo]) tipo = 'manual';
+    fecharAjuda();
+    if (!document.getElementById('nbAjudaStyle')) { var st = document.createElement('style'); st.id = 'nbAjudaStyle'; st.textContent = AJ_CSS; (document.head || document.documentElement).appendChild(st); }
+    var o = document.createElement('div'); o.id = 'nbAjudaOv';
+    o.innerHTML = '<div class="nbA" role="dialog" aria-modal="true" aria-label="Ajuda"><div class="nbAh"><b></b><div class="nbAt">' +
+      ['manual', 'termos', 'privacidade', 'creditos'].map(function (k) { return '<button type="button" data-k="' + k + '">' + TITULOS[k] + '</button>'; }).join('') +
+      '</div><button type="button" class="nbAx">Fechar</button></div><iframe title="Ajuda"></iframe></div>';
+    var fr = o.querySelector('iframe');
+    var mostrar = function (k) {
+      tipo = k; o.querySelector('b').textContent = TITULOS[k] + (k === 'manual' ? ' — ' + NAME : '');
+      [].forEach.call(o.querySelectorAll('[data-k]'), function (b) { b.classList.toggle('on', b.getAttribute('data-k') === k); });
+      fr.src = urlAjuda(k);
+    };
+    o.addEventListener('mousedown', function (e) { if (e.target === o) fecharAjuda(); });
+    o.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]'); if (b) { mostrar(b.getAttribute('data-k')); return; }
+      if (e.target.closest('.nbAx')) fecharAjuda();
+    });
+    (document.body || document.documentElement).appendChild(o);
+    document.addEventListener('keydown', teclaAjuda, true);
+    mostrar(tipo);
+    var x = o.querySelector('.nbAx'); if (x) x.focus();
+    return true;
+  }
+
   function publicList() {
     var l = provider ? (provider.list() || []) : LIST;
     return l.map(function (x) { return { id: x.id, name: x.name, desc: x.desc || '', swatch: x.swatch || null }; });
@@ -135,6 +213,11 @@
   var api = window.NebulosaSkin = {
     app: APP,
     versao: VERSAO,
+    links: LINKS,
+    creditos: CREDITOS,
+    itensAjuda: [{ id: 'manual', texto: 'Manual do usuário' }, { id: 'termos', texto: 'Termos de uso' }, { id: 'privacidade', texto: 'Privacidade' }, { id: 'creditos', texto: 'Créditos e licenças' }],
+    abrirAjuda: abrirAjuda,
+    abrirManual: function () { return abrirAjuda('manual'); },
     name: NAME,
     inWorkspace: inFrame,
     get list() { return publicList(); },

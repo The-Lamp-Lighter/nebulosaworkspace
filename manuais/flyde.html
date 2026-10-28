@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Nebulosa Workspace: 10 programas gratuitos que funcionam direto no navegador">
+<meta property="og:image:alt" content="Nebulosa Workspace: 9 programas gratuitos que funcionam direto no navegador">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Flyde — Apresentações em Slides grátis no navegador | Manual">
 <meta name="twitter:description" content="O Flyde cria apresentações de dois jeitos: slides clássicos, um depois do outro, ou um mapa com zoom, em que a câmera voa, gira e aproxima de um ponto ao outro. Tudo com animações e transições.">
@@ -29,16 +29,18 @@
 <link rel="stylesheet" href="manual.css">
 <script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
 <style>:root{--c1:#FF9C54;--c2:#A778FF}</style>
+<script>/* (0.5) aberto dentro de um programa (menu Ajuda): sem a barra de cima; links para fora abrem em outra janela */
+if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
 </head>
 <body>
 <header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/flyde/" target="_blank" rel="noopener">Abrir o Flyde</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
-<div class="capa"><div class="in"><span class="tag">Mídia &amp; Criatividade</span><h1>Flyde<small>by Nebulosa Workspace</small></h1><p class="funcao">Apresentações em Slides</p><p>O Flyde cria apresentações de dois jeitos: slides clássicos, um depois do outro, ou um mapa com zoom, em que a câmera voa, gira e aproxima de um ponto ao outro. Tudo com animações e transições.</p>
+<div class="capa"><div class="in"><span class="tag">Mídia &amp; Criatividade</span><h1>Flyde<small>by Nebulosa Workspace</small></h1><p class="funcao">Apresentações em Slides</p><p>O Flyde cria apresentações de dois jeitos: slides clássicos, um depois do outro, ou um mapa com zoom, em que a câmera voa, gira e aproxima de um ponto ao outro. Tudo com animações, transições e trilhas de áudio — e exporta em HTML, PowerPoint, vídeo (MP4 ou WebM), imagens e PDF.</p>
 <div class="acoes"><a href="../index.html#app=flyde">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
-<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. Como começar</a><a href="#s2">2. Inserir conteúdo</a><a href="#s3">3. Animações e transições</a><a href="#s4">4. Apresentar</a><a href="#s5">5. Salvar</a><a href="#s6">6. Atalhos de teclado</a><a href="#s7">7. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Como começar</h2>
+<div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. Como começar</a><a href="#s2">2. Inserir conteúdo</a><a href="#s3">3. Animações e transições</a><a href="#s4">4. Trilhas de áudio</a><a href="#s5">5. Fundo do mapa com zoom</a><a href="#s6">6. Apresentar</a><a href="#s7">7. Exportar</a><a href="#s8">8. Vídeo</a><a href="#s9">9. Atalhos de teclado</a><a href="#s10">10. Menu Ajuda</a><a href="#s11">11. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Como começar</h2>
 <p>Ao abrir, o Flyde pergunta como você quer começar:</p>
 <ul><li><b>Apresentação clássica</b> — slides um depois do outro, com 16 transições e animações de entrada, ênfase e saída.</li>
 <li><b>Mapa com zoom</b> — um espaço gigante com tudo dentro; a câmera voa, gira e dá zoom de um ponto ao outro.</li>
-<li><b>Abrir uma apresentação (.html)</b> feita antes no Flyde.</li></ul>
+<li><b>Abrir uma apresentação</b> feita antes no Flyde: o arquivo <b>.html</b> exportado ou o <b>projeto .json</b>.</li></ul>
 <p>Dê um nome à apresentação no campo do alto. O selo ao lado mostra o modo (Slides ou Mapa).</p></section><section id="s2"><h2><span class="num">2</span>Inserir conteúdo</h2>
 <p>O painel <b>Inserir</b> (à esquerda) traz textos, imagens e formas: retângulo, arredondado, círculo, triângulo, losango, pentágono, hexágono, estrela, seta, chevron, coração, mais, balão, anel, linha e seta fina. Em <b>Modelos</b> há slides prontos (capa, título e texto, imagem…).</p>
 <ul><li>Clique duas vezes num texto (ou <kbd>Enter</kbd>) para editar.</li>
@@ -50,11 +52,41 @@
 <li><b>Saída</b>: sumir, encolher, sair para a direita, cair e girar e sumir.</li>
 <li>Quando começa: ao clicar, junto com o anterior ou depois do anterior. Textos podem entrar de uma vez ou palavra por palavra.</li>
 <li>Na aba <b>Slide</b>, escolha a transição entre slides (corte, suave, zoom, abrir ao meio…). <b>Pré-visualizar animações</b> mostra o resultado.</li>
-</ul></section><section id="s4"><h2><span class="num">4</span>Apresentar</h2>
+</ul></section><section id="s4"><h2><span class="num">4</span>Trilhas de áudio</h2>
+<p>Na aba <b>Slide</b> (ou <b>Quadro</b>, no mapa com zoom), à direita, há duas trilhas opcionais:</p>
+<ul><li><b>Trilha de áudio deste slide</b> — toca quando o slide aparece e para quando ele sai. Cada slide (ou quadro) pode ter a sua.</li>
+<li><b>Trilha da apresentação inteira</b> — toca do começo ao fim, por baixo das trilhas de cada slide (uma música de fundo, por exemplo).</li>
+<li>Clique em <b>Escolher áudio…</b> (MP3, M4A, OGG, WAV…). Depois dá para <b>Ouvir</b>, <b>Trocar</b>, <b>Remover</b> e ajustar o <b>Volume</b>.</li>
+<li><b>Ajuste automático</b>: se o áudio for mais longo que o slide, ele é cortado quando o slide termina; se for mais longo que a apresentação inteira, é cortado no fim dela. O corte tem um esmaecimento suave. Áudios mais curtos tocam inteiros.</li>
+<li>Com o <b>avanço automático</b>, o painel mostra quanto tempo o slide (e a apresentação) vai durar e avisa quando o áudio será cortado.</li></ul>
+<div class="dica">O áudio vai junto quando você exporta a apresentação (.html), o projeto (.json) ou o vídeo. Enquanto você trabalha, ele fica guardado no navegador.</div></section>
+<section id="s5"><h2><span class="num">5</span>Fundo do mapa com zoom</h2>
+<p>No mapa com zoom, a aba <b>Quadro</b> tem a seção <b>Fundo do mapa</b>: escolha uma <b>cor</b>, como antes, ou uma <b>imagem</b> — do mesmo jeito que o fundo dos slides na apresentação clássica.</p>
+<ul><li><b>Fixa na tela</b>: a imagem fica parada atrás enquanto a câmera voa, gira e aproxima.</li>
+<li><b>Acompanha o mapa</b>: a imagem cobre o mapa inteiro e se move e aproxima junto com ele.</li>
+<li><b>Opacidade da imagem</b>: deixe a imagem mais clara ou mais escura; a cor escolhida aparece por baixo.</li>
+<li><b>Só cor</b> tira a imagem.</li></ul></section>
+<section id="s6"><h2><span class="num">6</span>Apresentar</h2>
 <ul><li><b>▶ Apresentar</b> (<kbd>F5</kbd>) começa do início; <b>▶ Daqui</b> (<kbd>Shift</kbd> + <kbd>F5</kbd>) começa do slide atual.</li>
-<li>Durante a apresentação: setas, espaço ou clique avançam; <kbd>B</kbd> tela preta; <kbd>L</kbd> apontador laser; <kbd>N</kbd> notas; <kbd>G</kbd> visão geral; <kbd>Esc</kbd> sai.</li></ul></section><section id="s5"><h2><span class="num">5</span>Salvar</h2>
-<ul><li><b>Apresentação (.html)</b> — roda em qualquer navegador, com animações, e dá para reabrir e editar no Flyde.</li>
-<li><b>PowerPoint (.pptx)</b> — para abrir no PowerPoint, no Google Apresentações ou no LibreOffice (sem animações e transições).</li></ul></section><section id="s6"><h2><span class="num">6</span>Atalhos de teclado</h2>
+<li>Durante a apresentação: setas, espaço ou clique avançam; <kbd>B</kbd> tela preta; <kbd>L</kbd> apontador laser; <kbd>N</kbd> notas; <kbd>G</kbd> visão geral; <kbd>Esc</kbd> sai.</li>
+<li>As trilhas de áudio tocam sozinhas. Se o navegador bloquear o som (acontece ao abrir um arquivo .html que já começa apresentando), basta clicar ou apertar uma tecla.</li></ul></section><section id="s7"><h2><span class="num">7</span>Exportar</h2>
+<p>O botão <b>Exportar</b> (antes chamado “Salvar”) reúne todas as saídas — as que o Flyde já tinha e as que vieram do antigo FotoFlow:</p>
+<table><tr><th>Opção</th><th>O que gera</th></tr>
+<tr><td>Apresentação (.html)</td><td>Roda em qualquer navegador, com animações e áudio. Dá para reabrir e editar no Flyde.</td></tr>
+<tr><td>PowerPoint (.pptx)</td><td>Para o PowerPoint, Google Apresentações ou LibreOffice (sem animações e transições).</td></tr>
+<tr><td>Vídeo (MP4 ou WebM)</td><td>Um filme com transições, animações e as trilhas de áudio (veja a seção 8).</td></tr>
+<tr><td>PNG / JPG do slide atual</td><td>A imagem do slide (ou quadro) que está na tela, em Full HD.</td></tr>
+<tr><td>PNG / JPG de cada slide</td><td>Uma imagem por slide, num arquivo .zip.</td></tr>
+<tr><td>PDF</td><td>Uma página por slide (ou por quadro do mapa).</td></tr>
+<tr><td>Projeto (.json)</td><td>Para reabrir e continuar depois, pelo botão <b>Abrir</b>.</td></tr></table></section>
+<section id="s8"><h2><span class="num">8</span>Vídeo</h2>
+<ul><li>Em <b>Exportar › Vídeo</b>, escolha o <b>formato</b> (MP4 com H.264 ou WebM com VP9), a <b>qualidade</b> (HD 720p ou Full HD 1080p), os <b>quadros por segundo</b> e o <b>tempo de cada slide parado</b>.</li>
+<li>Slides com avanço automático usam o tempo deles; nos outros vale o tempo escolhido. Cada “clique” das animações vira uma pequena pausa.</li>
+<li>No mapa com zoom, a câmera voa de quadro em quadro, como na apresentação, com a imagem de fundo do mapa.</li>
+<li>As duas trilhas de áudio são misturadas e ajustadas automaticamente ao tempo de cada slide e do vídeo inteiro.</li>
+<li>O vídeo é gerado aqui mesmo no navegador, mais rápido que o tempo real, com barra de progresso e botão Cancelar.</li></ul>
+<div class="nota">Precisa do Chrome ou do Edge atualizados. O MP4 aparece quando o navegador tem o codificador H.264 (Chrome e Edge no Windows e no Mac têm). As letras usam as fontes do Google; sem internet, o vídeo e as imagens saem com uma fonte parecida do sistema.</div></section>
+<section id="s9"><h2><span class="num">9</span>Atalhos de teclado</h2>
 <table><tr><th>Teclas</th><th>O que faz</th></tr>
 <tr><td><kbd>F5</kbd> · <kbd>Shift</kbd> + <kbd>F5</kbd></td><td>Apresentar do início · do slide atual</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> / Y</td><td>Desfazer e refazer</td></tr>
@@ -63,7 +95,9 @@
 <tr><td>Setas</td><td>Mover (Shift move mais rápido)</td></tr>
 <tr><td><kbd>Enter</kbd> ou duplo clique</td><td>Editar texto</td></tr>
 <tr><td><kbd>Espaço</kbd> + arrastar</td><td>Mover a tela</td></tr>
-<tr><td><kbd>Ctrl</kbd> + <kbd>roda</kbd></td><td>Zoom</td></tr></table></section><section id="s7"><h2><span class="num">7</span>Dentro do Nebulosa Workspace</h2>
+<tr><td><kbd>Ctrl</kbd> + <kbd>roda</kbd></td><td>Zoom</td></tr></table></section><section id="s10"><h2><span class="num">10</span>Menu Ajuda</h2>
+<p>O botão <b>Ajuda</b>, no alto, tem: <b>Manual do usuário</b> (este manual), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b> e <b>Créditos e licenças</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</p></section>
+<section id="s11"><h2><span class="num">11</span>Dentro do Nebulosa Workspace</h2>
 <ul>
 <li>Abra o Flyde pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Flyde entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
@@ -71,6 +105,7 @@
 <li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
 <li>O Flyde também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/flyde/</code>) ou pelo arquivo HTML único.</li>
 </ul></section></main></div>
-<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.4</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.5</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

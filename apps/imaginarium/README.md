@@ -1,7 +1,7 @@
 # Imaginarium
 
 **Editor gráfico offline — sua criatividade sem limites.**
-Versão 2.0 · Autor: **Márcio Willians Barreto de Andrade**
+Versão 2.0 · Autores e idealizadores: **Márcio Willians Barreto de Andrade e Raul Goulart de Andrade** · Equipe de Produção Lamp Lighter
 
 O Imaginarium é um editor de imagens completo que roda no navegador, sem
 servidor, sem instalação e sem internet. A versão 2.0 segue o modelo de
@@ -211,7 +211,7 @@ imaginarium/
 ## Créditos
 
 **IMAGINARIUM** — Versão 2.0 — Editor Gráfico Offline
-Autor: **Márcio Willians Barreto de Andrade**
+Autores e idealizadores: **Márcio Willians Barreto de Andrade e Raul Goulart de Andrade** · Equipe de Produção Lamp Lighter
 
 Projeto desenvolvido para uso pessoal e educacional.
 Photoshop é marca da Adobe; Photopea é de seu respectivo autor. Todos os

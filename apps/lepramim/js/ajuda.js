@@ -56,6 +56,7 @@
       <p>Pelo site, tudo funciona sem instalar nada: a voz neural, o OCR, o MP3 e o leitor completo de DOCX são baixados pela internet na primeira vez em que você os usa (com a sua permissão) e ficam guardados no navegador. No computador, abrindo pelo arquivo <b>Iniciar-LePraMim</b>, o navegador oferece <b>Instalar aplicativo</b>, e o <b>Baixar-Bibliotecas</b> instala tudo de uma vez na pasta libs; depois disso tudo funciona offline.</p>
     ` });
     ui.modal({ titulo: 'Como usar o LêPraMim', corpo, largo: true, botoes: [
+      { texto: 'Manual do usuário', acao: () => LPM.nebulosaVozes && LPM.nebulosaVozes.abrirSite('manual') }, // [Nebulosa]
       { texto: 'Créditos', acao: () => ajuda.creditos() },
       { texto: 'Fechar', classe: 'primario' }
     ] });
@@ -67,12 +68,15 @@
       el('img', { src: 'assets/logo-vertical.png', alt: cfg.NOME + ' — ' + cfg.SLOGAN }),
       el('p', { class: 'autor', text: cfg.NOME }),
       el('p', { text: 'Versão ' + cfg.VERSAO }),
-      el('p', { text: 'Autor: ' + cfg.AUTOR }),
+      el('p', { text: 'Autores e idealizadores: ' + cfg.AUTOR }), // [Nebulosa] créditos (0.5)
+      el('p', { text: cfg.EQUIPE || 'Equipe de Produção Lamp Lighter' }),
       el('p', { class: 'nota', text: 'Finalidade: ' + cfg.FINALIDADE.toLowerCase() + '.' }),
       el('p', { class: 'nota', text: 'Leitor de ebooks, documentos e audiobooks que funciona sem internet. Nenhum conteúdo sai deste computador.' }),
       el('p', { class: 'nota', text: 'Componentes de terceiros: PDF.js (Mozilla, Apache 2.0). Opcionais: Piper e ONNX Runtime (MIT), voz Cadu (CC0), Tesseract.js (Apache 2.0), Mammoth.js (BSD) e lamejs (LGPL).' })
     ]);
-    ui.modal({ titulo: 'Créditos', corpo, botoes: [{ texto: 'Fechar', classe: 'primario' }] });
+    ui.modal({ titulo: 'Sobre o LêPraMim', corpo, botoes: [
+      { texto: 'Créditos e licenças', acao: () => LPM.nebulosaVozes && LPM.nebulosaVozes.abrirSite('creditos') }, // [Nebulosa]
+      { texto: 'Fechar', classe: 'primario' }] });
   };
 
   LPM.ajuda = ajuda;

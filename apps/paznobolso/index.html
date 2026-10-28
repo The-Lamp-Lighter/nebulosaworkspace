@@ -31,6 +31,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav:hover{background:var(--bg)}
 .nav.at{background:var(--c);font-weight:700}
 .nav.at i{background:var(--sageD)}
+.lnk{border:0;background:none;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit} /* [Nebulosa] 0.5 */
+.nav.nbx{font-size:.92em;opacity:.9}.nbgrupo{margin:.8rem .5rem .2rem;font-size:.78em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.65}.fechado .nbgrupo{visibility:hidden}.nav.nbx+.rodape{margin-top:.6rem}
 .rodape{margin-top:auto;padding:.8rem .4rem 0;font-size:.74rem;color:var(--ink2);line-height:1.3}
 .princ{min-width:0}
 .topo{position:sticky;top:0;z-index:20;background:var(--hue);border-bottom:1px solid rgba(34,64,58,.2);padding:.6rem 1.2rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
@@ -724,7 +726,7 @@ function analisar(S, ano, hoje) {
 /* ===================== Interface: base ===================== */
 const $ = (s, r) => (r || document).querySelector(s);
 const e = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const AUTOR = 'Autor: Márcio Willians Barreto de Andrade';
+const AUTOR = 'Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter'; /* [Nebulosa] créditos (0.5) */
 let S = null, IT = {}, CT = {}, ET = {}, CC = {};
 const UI = { tela: 'painel', ano: new Date().getFullYear(), grade: { modo: 'ano', abertas: {}, sel: null }, lf: { txt: '', mes: '', cat: '', etq: '', lim: 200 }, lmais: false, ldata: hojeISO(), acompMes: null, acompAb: {}, recMes: hojeISO().slice(0, 7), rel: 'grade', relModo: 'ano', relMes: null, relCc: 'det', pCat: { R: null, D: null }, etqSel: null, cadArq: false };
 const SE = { dirty: false, arquivo: null, guardado: null, terceiros: false, cr: null, undo: [], travado: null };
@@ -909,7 +911,7 @@ function telaInicio() {
     (t ? '<div class="alerta" style="margin-top:1.2rem"><b>Há alterações não guardadas da última sessão</b> (' + new Date(t.quando).toLocaleString('pt-BR') + ').<div class="linha" style="margin-top:.5rem"><button class="btn pri" data-a="recuperar">Recuperar alterações</button><button class="btn" data-a="descartarTemp">Descartar</button></div></div>' : '') +
     '<div class="opcoes"><button data-a="abrir" style="--c:var(--sage)"><b>Abrir arquivo de dados</b>Continue de onde parou, escolhendo o último arquivo que você guardou.</button><button data-a="novo" style="--c:var(--sky)"><b>Começar novo</b>Dados em branco, com um cadastro genérico de categorias.</button><button data-a="importarInicio" style="--c:var(--butter)"><b>Importar planilha</b>Traga categorias e valores de uma planilha de orçamento anual (.xlsx).</button></div>' +
     '<label class="ck"><input type="checkbox" id="ckTerc"> Estou em um computador de terceiros (não manter cópia temporária neste navegador)</label>' +
-    '<p class="peq" style="margin-top:1rem">Ao terminar, use “Guardar dados” para gerar o arquivo atualizado. ' + AUTOR + '.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + ((window.NebulosaSkin && NebulosaSkin.versao) || '0.3') + '</span></p></div></div>'; /* [Nebulosa] assinatura no nome (acima e no menu) e rodapé */
+    '<p class="peq" style="margin-top:1rem">Ao terminar, use “Guardar dados” para gerar o arquivo atualizado.<br>Ajuda: <button class="lnk" data-a="nbAjuda" data-k="manual">Manual do usuário</button> · <button class="lnk" data-a="nbAjuda" data-k="termos">Termos de uso</button> · <button class="lnk" data-a="nbAjuda" data-k="privacidade">Privacidade</button> · <button class="lnk" data-a="nbAjuda" data-k="creditos">Créditos e licenças</button><br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + ((window.NebulosaSkin && NebulosaSkin.versao) || '0.3') + '</span></p></div></div>'; /* [Nebulosa] assinatura no nome (acima e no menu) e rodapé */
 }
 function telaTrava() { return '<div class="inicio"><div class="cx" style="max-width:26rem"><div style="display:flex;align-items:center;gap:.8rem">' + logo(56) + '<h2>Bloqueado por inatividade</h2></div><p>Digite a senha para continuar. Nada foi perdido.</p>' + (SE.cr.dica ? '<p class="peq">Dica: ' + e(SE.cr.dica) + '</p>' : '') + '<label class="cp">Senha<input type="password" id="senhaTrava" autocomplete="off"></label><p class="erro neg" id="erroTrava"></p><button class="btn pri" data-a="destravar">Desbloquear</button></div></div>'; }
 
@@ -929,6 +931,7 @@ function casca() {
   const est = SE.dirty ? '<div class="estado sujo">Alterações não guardadas</div>' : '<div class="estado">' + (SE.guardado ? 'Guardado às ' + hora(SE.guardado) : 'Sem alterações pendentes') + '</div>';
   return '<div class="casca' + (UI.menuFechado ? ' fechado' : '') + '"><aside class="lado"><div class="marca">' + logo(38) + NOME + '<small class="nb-by">by Nebulosa Workspace</small></div><button class="nav mn" data-a="menu" title="Recolher ou abrir o menu" aria-label="Recolher ou abrir o menu"><svg viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M1 1h12M1 6h12M1 11h12"/></svg><span>Recolher o menu</span></button>' +
     TELAS.map(x => '<button class="nav ' + (x[0] === UI.tela ? 'at' : '') + '" style="--c:var(--' + x[2] + ')" data-a="ir" data-t="' + x[0] + '" title="' + x[1] + '"><i></i><span>' + x[1] + '</span></button>').join('') +
+    '<div class="nbgrupo">Ajuda</div>' + [['manual', 'Manual do usuário', 'sky'], ['termos', 'Termos de uso', 'butter'], ['privacidade', 'Privacidade', 'butter'], ['creditos', 'Créditos e licenças', 'butter']].map(x => '<button class="nav nbx" style="--c:var(--' + x[2] + ')" data-a="nbAjuda" data-k="' + x[0] + '" title="' + x[1] + '"><i></i><span>' + x[1] + '</span></button>').join('') + /* [Nebulosa] menu Ajuda (0.5) */
     '<div class="rodape"><div title="' + e(SE.arquivo || '') + '">' + (SE.arquivo ? 'Arquivo: ' + e(SE.arquivo) : 'Dados novos, ainda sem arquivo') + '</div>' + (SE.terceiros ? '<div>Modo computador de terceiros</div>' : '') + '<div style="margin-top:.5rem">' + AUTOR + '</div></div></aside>' +
     '<div class="princ" style="--hue:var(--' + t[2] + ')"><header class="topo"><h1>' + t[1] + '</h1>' +
     '<label class="peq" style="display:flex;align-items:center;gap:.3rem">Ano <select class="in" data-c="ano" aria-label="Ano">' + anos.map(a => '<option ' + (a === UI.ano ? 'selected' : '') + '>' + a + '</option>').join('') + '<option value="novo">Abrir novo ano…</option></select></label>' + est +
@@ -938,6 +941,8 @@ function casca() {
 }
 function cadeado(f) { return '<svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="8" width="12" height="9" rx="2"/><path d="' + (f ? 'M4.5 8V5.5a3.5 3.5 0 0 1 7 0V8' : 'M4.5 8V5.5a3.5 3.5 0 0 1 6.6-1.6') + '"/></svg>'; }
 A.menu = () => { UI.menuFechado = !UI.menuFechado; render(); };
+/* [Nebulosa] menu Ajuda (0.5): Manual do usuário, Termos de uso, Privacidade, Créditos e licenças — o conteúdo abre aqui mesmo, numa janela */
+A.nbAjuda = d => { const k = d.k || 'manual', N = window.NebulosaSkin; if (N && N.abrirAjuda) return N.abrirAjuda(k); const P = { manual: 'manuais/paznobolso.html', termos: 'legal/termos.html', privacidade: 'legal/privacidade.html', creditos: 'legal/creditos.html' }; window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank'); };
 A.ir = d => { UI.tela = d.t; render(); window.scrollTo(0, 0); };
 C_.ano = el => { if (el.value === 'novo') { el.value = UI.ano; novoAno(); return; } UI.ano = +el.value; UI.acompMes = null; render(); };
 

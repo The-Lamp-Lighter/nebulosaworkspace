@@ -11,7 +11,8 @@ LPM.config = {
   NOME: 'LêPraMim',
   SLOGAN: 'Software de Leitura e Audiolivros para Computador',
   // Para corrigir o nome nos créditos, altere somente esta linha:
-  AUTOR: 'Márcio Willians Barreto de Andrade',
+  AUTOR: 'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade', // [Nebulosa] autores e idealizadores (0.5)
+  EQUIPE: 'Equipe de Produção Lamp Lighter',
   VERSAO: '1.1.0',
   FINALIDADE: 'Uso doméstico',
 

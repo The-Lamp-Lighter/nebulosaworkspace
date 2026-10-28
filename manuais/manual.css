@@ -67,3 +67,8 @@ footer.rodape a { color: var(--ink2); }
 @media print { .topo, nav.indice, .capa .acoes { display: none; } .layout { display: block; } main section { break-inside: avoid; border: 0; padding: 0 0 12px; } body { background: #fff; } }
 @media (max-width: 640px) { .topo a.bt, .topo button.bt { display: none; } .topo .marca small { display: none; } }
 @media (max-width: 640px) { main table { display: block; overflow-x: auto; max-width: 100%; } }
+
+/* (0.5) dentro da janela de Ajuda de um programa (?embed=1) */
+.embed .topo { display: none; }
+.embed nav.indice { top: 12px; }
+.embed main section { scroll-margin-top: 12px; }

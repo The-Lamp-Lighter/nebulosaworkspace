@@ -26,7 +26,7 @@
 
 /* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
    Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
-window.NEBULOSA_VERSAO = '0.4';
+window.NEBULOSA_VERSAO = '0.5';
 
 /* Temáticas da página inicial, na ordem em que aparecem. */
 window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];
@@ -52,8 +52,8 @@ window.NEBULOSA_APPS = [
     path: 'apps/flyde/',
     group: 'Escrever e apresentar',
     tag: 'Apresentações',
-    desc: 'Slides clássicos e mapas com zoom, com animações e transições para impressionar sem esforço.',
-    keywords: 'slides apresentacao powerpoint canva prezi animacao transicao palestra aula',
+    desc: 'Slides clássicos e mapas com zoom, com animações, transições e trilhas de áudio. Exporta em vídeo, imagens, PDF e PowerPoint.',
+    keywords: 'slides apresentacao powerpoint canva prezi animacao transicao palestra aula video mp4 webm musica audio trilha fotos pdf imagem png jpg',
     icon: 'slides',
     colors: ['#FF9C54', '#A778FF'],
     defaultSkin: 'default',
@@ -144,20 +144,6 @@ window.NEBULOSA_APPS = [
     defaultSkin: 'imaginarium',
     tema: 'Mídia & Criatividade',
     funcao: 'Editor Multifuncional de Imagens'
-  },
-  {
-    id: 'fotoflow',
-    name: 'FotoFlow',
-    path: 'apps/fotoflow/',
-    group: 'Imagens e vídeo',
-    tag: 'Vídeos',
-    desc: 'Transforme fotos em filmes com movimentos de câmera, transições e música.',
-    keywords: 'video filme foto slideshow fotos musica transicao montagem apresentacao clipe animacao',
-    icon: 'film',
-    colors: ['#7f63e8', '#FF9C54'],
-    defaultSkin: 'default',
-    tema: 'Mídia & Criatividade',
-    funcao: 'Criador de Apresentações de Fotos e Vídeo'
   },
   {
     id: 'fluxo',

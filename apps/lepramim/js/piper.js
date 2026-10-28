@@ -107,12 +107,13 @@
    * mostra o progresso e guarda a voz no navegador. Resolve true se pode falar.
    */
   const emAndamento = new Map();
-  P.garantir = function (v) {
+  P.garantir = function (v, op) {
     if (!v || !v.piper || P.liberada(v)) return Promise.resolve(true);
+    const perguntarSempre = !!(op && op.perguntar); // [Nebulosa] botão "Baixar Vozes": faz a pergunta de novo
     if (emAndamento.has(v.id)) return emAndamento.get(v.id);
     const ui = LPM.ui, cfg = LPM.dados.cfg;
     const tarefa = (async () => {
-      if (!cfg.piperWeb) {
+      if (!cfg.piperWeb || perguntarSempre) {
         const ok = await ui.perguntar('Baixar a voz ' + nomeDaVoz(v) + '?',
           'Para ler com a voz neural ' + nomeDaVoz(v) + ', o LêPraMim baixa a voz uma única vez (cerca de ' + v.mb +
           ' MB, mais uns 25 MB do motor de voz, que servem para todas as vozes). Ela fica guardada neste navegador e, das próximas vezes, a leitura começa na hora. ' +
