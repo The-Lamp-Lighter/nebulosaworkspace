@@ -6,6 +6,7 @@
 <title>EmCanto — Sua partitura ganha voz</title>
 <!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o programa funciona sozinho) -->
 <script src="../../shared/nebulosa-bridge.js" data-app="emcanto" data-name="EmCanto" data-preview="#e9eef5 #14305a #1d5fae #b9811f"></script>
+<script src="nebulosa-idiomas.js"></script><!-- [Nebulosa] idiomas (0.6): textos em inglês e espanhol, manual e documentação traduzidos -->
 <meta name="description" content="EmCanto - Leia, ouça, transforme. Leitura, reconhecimento, reprodução, edição e harmonização de partituras, sem internet.">
 <meta name="author" content="Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter">
 <meta name="color-scheme" content="light dark">
@@ -9235,7 +9236,7 @@ EC.importer.readHeader = function (score, lines, pg) {
             { label: (A.showOrig ? 'Ocultar' : 'Mostrar') + ' partitura original ao lado', icon: 'image', disabled: !has || !A.proj.source.length, action: function () { A.showOrig = !A.showOrig; ui.renderOrig(); ui.fitSoon(); } },
             { label: 'Configurações…', icon: 'gear', action: ui.dlgSettings }];
         }),
-        menuButton('Ajuda', 'help', [{ label: 'Manual do usuário', icon: 'book', action: function () { ui.nbAjuda('manual'); } } /* [Nebulosa] 0.5 */, { label: 'Manual dentro do programa', kbd: 'F1', action: function () { ui.dlgDoc('manual'); } }, { label: 'Atalhos de teclado', icon: 'kbd', kbd: '?', action: function () { ui.dlgDoc('manual', 'atalhos'); } }, { label: 'Documentação técnica', action: function () { ui.dlgDoc('tech'); } }, { label: 'Plano de testes', action: function () { ui.dlgDoc('tech', 'testes'); } }, { label: 'Autoteste do reconhecimento', icon: 'check', action: function () { ui.selfTest(); } }, '-', { label: 'Termos de uso', action: function () { ui.nbAjuda('termos'); } }, { label: 'Privacidade', action: function () { ui.nbAjuda('privacidade'); } }, { label: 'Créditos e licenças', action: function () { ui.nbAjuda('creditos'); } } /* [Nebulosa] 0.5 */, '-', { label: 'Sobre o EmCanto', icon: 'info', action: ui.dlgAbout }])
+        menuButton('Ajuda', 'help', [{ label: 'Manual do usuário', icon: 'book', action: function () { ui.nbAjuda('manual'); } } /* [Nebulosa] 0.5 */, { label: 'Manual dentro do programa', kbd: 'F1', action: function () { ui.dlgDoc('manual'); } }, { label: 'Atalhos de teclado', icon: 'kbd', kbd: '?', action: function () { ui.dlgDoc('manual', 'atalhos'); } }, { label: 'Documentação técnica', action: function () { ui.dlgDoc('tech'); } }, { label: 'Plano de testes', action: function () { ui.dlgDoc('tech', 'testes'); } }, { label: 'Autoteste do reconhecimento', icon: 'check', action: function () { ui.selfTest(); } }, '-', { label: 'Termos de uso', action: function () { ui.nbAjuda('termos'); } }, { label: 'Privacidade', action: function () { ui.nbAjuda('privacidade'); } }, { label: 'Créditos e licenças', action: function () { ui.nbAjuda('creditos'); } } /* [Nebulosa] 0.5 */, { label: '🌐 Idioma', action: function () { ui.nbAjuda('idioma'); } } /* [Nebulosa] idiomas 0.6 */, '-', { label: 'Sobre o EmCanto', icon: 'info', action: ui.dlgAbout }])
       ),
       h('div', { class: 'title', id: 'bar-title', 'aria-live': 'off' }));
     app.appendChild(bar);
@@ -9286,13 +9287,13 @@ EC.importer.readHeader = function (score, lines, pg) {
     Promise.all([EC.store.list(), EC.store.kvGet('autosave')]).then(function (r) {
       var list = r[0], auto = r[1]; box.innerHTML = '';
       if (auto && auto.json && (!A.proj || A.proj.id !== auto.id)) {
-        box.appendChild(h('div', { class: 'callout', style: { marginBottom: '1rem' } }, h('p', null, h('b', null, 'Trabalho recuperável: '), '“' + auto.name + '”, alterado em ' + new Date(auto.when).toLocaleString('pt-BR') + '.'),
+        box.appendChild(h('div', { class: 'callout', style: { marginBottom: '1rem' } }, h('p', null, h('b', null, 'Trabalho recuperável: '), '“' + auto.name + '”, alterado em ' + new Date(auto.when).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR') + '.'),
           h('div', { class: 'quick', style: { marginTop: '.4rem' } }, h('button', { type: 'button', class: 'btn sm pri', onclick: function () { ui.loadProjectText(auto.json, { id: auto.id, dirty: true }); } }, 'Recuperar'), h('button', { type: 'button', class: 'btn sm', onclick: function () { EC.store.kvDel('autosave').then(ui.loadRecents); } }, 'Descartar'))));
       }
       if (!list.length) return;
       box.appendChild(h('h2', { id: 'h-rec' }, 'Projetos guardados neste navegador'));
       box.appendChild(h('div', { class: 'cards' }, list.slice(0, 8).map(function (p) {
-        return h('button', { type: 'button', class: 'card', onclick: function () { ui.openStored(p.id); } }, h('b', null, p.name), h('span', null, 'Salvo em ' + new Date(p.updated).toLocaleString('pt-BR')));
+        return h('button', { type: 'button', class: 'card', onclick: function () { ui.openStored(p.id); } }, h('b', null, p.name), h('span', null, 'Salvo em ' + new Date(p.updated).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR')));
       })));
     }).catch(function () { });
   };
@@ -10131,7 +10132,7 @@ EC.importer.readHeader = function (score, lines, pg) {
         if (!EC.store.ok) list.appendChild(h('div', { class: 'callout bad' }, 'Este navegador bloqueou o armazenamento local (modo privado?). Os projetos só existem enquanto a página estiver aberta.'));
         if (!items.length) { list.appendChild(h('p', null, 'Nenhum projeto guardado ainda. Use Arquivo › Salvar.')); return; }
         items.forEach(function (p) {
-          list.appendChild(h('div', { class: 'card' }, h('b', null, p.name), h('span', null, 'Salvo em ' + new Date(p.updated).toLocaleString('pt-BR') + ' · ' + Math.max(1, Math.round(p.size / 1024)) + ' kB'),
+          list.appendChild(h('div', { class: 'card' }, h('b', null, p.name), h('span', null, 'Salvo em ' + new Date(p.updated).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR') + ' · ' + Math.max(1, Math.round(p.size / 1024)) + ' kB'),
             h('div', { class: 'acts' },
               h('button', { type: 'button', class: 'btn sm pri', onclick: function () { dlg.close(); ui.openStored(p.id); } }, 'Abrir'),
               h('button', { type: 'button', class: 'btn sm', onclick: function () { EC.store.get(p.id).then(function (rec) { return EC.io.save({ name: p.name.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') + '.emcanto', ext: '.emcanto', exts: ['.emcanto', '.json'], mime: 'application/json', desc: 'Projeto EmCanto', data: rec.json, askName: ui.askName }); }).then(function (r) { if (r) ui.toast('Arquivo salvo: ' + r.name + '.', 'ok'); }); } }, icon('download'), 'Salvar em arquivo'),
@@ -10481,7 +10482,11 @@ EC.importer.readHeader = function (score, lines, pg) {
       buttons: [{ label: 'Fechar', pri: true }] });
   };
   ui.dlgDoc = function (which, anchor) {
-    var C = EC.CONTENT[which], art = h('article', { html: C.html, tabindex: '0' }), nav = h('nav', { 'aria-label': 'Seções' });
+    var C = EC.CONTENT[which], NI = window.NebulosaIdiomas, LD = NI && window.__emcantoDocs && window.__emcantoDocs[NI.atual()]; /* [Nebulosa] idiomas 0.6: manual e documentação no idioma escolhido */
+    if (LD && LD[which]) C = LD[which];
+    else if (NI && NI.atual() !== 'pt-BR' && which === 'manual') return ui.nbAjuda('manual'); /* manual traduzido do site */
+    else if (NI && NI.atual() !== 'pt-BR' && which === 'tech') C = { title: NI.t('Documentação técnica'), html: '<p class="note">' + NI.t('A documentação técnica está disponível somente em português.') + '</p>' + C.html };
+    var art = h('article', { html: C.html, tabindex: '0' }), nav = h('nav', { 'aria-label': 'Seções' });
     Array.prototype.forEach.call(art.querySelectorAll('h3'), function (h3, i) { if (!h3.id) h3.id = 'sec-' + i; nav.appendChild(h('a', { href: '#' + h3.id, onclick: function (e) { e.preventDefault(); h3.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, h3.textContent)); });
     ui.dialog({ title: C.title, cls: 'full', body: h('div', { class: 'doc' }, nav, art), buttons: [which === 'manual' ? { label: 'Documentação técnica', action: function () { setTimeout(function () { ui.dlgDoc('tech'); }, 30); } } : { label: 'Manual do Usuário', action: function () { setTimeout(function () { ui.dlgDoc('manual'); }, 30); } }, 'sp', { label: 'Fechar', pri: true }] });
     if (anchor) setTimeout(function () { var el = art.querySelector('#' + anchor); if (el) el.scrollIntoView({ block: 'start' }); }, 60);
@@ -10522,7 +10527,7 @@ EC.importer.readHeader = function (score, lines, pg) {
       h('div', null,
         h('dl', null, h('dt', null, 'Programa'), h('dd', null, EC.APP.name), h('dt', null, 'Slogan'), h('dd', null, EC.APP.slogan), h('dt', null, 'Autores e idealizadores'), h('dd', null, EC.APP.author), h('dt', null, 'Equipe de produção'), h('dd', null, EC.APP.team), h('dt', null, 'Versão'), h('dd', null, EC.APP.version)),
         h('h3', { style: { fontSize: '1rem', marginBottom: '.4rem' } }, 'Créditos'),
-        h('div', { html: EC.CONTENT.about }))),
+        h('div', { html: (window.NebulosaIdiomas && window.__emcantoDocs && window.__emcantoDocs[NebulosaIdiomas.atual()] && window.__emcantoDocs[NebulosaIdiomas.atual()].about) || EC.CONTENT.about }))), /* [Nebulosa] idiomas 0.6 */
       buttons: [{ label: 'Configurações', action: function () { setTimeout(ui.dlgSettings, 30); } }, { label: 'Créditos e licenças', action: function () { ui.nbAjuda('creditos'); } }, 'sp', { label: 'Fechar', pri: true }] });
   };
 })();

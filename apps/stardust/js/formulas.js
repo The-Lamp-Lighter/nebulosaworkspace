@@ -38,9 +38,37 @@
     ISBLANK: 'ÉCÉL.VAZIA', ISNUMBER: 'ÉNÚM', ISTEXT: 'ÉTEXTO', ISERROR: 'ÉERROS', ISERR: 'ÉERRO', ISNA: 'É.NÃO.DISP', ISLOGICAL: 'ÉLÓGICO', ISEVEN: 'ÉPAR', ISODD: 'ÉIMPAR', NA: 'NÃO.DISP',
     PMT: 'PGTO', FV: 'VF', PV: 'VP', NPER: 'NPER', RATE: 'TAXA', NPV: 'VPL', IRR: 'TIR'
   };
-  const EN = {}; // nome português normalizado → inglês
+  /* [Nebulosa] idiomas (0.6): nomes como no Excel em espanhol. Em inglês aparecem os nomes canônicos.
+     Separador ";" e vírgula decimal continuam iguais nos três idiomas (formato brasileiro de números). */
+  const ES = {
+    SUM: 'SUMA', AVERAGE: 'PROMEDIO', MIN: 'MIN', MAX: 'MAX', COUNT: 'CONTAR', COUNTA: 'CONTARA', COUNTBLANK: 'CONTAR.BLANCO',
+    COUNTIF: 'CONTAR.SI', COUNTIFS: 'CONTAR.SI.CONJUNTO', SUMIF: 'SUMAR.SI', SUMIFS: 'SUMAR.SI.CONJUNTO', AVERAGEIF: 'PROMEDIO.SI', AVERAGEIFS: 'PROMEDIO.SI.CONJUNTO',
+    MAXIFS: 'MAX.SI.CONJUNTO', MINIFS: 'MIN.SI.CONJUNTO',
+    IF: 'SI', IFS: 'SI.CONJUNTO', IFERROR: 'SI.ERROR', IFNA: 'SI.ND', AND: 'Y', OR: 'O', NOT: 'NO', XOR: 'XO', SWITCH: 'CAMBIAR', TRUE: 'VERDADERO', FALSE: 'FALSO',
+    ROUND: 'REDONDEAR', ROUNDUP: 'REDONDEAR.MAS', ROUNDDOWN: 'REDONDEAR.MENOS', INT: 'ENTERO', TRUNC: 'TRUNCAR', ABS: 'ABS', SQRT: 'RAIZ',
+    POWER: 'POTENCIA', MOD: 'RESIDUO', PI: 'PI', RAND: 'ALEATORIO', RANDBETWEEN: 'ALEATORIO.ENTRE', PRODUCT: 'PRODUCTO', SUMPRODUCT: 'SUMAPRODUCTO',
+    SUMSQ: 'SUMA.CUADRADOS', MEDIAN: 'MEDIANA', MODE: 'MODA', 'MODE.SNGL': 'MODA.UNO', STDEV: 'DESVEST', 'STDEV.S': 'DESVEST.M', 'STDEV.P': 'DESVEST.P', STDEVP: 'DESVESTP',
+    VAR: 'VAR', 'VAR.S': 'VAR.S', 'VAR.P': 'VAR.P', VARP: 'VARP', LARGE: 'K.ESIMO.MAYOR', SMALL: 'K.ESIMO.MENOR', RANK: 'JERARQUIA', 'RANK.EQ': 'JERARQUIA.EQV',
+    CEILING: 'MULTIPLO.SUPERIOR', FLOOR: 'MULTIPLO.INFERIOR', MROUND: 'REDOND.MULT', EXP: 'EXP', LN: 'LN', LOG: 'LOG', LOG10: 'LOG10', SIGN: 'SIGNO', EVEN: 'REDONDEA.PAR', ODD: 'REDONDEA.IMPAR',
+    FACT: 'FACT', GCD: 'M.C.D', LCM: 'M.C.M', SIN: 'SENO', COS: 'COS', TAN: 'TAN', RADIANS: 'RADIANES', DEGREES: 'GRADOS', COUNTUNIQUE: 'CONTAR.UNICOS',
+    CONCATENATE: 'CONCATENAR', CONCAT: 'CONCAT', TEXTJOIN: 'UNIRCADENAS', LEFT: 'IZQUIERDA', RIGHT: 'DERECHA', MID: 'EXTRAE', LEN: 'LARGO',
+    UPPER: 'MAYUSC', LOWER: 'MINUSC', PROPER: 'NOMPROPIO', TRIM: 'ESPACIOS', SUBSTITUTE: 'SUSTITUIR', REPLACE: 'REEMPLAZAR',
+    FIND: 'ENCONTRAR', SEARCH: 'HALLAR', TEXT: 'TEXTO', VALUE: 'VALOR', REPT: 'REPETIR', EXACT: 'IGUAL', CHAR: 'CARACTER', CODE: 'CODIGO', CLEAN: 'LIMPIAR', T: 'T', N: 'N',
+    VLOOKUP: 'BUSCARV', HLOOKUP: 'BUSCARH', XLOOKUP: 'BUSCARX', LOOKUP: 'BUSCAR', INDEX: 'INDICE', MATCH: 'COINCIDIR', CHOOSE: 'ELEGIR',
+    ROW: 'FILA', COLUMN: 'COLUMNA', ROWS: 'FILAS', COLUMNS: 'COLUMNAS', TRANSPOSE: 'TRANSPONER',
+    TODAY: 'HOY', NOW: 'AHORA', DATE: 'FECHA', TIME: 'NSHORA', YEAR: 'AÑO', MONTH: 'MES', DAY: 'DIA', HOUR: 'HORA', MINUTE: 'MINUTO', SECOND: 'SEGUNDO',
+    WEEKDAY: 'DIASEM', WEEKNUM: 'NUM.DE.SEMANA', DATEDIF: 'SIFECHA', EDATE: 'FECHA.MES', EOMONTH: 'FIN.MES', NETWORKDAYS: 'DIAS.LAB', WORKDAY: 'DIA.LAB',
+    DAYS: 'DIAS', DATEVALUE: 'FECHANUMERO', YEARFRAC: 'FRAC.AÑO',
+    ISBLANK: 'ESBLANCO', ISNUMBER: 'ESNUMERO', ISTEXT: 'ESTEXTO', ISERROR: 'ESERROR', ISERR: 'ESERR', ISNA: 'ESNOD', ISLOGICAL: 'ESLOGICO', ISEVEN: 'ES.PAR', ISODD: 'ES.IMPAR', NA: 'NOD',
+    PMT: 'PAGO', FV: 'VF', PV: 'VA', NPER: 'NPER', RATE: 'TASA', NPV: 'VNA', IRR: 'TIR'
+  };
+  const idioma = () => (window.NebulosaIdiomas ? window.NebulosaIdiomas.atual() : 'pt-BR');
+  /** Nome da função no idioma escolhido (pt: SOMA, en: SUM, es: SUMA). */
+  const nome = en => { const l = idioma(); return l === 'en' ? en : l === 'es' ? (ES[en] || en) : (PT[en] || en); };
+  const EN = {}; // nome português (ou espanhol) normalizado → inglês
   const normName = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-  Object.keys(PT).forEach(k => { EN[normName(PT[k])] = k; });
+  Object.keys(ES).forEach(k => { EN[normName(ES[k])] = k; });
+  Object.keys(PT).forEach(k => { EN[normName(PT[k])] = k; }); // o português vale mais quando o nome é igual
   const toEn = name => { const u = String(name).toUpperCase(); if (FN[u] || PT[u]) return u; const n = normName(name); return EN[n] || (FN[n] ? n : u); };
 
   /* ---------- tokens ---------- */
@@ -60,7 +88,7 @@
         toks.push({ t: 'str', v: s }); i = j + 1; continue;
       }
       if (ch === '#') {
-        const m = /^#(?:NULL!|DIV\/0!|VALUE!|REF!|NAME\?|NUM!|N\/A|NULO!|VALOR!|NOME\?|NÚM!|N\/D|CIRC!)/i.exec(rest);
+        const m = /^#(?:NULL!|DIV\/0!|VALUE!|REF!|NAME\?|NUM!|N\/A|NULO!|VALOR!|NOME\?|NÚM!|N\/D|CIRC!|¡NULO!|¡DIV\/0!|¡VALOR!|¡REF!|¿NOMBRE\?|¡NUM!)/i.exec(rest);
         if (m) { toks.push({ t: 'err', v: m[0].toUpperCase() }); i += m[0].length; continue; }
       }
       // número
@@ -87,7 +115,7 @@
       m = /^([A-Za-z_\u00C0-\u024F][\w.\u00C0-\u024F]*)/.exec(rest);
       if (m) {
         const u = normName(m[1]);
-        if (u === 'TRUE' || u === 'VERDADEIRO') toks.push({ t: 'bool', v: true });
+        if (u === 'TRUE' || u === 'VERDADEIRO' || u === 'VERDADERO') toks.push({ t: 'bool', v: true });
         else if (u === 'FALSE' || u === 'FALSO') toks.push({ t: 'bool', v: false });
         else toks.push({ t: 'name', v: m[1] });
         i += m[1].length; continue;
@@ -109,10 +137,10 @@
         case 'ws': return k.v;
         case 'str': return '"' + k.v.replace(/"/g, '""') + '"';
         case 'num': return pt ? fmtNumLit(k.v).replace('.', ',') : fmtNumLit(k.v);
-        case 'bool': return pt ? (k.v ? 'VERDADEIRO' : 'FALSO') : (k.v ? 'TRUE' : 'FALSE');
-        case 'err': return pt ? (SD.ERR_PT[k.v] || k.v) : (SD.ERR_EN[k.v] || k.v);
+        case 'bool': return pt ? SD.boolTela(k.v) : (k.v ? 'TRUE' : 'FALSE'); // [Nebulosa] idiomas
+        case 'err': { const c = SD.ERR_DE[k.v] || SD.ERR_PT[k.v] || k.v; return pt ? SD.errTela(c) : (SD.ERR_EN[c] || k.v); }
         case 'ref': return (k.sheet !== undefined ? quoteSheet(k.sheet) + '!' : '') + k.v.toUpperCase();
-        case 'fn': { if (/^_xl(fn|ws)\./i.test(k.v)) return '_xlfn.' + k.v.replace(/^_xl(fn|ws)\./i, '').toUpperCase() + '('; const en = toEn(k.v); return (pt ? (PT[en] || en) : en) + '('; }
+        case 'fn': { if (/^_xl(fn|ws)\./i.test(k.v)) return '_xlfn.' + k.v.replace(/^_xl(fn|ws)\./i, '').toUpperCase() + '('; const en = toEn(k.v); return (pt ? nome(en) : en) + '('; }
         case 'name': return k.v;
         case 'sep': return pt ? ';' : ',';
         case 'op': case 'bad': return k.v;
@@ -158,7 +186,7 @@
         case 'num': return { k: 'lit', v: k.v };
         case 'str': return { k: 'lit', v: k.v };
         case 'bool': return { k: 'lit', v: k.v };
-        case 'err': return { k: 'lit', v: ERR[SD.ERR_PT[k.v] || k.v] || new Err(k.v) };
+        case 'err': return { k: 'lit', v: ERR[SD.ERR_DE[k.v] || SD.ERR_PT[k.v] || k.v] || new Err(k.v) };
         case 'ref': return { k: 'ref', sheet: k.sheet, ref: k.v };
         case 'name': return { k: 'name', v: k.v };
         case '(': { const e = expr(1); if (!peek() || next().t !== ')') throw new Error('falta )'); return e; }
@@ -766,7 +794,14 @@
     PMT: ['taxa; nper; vp; [vf]; [tipo]', 'Valor da prestação. Ex.: =PGTO(1%;12;-1000)'], FV: ['taxa; nper; pgto; [vp]; [tipo]', 'Valor futuro.'], PV: ['taxa; nper; pgto; [vf]; [tipo]', 'Valor presente.'],
     NPER: ['taxa; pgto; vp; [vf]; [tipo]', 'Número de períodos.'], RATE: ['nper; pgto; vp; [vf]; [tipo]', 'Taxa de juros por período.'], NPV: ['taxa; valor1; …', 'Valor presente líquido.'], IRR: ['valores; [estimativa]', 'Taxa interna de retorno.']
   };
-  const library = () => ({ categorias: CAT, doc: DOC, pt: PT });
+  // [Nebulosa] idiomas (0.6): nomes, argumentos e descrições no idioma escolhido
+  const library = () => {
+    const l = idioma();
+    if (l === 'pt-BR') return { categorias: CAT, doc: DOC, pt: PT };
+    const T = s => (window.NebulosaIdiomas ? window.NebulosaIdiomas.t(s) : s), doc = {}, nomes = {};
+    Object.keys(DOC).forEach(k => { doc[k] = [T(DOC[k][0]), T(DOC[k][1])]; nomes[k] = nome(k); });
+    return { categorias: CAT, doc, pt: nomes };
+  };
 
-  SD.F = { tokenize, untokenize, toDisplay, toCanonical, parse, check, recalc, evaluate, shiftFormula, adjustForInsert, renameSheetRefs, refsIn, toFileFormula, fromFileFormula, library, PT, toEn, FN, cmp, Rng };
+  SD.F = { tokenize, untokenize, toDisplay, toCanonical, parse, check, recalc, evaluate, shiftFormula, adjustForInsert, renameSheetRefs, refsIn, toFileFormula, fromFileFormula, library, PT, ES, nome, toEn, FN, cmp, Rng };
 })();

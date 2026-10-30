@@ -41,6 +41,19 @@
   </div>
 </main>
 <script>
+  // [Nebulosa] idiomas (0.6): créditos em inglês e espanhol, conforme o idioma escolhido no Nebulosa Workspace
+  (function () {
+    var L; try { L = localStorage.getItem('nebulosa.idioma'); } catch (e) {}
+    var T = { en: ['Imaginarium logo', 'Version 2.0 — Offline Graphics Editor', 'Authors and creators', 'Márcio Willians Barreto de Andrade and Raul Goulart de Andrade', 'Production team', 'Lamp Lighter Production Team', 'Project developed for personal and educational use.', 'All rights to the respective formats belong to their owners.', 'Interface created exclusively for Imaginarium.', 'Credits — Imaginarium'],
+              es: ['Logotipo de Imaginarium', 'Versión 2.0 — Editor Gráfico sin Conexión', 'Autores e idealizadores', 'Márcio Willians Barreto de Andrade y Raul Goulart de Andrade', 'Equipo de producción', 'Equipo de Producción Lamp Lighter', 'Proyecto desarrollado para uso personal y educativo.', 'Todos los derechos de los respectivos formatos pertenecen a sus propietarios.', 'Interfaz creada exclusivamente para Imaginarium.', 'Créditos — Imaginarium'] }[L];
+    if (!T) return;
+    document.documentElement.lang = L;
+    document.querySelector('img').alt = T[0];
+    document.querySelector('.version').textContent = T[1];
+    var dd = document.querySelectorAll('dt, dd'); for (var i = 0; i < 4; i++) dd[i].textContent = T[2 + i];
+    var p = document.querySelectorAll('.notes p'); for (var j = 0; j < 3; j++) p[j].textContent = T[6 + j];
+    document.title = T[9];
+  })();
   // Esc fecha a janela de créditos (avisa o aplicativo)
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && window.parent !== window) window.parent.postMessage('imaginarium:close', '*'); });
 </script>

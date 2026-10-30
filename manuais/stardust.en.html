@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stardust — Free Spreadsheets and Charts in the browser | Manual</title>
+<meta name="description" content="Stardust is the Nebulosa Workspace spreadsheet: tables, formulas, formatting, conditional formatting, drop-down lists, comments, sorting, filters and charts, with files that open in Excel and LibreOffice. Everything runs in your browser.">
+<!-- seo -->
+<link rel="canonical" href="https://nebulosaworkspace.com.br/manuais/stardust.en.html">
+<link rel="alternate" hreflang="pt-BR" href="https://nebulosaworkspace.com.br/manuais/stardust.html">
+<link rel="alternate" hreflang="en" href="https://nebulosaworkspace.com.br/manuais/stardust.en.html">
+<link rel="alternate" hreflang="es" href="https://nebulosaworkspace.com.br/manuais/stardust.es.html">
+<link rel="alternate" hreflang="x-default" href="https://nebulosaworkspace.com.br/manuais/stardust.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nebulosa Workspace">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://nebulosaworkspace.com.br/manuais/stardust.en.html">
+<meta property="og:title" content="Stardust — Free Spreadsheets and Charts in the browser | Manual">
+<meta property="og:description" content="Stardust is the Nebulosa Workspace spreadsheet: tables, formulas, formatting, conditional formatting, drop-down lists, comments, sorting, filters and charts, with files that open in Excel and LibreOffice. Everything runs in your browser.">
+<meta property="og:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Nebulosa Workspace: 9 free programs that run right in the browser">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stardust — Free Spreadsheets and Charts in the browser | Manual">
+<meta name="twitter:description" content="Stardust is the Nebulosa Workspace spreadsheet: tables, formulas, formatting, conditional formatting, drop-down lists, comments, sorting, filters and charts, with files that open in Excel and LibreOffice. Everything runs in your browser.">
+<meta name="twitter:image" content="https://nebulosaworkspace.com.br/assets/img/og-nebulosa-workspace.jpg">
+<meta name="theme-color" content="#323559">
+<!-- /seo -->
+<link rel="icon" type="image/png" href="../assets/img/favicon-64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="manual.css">
+<script>try{var t=(JSON.parse(localStorage.getItem('nebulosa.hub')||'{}')||{}).theme;document.documentElement.setAttribute('data-theme',t==='light'?'light':t==='dark'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}catch(e){}</script>
+<style>:root{--c1:#4d8fd6;--c2:#a244f5}</style>
+<script>/* (0.5) aberto dentro de um programa (menu Ajuda): sem a barra de cima; links para fora abrem em outra janela */
+if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
+</head>
+<body>
+<header class="topo"><a class="marca" href="index.en.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuals <small>Nebulosa Workspace</small></span></a><span class="esp"></span><nav class="idiomas" aria-label="Language"><a href="stardust.html" lang="pt-BR" hreflang="pt-BR">PT</a><a href="stardust.en.html" lang="en" hreflang="en" aria-current="true">EN</a><a href="stardust.es.html" lang="es" hreflang="es">ES</a></nav><a class="bt" href="../apps/stardust/" target="_blank" rel="noopener">Open Stardust</a><a class="bt" href="../index.html">Open the Workspace</a><button class="bt" onclick="window.print()">Print</button></header>
+<div class="capa"><div class="in"><span class="tag">Productivity &amp; Data</span><h1>Stardust<small>by Nebulosa Workspace</small></h1><p class="funcao">Spreadsheets and Charts</p><p>Stardust is the Nebulosa Workspace spreadsheet: tables, formulas, formatting, conditional formatting, drop-down lists, comments, sorting, filters and charts, with files that open in Excel and LibreOffice. Everything runs in your browser; no data leaves your computer.</p>
+<div class="acoes"><a href="../index.html#app=stardust">Open in the Workspace</a><a class="sec" href="index.en.html">Other manuals</a></div></div></div>
+<div class="layout"><nav class="indice" aria-label="Contents"><b>In this manual</b><a href="#s1">1. The screen</a><a href="#s2">2. Getting started</a><a href="#s3">3. Selecting and moving around</a><a href="#s4">4. Formulas and functions</a><a href="#s5">5. Copy, paste and fill</a><a href="#s6">6. Formatting</a><a href="#s7">7. Rows, columns and sheets</a><a href="#s8">8. Data: sort, filter, find</a><a href="#s9">9. Conditional formatting</a><a href="#s10">10. Data validation and drop-down lists</a><a href="#s11">11. Comments</a><a href="#s12">12. Charts</a><a href="#s13">13. Opening files</a><a href="#s14">14. Saving and exporting</a><a href="#s15">15. Keyboard shortcuts</a><a href="#s16">16. Frequently asked questions</a><a href="#s17">17. Inside the Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>The screen</h2>
+<table><tr><th>Area</th><th>What it is for</th></tr>
+<tr><td>Top bar</td><td>Menus (File, Edit, Insert, Format, Data, View, Help), workbook name, undo/redo, Open, <b>Save</b> and Appearance.</td></tr>
+<tr><td>Tools (capsules)</td><td>Font and size · bold, italic, underline · text color, fill and borders · alignment, wrap text and merge · number format (R$, %, 000, decimal places) · Σ AutoSum, sort and filter · <b>Chart</b> · side panel.</td></tr>
+<tr><td>Formula bar</td><td>On the left, the <b>name box</b> (shows the current cell; type <code>B12</code> or <code>A1:D20</code> and Enter to go there). <b>ƒx</b> opens the function list. The wide bar shows and edits the cell's content.</td></tr>
+<tr><td>Grid</td><td>The cells. Columns with letters (A, B, C…) and rows with numbers.</td></tr>
+<tr><td>Side panel</td><td><b>Functions</b> tab (list with explanation and example) and <b>Chart</b> tab (type, title, data, legend and colors).</td></tr>
+<tr><td>Footer</td><td>Sheet tabs (pills), <b>+</b> button for a new sheet, Sum/Average/Count of the selection and zoom.</td></tr></table></section><section id="s2"><h2><span class="num">2</span>Getting started</h2>
+<ol>
+<li>Click a cell and type. <kbd>Enter</kbd> confirms and moves down; <kbd>Tab</kbd> confirms and moves right.</li>
+<li>Numbers follow the Brazilian format in every language: <code>1.234,56</code> (comma as decimal separator), <code>R$ 50,00</code>, <code>15%</code>, dates <code>25/10/2026</code> (day/month/year) and times <code>14:30</code>. Stardust recognizes them and applies the format.</li>
+<li>For a formula, start with <kbd>=</kbd>: <code>=A1+B1</code>, <code>=SUM(B2:B10)</code>.</li>
+<li>To start from a ready-made example, use <b>File › New from template</b>: Monthly budget, Class grades, Sales by month or Shopping list (the template texts come in the chosen language).</li>
+<li>Save with <kbd>Ctrl</kbd>+<kbd>S</kbd>. The default format is Excel's (.xlsx).</li>
+</ol>
+<div class="dica">To type a text that starts with “=” or a number that should stay as text (e.g. <code>00123</code>), start with an apostrophe: <code>'00123</code>.</div></section><section id="s3"><h2><span class="num">3</span>Selecting and moving around</h2>
+<ul>
+<li>Click and drag to select a range; <kbd>Shift</kbd>+click extends the selection.</li>
+<li>Click a column letter or row number to select the whole column or row; the top-left corner selects everything.</li>
+<li><kbd>Ctrl</kbd> + <kbd>arrows</kbd> jumps to the end of the data; <kbd>Shift</kbd> + <kbd>arrows</kbd> extends the selection; <kbd>Ctrl</kbd> + <kbd>Home</kbd> goes back to A1.</li>
+<li>The bottom bar shows the <b>Sum</b>, <b>Average</b> and <b>Count</b> of the selection.</li>
+<li>Zoom: control in the footer or <kbd>Ctrl</kbd> + <kbd>mouse wheel</kbd>.</li>
+</ul></section><section id="s4"><h2><span class="num">4</span>Formulas and functions</h2>
+<p>Formulas follow Excel. In English, functions appear with their English names (SUM, AVERAGE, IF, VLOOKUP); as in Brazilian Excel, the <b>semicolon</b> separates arguments and the <b>comma</b> is the decimal separator — in every language.</p>
+<table><tr><th>Example</th><th>Result</th></tr>
+<tr><td><code>=SUM(B2:B10)</code></td><td>Sum of the range</td></tr>
+<tr><td><code>=AVERAGE(B2:B10)</code></td><td>Average</td></tr>
+<tr><td><code>=IF(B2&gt;=7;"Passed";"Retake")</code></td><td>Chooses a text according to the test</td></tr>
+<tr><td><code>=VLOOKUP(A2;Products!A:C;3;FALSE)</code></td><td>Looks up a value in a table</td></tr>
+<tr><td><code>=SUMIF(A:A;"Rent";B:B)</code></td><td>Sums only what matches the criterion</td></tr>
+<tr><td><code>=COUNTIF(C2:C50;"&gt;100")</code></td><td>Counts the cells above 100</td></tr>
+<tr><td><code>=DATEDIF(B2;TODAY();"Y")</code></td><td>Age in years</td></tr>
+<tr><td><code>=PMT(1%;12;-1000)</code></td><td>Installment amount</td></tr></table>
+<ul>
+<li><b>More than 120 functions</b>: math, statistics, logic, text, lookup and reference, date and time, information and financial. The full list, with an explanation of each one, is in the <b>Functions</b> panel (<b>ƒx</b> button).</li>
+<li>You can type the names in English (SUM, AVERAGE, IF, VLOOKUP), in Portuguese (SOMA, MÉDIA, SE, PROCV) or in Spanish (SUMA, PROMEDIO, SI, BUSCARV); the file keeps the formula in Excel's standard and it shows up in the chosen language.</li>
+<li>As you type, the function list appears: <kbd>↑</kbd> <kbd>↓</kbd> choose and <kbd>Tab</kbd> accepts. Below the formula bar, the <b>tip</b> with the arguments appears, highlighting the one you are typing.</li>
+<li>While writing a formula, click a cell (or drag across a range) to insert the reference. References appear in color on the grid.</li>
+<li><kbd>F4</kbd> cycles between <code>A1</code>, <code>$A$1</code>, <code>A$1</code> and <code>$A1</code> (fixed reference when copying).</li>
+<li>Reference to another sheet: <code>=Sales!B2</code> or <code>='My sheet'!B2</code>. While writing the formula, click the other sheet's tab and then the cell.</li>
+<li>Parentheses forgotten at the end are closed automatically.</li>
+</ul>
+<h3>Errors</h3>
+<table><tr><th>Error</th><th>What it means</th></tr>
+<tr><td><code>#DIV/0!</code></td><td>Division by zero</td></tr><tr><td><code>#VALUE!</code></td><td>Text where a number was expected</td></tr>
+<tr><td><code>#NAME?</code></td><td>Function that does not exist (check the name)</td></tr><tr><td><code>#REF!</code></td><td>Reference to cells or a sheet that no longer exist</td></tr>
+<tr><td><code>#N/A</code></td><td>Value not found (VLOOKUP, MATCH…)</td></tr><tr><td><code>#NUM!</code></td><td>Invalid number</td></tr>
+<tr><td><code>#CIRC!</code></td><td>Circular reference: the formula depends on itself</td></tr></table></section><section id="s5"><h2><span class="num">5</span>Copy, paste and fill</h2>
+<ul>
+<li><kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>Ctrl</kbd> + <kbd>X</kbd> / <kbd>Ctrl</kbd> + <kbd>V</kbd>: copy, cut and paste — including from and to Excel, LibreOffice and Google Sheets.</li>
+<li>When pasting formulas, relative references follow the new position (as in Excel).</li>
+<li><b>Edit › Paste values only</b> and <b>Paste formatting only</b>.</li>
+<li><b>Fill handle</b>: the small square at the corner of the selection. Drag down or sideways to continue series: 1, 2, 3…; dates; months; weekdays; “Item 1, Item 2…”; and to copy formulas. Double-clicking the handle fills down to the end of the data in the neighboring column.</li>
+<li><kbd>Ctrl</kbd> + <kbd>D</kbd> fills down and <kbd>Ctrl</kbd> + <kbd>R</kbd> fills right. <kbd>Ctrl</kbd> + <kbd>Enter</kbd> writes the same value in all selected cells.</li>
+</ul></section><section id="s6"><h2><span class="num">6</span>Formatting</h2>
+<ul>
+<li>Toolbar: font (Calibri, Cambria, Consolas), size, bold, italic, underline, strikethrough, text color, fill color, borders (all, outside, thick, bottom, top…), alignment, wrap text and <b>merge and center</b>.</li>
+<li>Number formats: General, Number, Currency (R$), Percentage, Date, Long date, Time, Text and Scientific; buttons for decimal places and thousands separator.</li>
+<li><b>Format cells</b> (<kbd>Ctrl</kbd> + <kbd>1</kbd>): Number tab (with Excel format code, e.g. <code>#,##0.00</code>), Alignment, Font, Border and Fill.</li>
+<li>Column width and row height: drag the divider in the header; double-click to fit the content. Also in <b>Format</b>.</li>
+<li>Hide and unhide rows and columns: right-click the header.</li>
+</ul></section><section id="s7"><h2><span class="num">7</span>Rows, columns and sheets</h2>
+<ul>
+<li>Insert and delete rows and columns: <b>Insert</b> menu or right-click the cell or header. Formulas adjust by themselves.</li>
+<li>New sheet: <b>+</b> button in the footer (<kbd>Shift</kbd>+<kbd>F11</kbd>). Double-click the tab to rename; right-click to duplicate, move or delete; drag the tab to change the order.</li>
+<li><b>View › Freeze panes</b>: first row, first column or everything above and to the left of the current cell. Useful to keep the header visible.</li>
+<li><b>View › Gridlines</b> shows or hides the grid lines.</li>
+</ul></section><section id="s8"><h2><span class="num">8</span>Data: sort, filter, find</h2>
+<ul>
+<li><b>Sort A→Z / Z→A</b>: click a cell in the column and use the buttons. Stardust finds the whole table and notices whether the first row is a header. <b>Data › Sort…</b> lets you choose the column, the order and a second criterion.</li>
+<li><b>Filter</b>: turns on small arrows in the table header. In each one, check the values you want to see, search, sort or clear the filter.</li>
+<li><b>Remove duplicates</b>: deletes repeated rows, keeping the first one.</li>
+<li><b>Find</b> (<kbd>Ctrl</kbd> + <kbd>F</kbd>) and <b>Find and replace</b> (<kbd>Ctrl</kbd> + <kbd>H</kbd>), in this sheet or in all of them.</li>
+</ul></section><section id="s9"><h2><span class="num">9</span>Conditional formatting</h2>
+<p>Changes the look of the cells automatically, according to the value of each one — for example, making grades below 5 red.</p>
+<ol><li>Select the cells and use <b>Format › Conditional formatting…</b> (or right-click the cell).</li>
+<li>In <b>Format cells with</b>, choose the rule: greater than, less than, greater than or equal, less than or equal, between, equal to, not equal to, text that contains, duplicate values, unique values, above average, below average, <b>color scale</b> or <b>data bars</b>.</li>
+<li>Type the value (when the rule asks for one) — numbers, dates such as <code>01/01/2026</code> or texts.</li>
+<li>Choose the look: red, yellow, green, Nebulosa purple, Nebulosa orange, bold only, red text only or <b>Custom</b> (background, text color and bold). For the color scale and the bars, choose the colors.</li>
+<li>Click <b>Apply</b>.</li></ol>
+<p>The window shows the sheet's rules; the top one has priority. The trash can deletes a rule and <b>Remove rules from range</b> clears a range. <b>Format › Remove conditional formatting from selection</b> and <b>Clear formatting</b> also remove them.</p>
+<p>Rules follow row and column insertions and deletions, appear in the PDF and JPG and are saved in the .xlsx as Excel conditional formatting.</p></section><section id="s10"><h2><span class="num">10</span>Data validation and drop-down lists</h2>
+<p>Limits what can be typed. The most common use is the <b>drop-down list</b>: the cell gets a small arrow with the options.</p>
+<ol><li>Select the cells and use <b>Data › Data validation…</b>.</li>
+<li>In <b>Allow</b>, choose:
+<ul><li><b>List of options</b> — type the options separated by semicolons (<code>Yes; No; Maybe</code>) or point to a range starting with “=” (<code>=E1:E10</code> or <code>=Lists!A1:A20</code>). If the range changes, the list changes too.</li>
+<li><b>Whole number</b>, <b>Number</b>, <b>Date</b> or <b>Text length</b> — with between, not between, equal, not equal, greater, less, greater or equal, less or equal.</li></ul></li>
+<li>Decide what happens to a value outside the rule: <b>Reject</b> (asks for another value) or <b>Warn only</b> (the person decides whether to keep it). If you want, write your own error message.</li></ol>
+<p>In a cell with a list, click the small arrow next to it or press <kbd>Alt</kbd>+<kbd>↓</kbd> to open the options. <b>Remove validation</b> (in the window or in <b>Data › Remove validation from selection</b>) removes the rule.</p>
+<div class="nota">As in Excel, validation checks what is typed; what is pasted or calculated by a formula is not blocked.</div></section><section id="s11"><h2><span class="num">11</span>Comments</h2>
+<ul><li>To comment on a cell: right-click › <b>Insert comment…</b>, <b>Insert › Comment…</b> or <kbd>Shift</kbd>+<kbd>F2</kbd>. Type and click <b>Save</b> (or <kbd>Ctrl</kbd>+<kbd>Enter</kbd>).</li>
+<li>The cell gets a <b>red triangle</b> in the corner. Hover over it to read.</li>
+<li>To change it, repeat the command (<b>Edit comment…</b>). To delete it, use <b>Delete</b> in the window or right-click › <b>Delete comment</b>. <b>Clear all</b> also deletes the comments in the selection.</li>
+<li>Comments go into the .xlsx as Excel and LibreOffice comments (notes), and come back when opening.</li></ul></section><section id="s12"><h2><span class="num">12</span>Charts</h2>
+<ol>
+<li>Select the data <b>with the headings</b> (for example, months in the first column and the values next to them).</li>
+<li>Click <b>Chart</b> and choose the type: Column, Bar, Line, Area, Pie, Doughnut or Scatter.</li>
+<li>The chart appears next to the data and the <b>Chart</b> panel opens for adjustments: type, title, data range (type it or click ▦ to pick it on the sheet), series in columns or rows, legend, data labels, stacked and colors (Stardust, Nebulosa or Sober).</li>
+<li>Drag the chart to move it; the dots change its size. <kbd>Delete</kbd> deletes the selected chart.</li>
+<li>Right-click the chart › <b>Download image (PNG)</b>.</li>
+</ol>
+<p>Charts follow the data: change a number and the chart changes too. In the .xlsx file they are saved as <b>native Excel charts</b>, editable in Excel and LibreOffice.</p></section><section id="s13"><h2><span class="num">13</span>Opening files</h2>
+<p><b>Open</b> (<kbd>Ctrl</kbd>+<kbd>O</kbd>) or drag the file into the window. Accepted formats: <code>.xlsx</code>, <code>.xlsm</code>, <code>.xlsb</code>, <code>.xls</code>, <code>.ods</code>, <code>.csv</code> (separated by semicolon, comma or tab), <code>.tsv</code> and <code>.txt</code>.</p>
+<ul><li>From .xlsx/.xlsm come values, formulas, formatting, widths, merged cells, frozen panes, charts, conditional formatting, data validation and comments. (Conditional rules made with Excel's own formulas are not read yet.)</li>
+<li>From .xls, .xlsb and .ods come values, formulas, number formats, widths and merged cells.</li>
+<li>Password-protected files do not open.</li></ul></section><section id="s14"><h2><span class="num">14</span>Saving and exporting</h2>
+<p><b>Save</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) and <b>Save as</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>) show the formats:</p>
+<table><tr><th>Format</th><th>What it keeps</th></tr>
+<tr><td><b>.xlsx</b> — Excel</td><td>Everything: values, formulas, formatting, merged cells, frozen panes, charts, conditional formatting, data validation and comments. <b>Recommended.</b></td></tr>
+<tr><td><b>.xlsm</b> — Excel macro-enabled</td><td>The same as .xlsx (Stardust does not create macros).</td></tr>
+<tr><td><b>.xlsb</b> — Excel binary</td><td>Values, formulas, number formats and widths. No colors and no charts.</td></tr>
+<tr><td><b>.xls</b> — Excel 97-2003</td><td>Calculated values, number formats and widths. No colors and no charts.</td></tr>
+<tr><td><b>.ods</b> — LibreOffice</td><td>Values, formulas and number formats. No colors and no charts.</td></tr>
+<tr><td><b>.csv</b></td><td>Only the open sheet and only the cell text (semicolon, the Brazilian standard, or comma).</td></tr>
+<tr><td><b>.pdf</b></td><td>To print or send: portrait or landscape, fit to width, gridlines, one or all sheets. Charts go at the end.</td></tr>
+<tr><td><b>.jpg</b></td><td>An image of the open sheet, with the charts in place.</td></tr></table>
+<p>In Chrome and Edge, the system window opens to choose the folder and the name; afterwards, <kbd>Ctrl</kbd>+<kbd>S</kbd> writes to the same file. In other browsers the file goes to the downloads folder.</p>
+<p><b>File › Print</b> generates the PDF and opens the browser's print dialog.</p>
+<div class="dica">Stardust keeps a recovery copy in this browser while you work. If the window closes without saving, when you open it again it offers <b>Recover</b>. Even so, save to a file.</div></section><section id="s15"><h2><span class="num">15</span>Keyboard shortcuts</h2>
+<table><tr><th>Keys</th><th>What it does</th></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd> · <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td>Save · Save as</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd> · <kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Open · PDF/print</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> · <kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Undo · Redo</td></tr>
+<tr><td><kbd>F2</kbd></td><td>Edit the cell</td></tr>
+<tr><td><kbd>Enter</kbd> · <kbd>Tab</kbd></td><td>Confirm and move down · move right</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>Enter</kbd></td><td>New line inside the cell</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Same value in the whole selection</td></tr>
+<tr><td><kbd>F4</kbd></td><td>Toggle $ in references</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>B</kbd> / I / U · <kbd>Ctrl</kbd> + <kbd>5</kbd></td><td>Bold / italic / underline · strikethrough</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>1</kbd></td><td>Format cells</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>D</kbd> · <kbd>Ctrl</kbd> + <kbd>R</kbd></td><td>Fill down · right</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>=</kbd></td><td>AutoSum</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>;</kbd></td><td>Today's date</td></tr>
+<tr><td><kbd>Shift</kbd> + <kbd>F2</kbd></td><td>Insert or edit comment</td></tr>
+<tr><td><kbd>Alt</kbd> + <kbd>↓</kbd></td><td>Open the cell's drop-down list</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd> · <kbd>Ctrl</kbd> + <kbd>H</kbd></td><td>Find · Replace</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd> · <kbd>Ctrl</kbd> + <kbd>Space</kbd> · <kbd>Shift</kbd> + <kbd>Space</kbd></td><td>Select all · column · row</td></tr>
+<tr><td><kbd>Delete</kbd></td><td>Clear the content</td></tr>
+<tr><td><kbd>Shift</kbd> + <kbd>F11</kbd> · <kbd>Alt</kbd> + <kbd>PageUp/PageDown</kbd></td><td>New sheet · switch sheet</td></tr>
+<tr><td><kbd>F9</kbd></td><td>Recalculate everything</td></tr></table>
+<p>The list is also in <b>Help › Keyboard shortcuts</b>.</p></section><section id="s16"><h2><span class="num">16</span>Frequently asked questions</h2>
+<h3>I opened an .xls and saved it again: the colors disappeared.</h3><p>The .xls, .xlsb and .ods formats are saved without colors and charts. Save as .xlsx to keep everything.</p>
+<h3>######## appears in the cell.</h3><p>The number does not fit the column width. Double-click the column divider in the header to fit it.</p>
+<h3>My formula with commas does not work.</h3><p>In Stardust, as in Brazilian Excel, the argument separator is the semicolon: <code>=SUM(A1;B1)</code>. The comma is the decimal separator: <code>=A1*1,5</code>.</p>
+<h3>Do the charts show up in Excel?</h3><p>Yes, when saved as .xlsx or .xlsm: they are native charts that you can edit in Excel or LibreOffice.</p>
+<h3>I saved as .xls/.ods: the rules and comments disappeared.</h3><p>Conditional formatting, data validation and comments are saved in .xlsx and .xlsm. Use one of these formats to keep them.</p>
+<h3>What does not exist (yet)?</h3><p>Macros and pivot tables.</p></section><section id="s17"><h2><span class="num">17</span>Inside the Nebulosa Workspace</h2>
+<ul>
+<li><b>Help menu</b>: the <b>Help</b> menu has: <b>User manual</b>, <b>Keyboard shortcuts</b>, <b>Function list</b>, <b>Terms of use</b>, <b>Privacy</b>, <b>Credits and licenses</b>, <b>🌐 Language</b> and <b>About Stardust</b>. The manual and the legal pages open in a window inside the program itself (you can switch between them with the buttons at the top of the window; <kbd>Esc</kbd> closes it).</li>
+<li>Open Stardust from the side menu, from its card on the home page or from the search (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
+<li>The <b>Appearance</b> button at the top of the Workspace switches Stardust's look between its original look and <b>Nebulosa Default</b> (purple, navy blue, orange and yellow). The choice applies only to this program and is remembered.</li>
+<li>The <b>Language</b> button (🌐) at the top of the Workspace — or <b>Help › 🌐 Language</b> inside the program — switches the menus, texts, function names and error codes between <b>Português do Brasil</b> (the default), <b>English</b> and <b>Español</b>. The choice applies to all programs and is remembered. What you wrote in your files is not translated.</li>
+<li>If you close Stardust's tab with changes not yet saved to a file, the Workspace asks before closing.</li>
+<li>The shortcuts <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> and <kbd>Alt</kbd> + <kbd>0</kbd> (home) work even with the focus inside the program.</li>
+<li>Stardust also opens on its own, outside the Workspace, at its folder's address (for example <code>…/apps/stardust/</code>) or from the single HTML file.</li>
+</ul></section></main></div>
+<footer class="rodape"><p>Nebulosa Workspace - a suite of simple, beautiful programs that run right in the browser. Version 0.6</p><p>Authors and creators: Márcio Willians Barreto de Andrade and Raul Goulart de Andrade · Lamp Lighter Production Team</p><p><a href="index.en.html">All manuals</a> · <a href="../index.html">Workspace home page</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.en.html">Terms of use</a> · <a href="../legal/privacidade.en.html">Privacy</a> · <a href="../legal/creditos.en.html">Credits and licenses</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<script src="../js/acessos.js" data-pagina="dominio" defer></script>
+</body>
+</html>

@@ -271,7 +271,7 @@
     const n = L.dados.paginas.length;
     $('#campoPagina').value = L.pagina + 1;
     $('#campoPagina').max = n;
-    $('#totalPaginas').textContent = 'de ' + n.toLocaleString('pt-BR');
+    $('#totalPaginas').textContent = 'de ' + n.toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR');
     const c = capituloAtual();
     $('#leitorCapitulo').textContent = c >= 0 ? L.dados.capitulos[c].titulo : (L.meta.autor || '');
     document.querySelectorAll('#abaCapitulos .item').forEach((b, i) => b.classList.toggle('atual', i === c));

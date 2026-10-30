@@ -80,8 +80,9 @@
       selVoz.textContent = '';
       lista.forEach(v => {
         const g = LPM.voz.generoDe(v);
-        const extra = [v.lang, g, v.localService === false ? 'online' : ''].filter(Boolean).join(', ');
-        selVoz.appendChild(el('option', { value: v.voiceURI, text: `${v.name} (${extra})`, selected: atual && atual.voiceURI === v.voiceURI }));
+        const T = x => (window.NebulosaIdiomas && x ? NebulosaIdiomas.t(x) : x); // [Nebulosa] idiomas 0.6
+        const extra = [v.lang, T(g), v.localService === false ? 'online' : ''].filter(Boolean).join(', ');
+        selVoz.appendChild(el('option', { value: v.voiceURI, text: `${T(v.name)} (${extra})`, selected: atual && atual.voiceURI === v.voiceURI }));
       });
       if (!LPM.voz.disponivel) notaVoz.textContent = 'Este navegador não oferece leitura por voz. Use o Microsoft Edge ou o Chrome.';
       else if (!LPM.voz.vozes.length) notaVoz.textContent = 'Nenhuma voz foi encontrada no sistema. No Windows, instale vozes em Configurações > Hora e idioma > Fala.';

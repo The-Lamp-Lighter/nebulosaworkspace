@@ -37,6 +37,14 @@
   const ERR_EN = { '#NULO!': '#NULL!', '#DIV/0!': '#DIV/0!', '#VALOR!': '#VALUE!', '#REF!': '#REF!', '#NOME?': '#NAME?', '#NÚM!': '#NUM!', '#N/D': '#N/A', '#CIRC!': '#REF!' };
   const ERR_PT = {}; Object.keys(ERR_EN).forEach(k => { if (k !== '#CIRC!') ERR_PT[ERR_EN[k]] = k; });
   const isErr = v => v instanceof Err;
+  /* [Nebulosa] idiomas (0.6): erros e VERDADEIRO/FALSO aparecem no idioma escolhido (por dentro continuam iguais) */
+  const idioma = () => (window.NebulosaIdiomas ? window.NebulosaIdiomas.atual() : 'pt-BR');
+  const ERR_ES = { '#NULO!': '#¡NULO!', '#DIV/0!': '#¡DIV/0!', '#VALOR!': '#¡VALOR!', '#REF!': '#¡REF!', '#NOME?': '#¿NOMBRE?', '#NÚM!': '#¡NUM!', '#N/D': '#N/A', '#CIRC!': '#CIRC!' };
+  const ERR_EN_TELA = Object.assign({}, ERR_EN, { '#CIRC!': '#CIRC!' });
+  const errTela = code => { const l = idioma(); return l === 'en' ? (ERR_EN_TELA[code] || code) : l === 'es' ? (ERR_ES[code] || code) : code; };
+  const boolTela = b => { const l = idioma(); return l === 'en' ? (b ? 'TRUE' : 'FALSE') : l === 'es' ? (b ? 'VERDADERO' : 'FALSO') : (b ? 'VERDADEIRO' : 'FALSO'); };
+  // qualquer grafia (pt, en, es) → código interno
+  const ERR_DE = {}; Object.keys(ERR_EN).forEach(k => { ERR_DE[k] = k; ERR_DE[ERR_EN[k]] = ERR_DE[ERR_EN[k]] || k; ERR_DE[ERR_ES[k]] = k; });
 
   /* ---------- datas (número de série do Excel, sistema 1900) ---------- */
   const EPOCH = Date.UTC(1899, 11, 30);
@@ -52,6 +60,11 @@
   /* ---------- formatação de números ---------- */
   const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const DIAS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  // [Nebulosa] idiomas (0.6): nomes de meses e dias nos formatos de data (mmmm, dddd) no idioma escolhido
+  const MESES_L = { en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], es: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'] };
+  const DIAS_L = { en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], es: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'] };
+  const mesesL = () => MESES_L[window.NebulosaIdiomas ? window.NebulosaIdiomas.atual() : ''] || MESES;
+  const diasL = () => DIAS_L[window.NebulosaIdiomas ? window.NebulosaIdiomas.atual() : ''] || DIAS;
   function groupInt(s) { return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
   function fmtGeneral(n) {
     if (!isFinite(n)) return '#NÚM!';
@@ -161,8 +174,8 @@
     for (const t of toks) {
       if (t.lit !== undefined) { out += t.lit; continue; }
       switch (t.t) {
-        case 'd': out += t.n === 1 ? p.d : t.n === 2 ? pad(p.d, 2) : t.n === 3 ? DIAS[p.wd].slice(0, 3) : DIAS[p.wd]; break;
-        case 'm': out += t.n === 1 ? p.m : t.n === 2 ? pad(p.m, 2) : t.n === 3 ? MESES[p.m - 1].slice(0, 3) : t.n === 5 ? MESES[p.m - 1][0] : MESES[p.m - 1]; break;
+        case 'd': { const D = diasL(); out += t.n === 1 ? p.d : t.n === 2 ? pad(p.d, 2) : t.n === 3 ? D[p.wd].slice(0, 3) : D[p.wd]; break; } // [Nebulosa] idiomas
+        case 'm': { const M = mesesL(); out += t.n === 1 ? p.m : t.n === 2 ? pad(p.m, 2) : t.n === 3 ? M[p.m - 1].slice(0, 3) : t.n === 5 ? M[p.m - 1][0] : M[p.m - 1]; break; }
         case 'y': out += t.n <= 2 ? pad(p.y % 100, 2) : p.y; break;
         case 'h': { let h = p.H; if (hasAmPm) h = h % 12 || 12; out += t.n >= 2 ? pad(h, 2) : h; break; }
         case 'min': out += t.n >= 2 ? pad(p.M, 2) : p.M; break;
@@ -176,8 +189,8 @@
   /** Texto que aparece na célula, e a cor do formato (se houver). */
   function formatValue(v, z) {
     if (v === null || v === undefined || v === '') return { t: '' };
-    if (isErr(v)) return { t: v.err };
-    if (typeof v === 'boolean') return { t: v ? 'VERDADEIRO' : 'FALSO' };
+    if (isErr(v)) return { t: errTela(v.err) }; // [Nebulosa] idiomas
+    if (typeof v === 'boolean') return { t: boolTela(v) };
     if (typeof v === 'string') {
       if (z && /@/.test(z)) { const secs = compile(z); const s = secs[3] || secs.find(x => x.kind === 'text'); if (s && s.kind === 'text') return { t: s.pre + v + s.post }; }
       return { t: v };
@@ -202,9 +215,10 @@
     const s = String(txt);
     const t = s.trim();
     if (t === '') return { v: null };
-    if (/^(verdadeiro|true)$/i.test(t)) return { v: true };
+    if (/^(verdadeiro|true|verdadero)$/i.test(t)) return { v: true };
     if (/^(falso|false)$/i.test(t)) return { v: false };
     if (ERR[t.toUpperCase()]) return { v: ERR[t.toUpperCase()] };
+    if (ERR_DE[t.toUpperCase()]) return { v: ERR[ERR_DE[t.toUpperCase()]] }; // [Nebulosa] idiomas
     // número brasileiro: 1.234,56 · 1234,56 · 1234.56 · -12 · (12) · 1,5e3
     const num = parseNumberBR(t);
     if (num !== null) return { v: num };
@@ -272,8 +286,8 @@
       if (z && /%/.test(z)) return fmtGeneral(v * 100) + '%';
       return fmtGeneral(v);
     }
-    if (typeof v === 'boolean') return v ? 'VERDADEIRO' : 'FALSO';
-    if (isErr(v)) return v.err;
+    if (typeof v === 'boolean') return boolTela(v); // [Nebulosa] idiomas
+    if (isErr(v)) return errTela(v.err);
     return String(v);
   }
 
@@ -284,8 +298,11 @@
     return { id: uid++, name: name || 'Planilha1', cells: new Map(), colW: {}, rowH: {}, merges: [], charts: [], freeze: { r: 0, c: 0 }, hiddenRows: new Set(), filter: null, showGrid: true, zoom: 1,
       condFormats: [], validations: [], notas: {} }; // [Nebulosa] regras e comentários (js/regras.js)
   }
+  // [Nebulosa] idiomas (0.6): nome das planilhas novas no idioma escolhido (Planilha1, Sheet1, Hoja1)
+  const baseNomePlanilha = () => ({ en: 'Sheet', es: 'Hoja' })[idioma()] || 'Planilha';
+  const semNome = () => ({ en: 'Untitled spreadsheet', es: 'Hoja de cálculo sin nombre' })[idioma()] || 'Planilha sem nome';
   function newWorkbook() {
-    return { sheets: [newSheet('Planilha1')], active: 0, name: 'Planilha sem nome', format: 'xlsx', props: {} };
+    return { sheets: [newSheet(baseNomePlanilha() + '1')], active: 0, name: semNome(), format: 'xlsx', props: {} };
   }
   function sheetUsed(sh) {
     let r2 = -1, c2 = -1;
@@ -367,10 +384,10 @@
 
   Object.assign(SD, {
     colName, colIndex, addr, key, unkey, parseAddr, parseRange, norm, rangeStr, inRange,
-    Err, ERR, ERR_EN, ERR_PT, isErr,
+    Err, ERR, ERR_EN, ERR_PT, ERR_ES, ERR_DE, isErr, idioma, errTela, boolTela, local: () => (window.NebulosaIdiomas ? window.NebulosaIdiomas.local() : 'pt-BR'),
     dateToSerial, serialToParts, todaySerial, nowSerial, MESES, DIAS,
     formatValue, fmtGeneral, isDateFormat, parseInput, parseNumberBR, editText,
-    DEF_W, DEF_H, newSheet, newWorkbook, sheetUsed, sheetDataBounds, uniqueSheetName, cloneStyle, cloneCell,
+    DEF_W, DEF_H, newSheet, newWorkbook, baseNomePlanilha, sheetUsed, sheetDataBounds, uniqueSheetName, cloneStyle, cloneCell,
     sheetToJSON, sheetFromJSON, wbToJSON, wbFromJSON, cellToJSON, cellFromJSON,
     hexToRgb, luminance
   });

@@ -6,6 +6,7 @@
 <title>Flyde · Nebulosa</title>
 <!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o programa funciona sozinho) -->
 <script src="../../shared/nebulosa-bridge.js" data-app="flyde" data-name="Flyde" data-modes data-preview="#141824 #232a3f #7b8cc7 #d6dc00"></script>
+<script src="nebulosa-idiomas.js"></script><!-- [Nebulosa] idiomas (0.6): textos em inglês e espanhol -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&family=Literata:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;600;800&family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&family=Bebas+Neue&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
@@ -272,6 +273,7 @@ input[type=range]{width:100%;accent-color:var(--lime)}
       <button data-help="termos">Termos de uso</button>
       <button data-help="privacidade">Privacidade</button>
       <button data-help="creditos">Créditos e licenças</button>
+      <button data-help="idioma">🌐 Idioma</button><!-- [Nebulosa] idiomas (0.6) -->
     </div>
   </details>
   <button class="btn" id="btnKeys" title="Atalhos" aria-label="Atalhos">⌨</button>
@@ -457,8 +459,10 @@ function thumbOf(sl,wpx){
 }
 
 /* ================= criação: elementos e layouts ================= */
-const T=(x,y,w,h,html,o)=>Object.assign({id:uid(),t:'text',x,y,w,h,r:0,op:1,html,fs:48,ff:'@body',fw:400,color:'@ink',ta:'left',va:'top',lh:1.25},o||{});
-const S=(shape,x,y,w,h,o)=>Object.assign({id:uid(),t:'shape',shape,x,y,w,h,r:0,op:1,fill:'@accent',stroke:null,sw:0,rad:null,shadow:0,html:'',fs:44,ff:'@body',fw:600,color:'@ink',ta:'center',va:'middle',lh:1.2},o||{});
+/* [Nebulosa] idiomas (0.6): o texto dos modelos nasce no idioma escolhido */
+const nbTH=h=>window.NebulosaIdiomas&&h?NebulosaIdiomas.traduzirHtml(h):h;
+const T=(x,y,w,h,html,o)=>Object.assign({id:uid(),t:'text',x,y,w,h,r:0,op:1,html:nbTH(html),fs:48,ff:'@body',fw:400,color:'@ink',ta:'left',va:'top',lh:1.25},o||{});
+const S=(shape,x,y,w,h,o)=>{const r=Object.assign({id:uid(),t:'shape',shape,x,y,w,h,r:0,op:1,fill:'@accent',stroke:null,sw:0,rad:null,shadow:0,html:'',fs:44,ff:'@body',fw:600,color:'@ink',ta:'center',va:'middle',lh:1.2},o||{}); r.html=nbTH(r.html); return r};
 const fin=a=>{a.forEach(e=>{e.mid=e.mid||e.id});return a};
 const LAYOUTS=[
  ['title','Título',()=>fin([S('ellipse',1180,-280,1100,1100,{fill:'@accent',op:.2}),S('ellipse',1480,560,640,640,{fill:'@accent2',op:.16}),T(120,330,1260,300,'Título da apresentação',{fs:132,ff:'@heading',fw:700,va:'bottom'}),S('rect',120,672,170,10,{fill:'@accent2'}),T(120,716,1200,110,'Um subtítulo que explica a ideia',{fs:46,color:'@ink2'})])],
@@ -478,17 +482,17 @@ const mkSlideData=(layout,o)=>Object.assign({id:uid(),bg:null,els:layoutEls(layo
 
 function newDeck(mode,themeId){
   const th=THEMES[themeId||'nebulosa'];
-  deck={v:1,title:mode==='map'?'Meu mapa de ideias':'Apresentação sem nome',mode,theme:themeId||'nebulosa',palette:{...th.p},slides:[],map:{els:[],frames:[],bg:null}};
+  deck={v:1,title:nbTH(mode==='map'?'Meu mapa de ideias':'Apresentação sem nome'),mode,theme:themeId||'nebulosa',palette:{...th.p},slides:[],map:{els:[],frames:[],bg:null}};
   IMGS={}; AUDS={};
   if(mode==='slides') sampleSlides(); else sampleMap();
   idx=0; sel=[]; H_=[]; hi=-1; commit(true); refreshAll(); fitView();
 }
 function sampleSlides(){
   const s1=mkSlideData('title',{trans:{type:'fade',dir:'l',dur:900}});
-  s1.els[2].html='Apresentações que voam'; s1.els[4].html='Flyde · feito para impressionar sem esforço';
+  s1.els[2].html=nbTH('Apresentações que voam'); s1.els[4].html=nbTH('Flyde · feito para impressionar sem esforço');
   s1.anims=[mkAnim(s1.els[2].id,'in','rise',{trig:'with',dur:900}),mkAnim(s1.els[3].id,'in','wipe',{trig:'after',dur:500}),mkAnim(s1.els[4].id,'in','fade',{trig:'after',dur:700}),mkAnim(s1.els[0].id,'emp','pulse',{trig:'with',dur:2000})];
   const s2=mkSlideData('content',{trans:{type:'push',dir:'l',dur:800}});
-  s2.els[0].html='Tudo o que você precisa'; s2.els[2].html='<ul><li>Slides clássicos e mapa com zoom</li><li>16 transições e dezenas de animações</li><li>Exporta para HTML e PowerPoint</li></ul>';
+  s2.els[0].html=nbTH('Tudo o que você precisa'); s2.els[2].html=nbTH('<ul><li>Slides clássicos e mapa com zoom</li><li>16 transições e dezenas de animações</li><li>Exporta para HTML e PowerPoint</li></ul>');
   s2.anims=[mkAnim(s2.els[0].id,'in','left',{trig:'with'}),mkAnim(s2.els[2].id,'in','rise',{trig:'click',by:'word',dur:900})];
   const s3=mkSlideData('kpi',{trans:{type:'zoomin',dir:'l',dur:800}});
   s3.els.forEach((e,i)=>{ if(i>0) s3.anims.push(mkAnim(e.id,'in','pop',{trig:i===1?'click':'with',delay:i<2?0:Math.floor((i-1)/2)*180,dur:600})) });
@@ -508,11 +512,11 @@ function sampleMap(){
   const d=cluster(-2500,-900,Q,'✨','Mostre o todo','No fim a câmera se afasta e revela o desenho completo.','4');
   const lines=fin([S('arrowline',900,-780,1000,60,{stroke:'@accent2',sw:12,r:-14}),S('arrowline',2300,420,1000,60,{stroke:'@accent',sw:12,r:96}),S('arrowline',1500,1700,1000,60,{stroke:'@accent2',sw:12,r:188}),S('arrowline',-2500,300,1000,60,{stroke:'@accent',sw:12,r:-84})]);
   m.els=[...c0,...a,...b,...c,...d,...lines];
-  const fr=(x,y,label,r,type)=>({id:uid(),kind:'frame',x:x-800,y:y-450,w:1600,h:900,r:r||0,label,trans:{type:type||'fly',dur:1700},notes:'',anims:[]});
+  const fr=(x,y,label,r,type)=>({id:uid(),kind:'frame',x:x-800,y:y-450,w:1600,h:900,r:r||0,label:nbTH(label),trans:{type:type||'fly',dur:1700},notes:'',anims:[]});
   m.frames=[fr(0,0,'Início',0,'jump'),fr(2700,-900,'Comece pequeno'),fr(2300,1500,'Ganhe velocidade'),fr(-2100,1300,'Mire no alvo',-8,'spin'),fr(-2500,-900,'Mostre o todo')];
   m.frames[1].anims=[mkAnim(a[2].id,'in','pop',{trig:'with',dur:600,delay:300}),mkAnim(a[3].id,'in','rise',{trig:'after'}),mkAnim(a[5].id,'in','blur',{trig:'after',by:'word'})];
   m.frames[2].anims=[mkAnim(b[3].id,'in','left',{trig:'with'}),mkAnim(b[5].id,'in','fade',{trig:'after'})];
-  m.frames.push({id:uid(),kind:'frame',x:-4400,y:-2400,w:8800,h:4950,r:0,label:'Visão geral',trans:{type:'fly',dur:2200},notes:'',anims:[]});
+  m.frames.push({id:uid(),kind:'frame',x:-4400,y:-2400,w:8800,h:4950,r:0,label:nbTH('Visão geral'),trans:{type:'fly',dur:2200},notes:'',anims:[]});
 }
 
 /* ================= histórico e salvamento ================= */
@@ -732,12 +736,35 @@ function frameAround(){
   addFrame({x:Math.round(cx-w/2),y:Math.round(cy-h/2),w:Math.round(w),h:Math.round(h)});
 }
 function addFrame(o){
-  const c=centerOfView(); const f=Object.assign({id:uid(),kind:'frame',x:Math.round(c.x-800),y:Math.round(c.y-450),w:1600,h:900,r:0,label:'Quadro '+(deck.map.frames.length+1),trans:{type:'fly',dur:1600},notes:'',anims:[]},o||{});
+  const c=centerOfView(); const f=Object.assign({id:uid(),kind:'frame',x:Math.round(c.x-800),y:Math.round(c.y-450),w:1600,h:900,r:0,label:nbTH('Quadro '+(deck.map.frames.length+1)),trans:{type:'fly',dur:1600},notes:'',anims:[]},o||{});
   deck.map.frames.splice(idx+1,0,f); idx=idx+1; renderWorld(); select([f.id]); commit(); renderStrip();
+}
+/* centro do objeto dentro do quadro (considera a rotação do quadro) */
+function noQuadro(e,f){
+  const cx=f.x+f.w/2, cy=f.y+f.h/2, a=-(f.r||0)*Math.PI/180, px=e.x+e.w/2-cx, py=e.y+e.h/2-cy;
+  const x=px*Math.cos(a)-py*Math.sin(a), y=px*Math.sin(a)+py*Math.cos(a); return Math.abs(x)<=f.w/2&&Math.abs(y)<=f.h/2;
+}
+/* primeira coordenada x livre à direita de tudo o que há no mapa */
+function areaLivreX(){
+  const xs=[...els(),...deck.map.frames].map(o=>o.x+o.w/2+Math.hypot(o.w,o.h)/2);
+  return (xs.length?Math.max(...xs):0)+400;
+}
+/* ＋ Slide no mapa: um quadro novo, vazio, numa área livre, já pronto para editar */
+function addMapSlide(){
+  const o=deck.map.frames[idx], y=o?Math.round(o.y+o.h/2-450):-450, x=Math.round(areaLivreX());
+  addFrame({x,y,w:1600,h:900,r:0,label:nbTH('Slide '+(deck.map.frames.length+1))}); focusFrame(idx);
 }
 function addSlide(layout){ const s=mkSlideData(layout); deck.slides.splice(idx+1,0,s); idx++; sel=[]; refreshAll(); fitView(); commit() }
 function dupScene(i){
-  if(isMap()){ const f=JSON.parse(JSON.stringify(deck.map.frames[i])); f.id=uid(); f.label+=' (cópia)'; deck.map.frames.splice(i+1,0,f); idx=i+1 }
+  if(isMap()){
+    /* a cópia é independente: clona os objetos que estão dentro do quadro e leva tudo para uma área vazia do mapa */
+    const o=deck.map.frames[i], f=JSON.parse(JSON.stringify(o)), dentro=els().filter(e=>noQuadro(e,o)), m={};
+    const dx=Math.round(areaLivreX()+Math.hypot(o.w,o.h)/2-(o.x+o.w/2));
+    const ns=dentro.map(e=>{const c=JSON.parse(JSON.stringify(e)); c.id=uid(); c.mid=c.id; m[e.id]=c.id; c.x+=dx; return c});
+    els().push(...ns); f.id=uid(); f.x+=dx; f.label=(f.label||nbTH('Quadro'))+' '+nbTH('(cópia)');
+    f.anims=(f.anims||[]).filter(a=>m[a.el]).map(a=>Object.assign(a,{id:uid(),el:m[a.el]}));
+    deck.map.frames.splice(i+1,0,f); idx=i+1; sel=[]; refreshAll(); focusFrame(idx); commit(); return;
+  }
   else { const s=JSON.parse(JSON.stringify(deck.slides[i])); const m={}; s.id=uid(); s.els.forEach(e=>{const n=uid(); m[e.id]=n; e.id=n /* mid permanece para o Morph */}); s.anims.forEach(a=>{a.id=uid();a.el=m[a.el]||a.el}); deck.slides.splice(i+1,0,s); idx=i+1 }
   sel=[]; refreshAll(); fitView(); commit();
 }
@@ -763,7 +790,7 @@ function renderStrip(){
     t.addEventListener('dragend',()=>{dragScene=null;renderStrip()});
     st.appendChild(t);
   });
-  const add=document.createElement('button'); add.className='addthumb'; add.textContent=isMap()?'＋ Quadro':'＋ Slide'; add.onclick=()=>isMap()?addFrame():openLayouts(); st.appendChild(add);
+  const add=document.createElement('button'); add.className='addthumb'; add.textContent=nbTH('＋ Slide'); add.onclick=()=>isMap()?addMapSlide():openLayouts(); st.appendChild(add);
   const cur=$('.thumb.cur',st); if(cur) cur.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 function openLayouts(){
@@ -1165,11 +1192,11 @@ $('#fileBg').addEventListener('change',async e=>{const f=e.target.files[0]; e.ta
 /* ================= barra rápida ================= */
 function renderQbar(){
   const q=$('#qbar'); const objs=selObjs();
-  if(!objs.length){ q.innerHTML=isMap()?`<button data-q="frame">＋ Quadro</button><button data-q="fit">Ver tudo</button><button data-q="prevw">▶ Pré-visualizar</button>`:`<button data-q="layouts">＋ Slide</button><button data-q="prevw">▶ Pré-visualizar animações</button>`; return }
+  if(!objs.length){ q.innerHTML=isMap()?`<button data-q="mslide">＋ Slide</button><button data-q="fit">Ver tudo</button><button data-q="prevw">▶ Pré-visualizar</button>`:`<button data-q="layouts">＋ Slide</button><button data-q="prevw">▶ Pré-visualizar animações</button>`; return }
   q.innerHTML=`<button data-q="dup">⧉ Duplicar</button><button data-q="front" title="Trazer para frente">▲</button><button data-q="back" title="Enviar para trás">▼</button>${isMap()&&!objs.some(isFrame)?'<button data-q="frameAround">▢ Quadro aqui</button>':''}<span class="sep"></span><button data-q="del">🗑</button>`;
 }
 $('#qbar').addEventListener('click',ev=>{ const b=ev.target.closest('button'); if(!b) return; const k=b.dataset.q;
-  if(k==='dup')dup(); else if(k==='del')del(); else if(k==='front'||k==='back')order(k); else if(k==='frame')addFrame(); else if(k==='frameAround')frameAround(); else if(k==='fit')fitView(); else if(k==='layouts')openLayouts(); else if(k==='prevw')previewScene() });
+  if(k==='dup')dup(); else if(k==='del')del(); else if(k==='front'||k==='back')order(k); else if(k==='frame')addFrame(); else if(k==='mslide')addMapSlide(); else if(k==='frameAround')frameAround(); else if(k==='fit')fitView(); else if(k==='layouts')openLayouts(); else if(k==='prevw')previewScene() });
 $('#zIn').onclick=()=>{const r=area.getBoundingClientRect(); zoomAt(1.25,r.left+r.width/2,r.top+r.height/2)}; $('#zOut').onclick=()=>{const r=area.getBoundingClientRect(); zoomAt(.8,r.left+r.width/2,r.top+r.height/2)}; $('#zLbl').onclick=()=>isMap()?fitView():fitRect(0,0,W,H,50);
 $('#zHand').onclick=()=>{tool=tool==='hand'?'select':'hand';$('#zHand').classList.toggle('on',tool==='hand');area.style.cursor=tool==='hand'?'grab':''};
 

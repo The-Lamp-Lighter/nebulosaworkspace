@@ -6,6 +6,7 @@
 <title>Typee · Nebulosa</title>
 <!-- [Nebulosa] ponte com o Nebulosa Workspace (opcional: sem ela o programa funciona sozinho) -->
 <script src="../../shared/nebulosa-bridge.js" data-app="typee" data-name="Typee" data-modes data-preview="#141824 #232a3f #7b8cc7 #d6dc00"></script>
+<script src="nebulosa-idiomas.js"></script><!-- [Nebulosa] idiomas (0.6): textos em inglês e espanhol -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap" rel="stylesheet">
@@ -325,6 +326,7 @@ body.focus .main{grid-template-columns:1fr}
       <button data-help="termos">Termos de uso</button>
       <button data-help="privacidade">Privacidade</button>
       <button data-help="creditos">Créditos e licenças</button>
+      <button data-help="idioma">🌐 Idioma</button><!-- [Nebulosa] idiomas (0.6) -->
       <button data-help="about">Sobre o Typee</button>
     </div>
   </details>
@@ -576,6 +578,8 @@ let TAB_ID=null; try{TAB_ID=sessionStorage.getItem('typee.tab')}catch(e){}
 if(location.hash==='#novo'){TAB_ID='t'+Math.random().toString(36).slice(2,8); try{sessionStorage.setItem('typee.tab',TAB_ID)}catch(e){} try{history.replaceState(null,'',location.href.split('#')[0])}catch(e){}}
 const DOC_KEY='nebulosa.typee.doc'+(TAB_ID?':'+TAB_ID:''), PREF_KEY='nebulosa.typee.prefs';
 const DEFAULT_TITLE='Documento sem nome';
+/* [Nebulosa] idiomas (0.6): modelos, datas e número de página no idioma escolhido */
+const nbI=()=>window.NebulosaIdiomas, nbT=(...a)=>nbI()?nbI().t(...a):String(a[0]), nbTH=h=>nbI()?nbI().traduzirHtml(h):h, nbLoc=()=>nbI()?nbI().local():'pt-BR';
 let dirty=false, printing=false;
 let mode='vis', downloads=null, saved=null, imgStore=[], lastWC=0, scale=1, pages=1, ET=0, selImg=null;
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -737,7 +741,7 @@ const TEMPLATES={
 };
 const WELCOME='<h1>Bem-vindo ao Typee</h1><p>Este é o seu primeiro documento, já dividido em páginas como no Word. Escreva em qualquer lugar: ele salva sozinho neste navegador.</p><h2>Três jeitos de montar o texto</h2><ul><li>Digite <b>/</b> numa linha para inserir títulos, listas, tabelas, imagens e quebras de página.</li><li>Use as abas Escrever, Inserir, Página e Revisar para o resto.</li><li>Prefere Markdown? Troque para o modo Markdown no topo.</li></ul><div class="callout" data-type="info"><p>Dica: o painel da esquerda mostra a estrutura do documento. Clique num título para ir até ele.</p></div><p>Quando terminar, salve em .docx para abrir no Word, ou em .txt ou .md.</p>';
 function setDoc(title,html,page){
-  titleEl.value=title||'Documento sem nome';
+  titleEl.value=title||nbT('Documento sem nome');
   PG={...DEFAULT_PG,...(page||{})}; syncPageControls();
   ed.innerHTML=sanitize(html||''); selImg=null;
   if(mode==='md'){mdTa.value=toMarkdown(cleanHTML());prev.innerHTML=ed.innerHTML}
@@ -832,7 +836,7 @@ function flowPageStyle(){
   const q=s=>'"'+String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"';
   if(PG.header) box[PG.hAlign]=q(PG.header);
   let fl={left:[],center:[],right:[]}; if(PG.footer) fl[PG.fAlign].push(q(PG.footer));
-  if(PG.numPos!=='none') fl[PG.numPos].push(PG.numFmt==='full'?'"Página " counter(page) " de " counter(pages)':'counter(page)');
+  if(PG.numPos!=='none') fl[PG.numPos].push(PG.numFmt==='full'?(()=>{const p=nbT('Página {1} de {2}').split(/\{\d\}/);return '"'+p[0]+'" counter(page) "'+p[1]+'" counter(pages)'})():'counter(page)'); /* [Nebulosa] idiomas */
   Object.keys(fl).forEach(k=>fb[k]=fl[k].join(' " · " '));
   const mb=(pos,v)=>v?'@'+pos+'{content:'+v+';font:11px sans-serif;color:#666}':'';
   const size=PG.size==='Carta'?'letter':PG.size==='Ofício'?'legal':'A4';
@@ -1406,7 +1410,7 @@ function act(a){
     case 'callout':insertBlock('<div class="callout" data-type="info"><p>Escreva o destaque aqui</p></div><p><br></p>');break;
     case 'quote':run('formatBlock','<blockquote>');break;
     case 'code':run('formatBlock','<pre>');break;
-    case 'date':run('insertText',new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}));break;
+    case 'date':run('insertText',new Date().toLocaleDateString(nbLoc(),{day:'numeric',month:'long',year:'numeric'}));break;
     case 'todo':toggleTodo();break; case 'indent':indentSel(1);break; case 'outdent':indentSel(-1);break;
     case 'hf':openHF();break;
     case 'toggleLayout':setLayout(layout==='pages'?'flow':'pages');break;
@@ -1711,7 +1715,7 @@ try{localStorage.removeItem('nebulosa.typee.game')}catch(e){}
 /* ---------- atualização geral ---------- */
 let rafT=0, saveT=0;
 let stateText='Pronto';
-const isUntitled=()=>{const t=titleEl.value.trim(); return !t||t===DEFAULT_TITLE};
+const isUntitled=()=>{const t=titleEl.value.trim(); return !t||t===DEFAULT_TITLE||t===nbT(DEFAULT_TITLE)};
 function setState(t){stateText=t; renderState()}
 function renderState(){
   const el=$('#saveState'), un=isUntitled(), mem=/Memória cheia/.test(stateText);
@@ -1744,7 +1748,7 @@ function refresh(reset){
 ed.addEventListener('input',()=>{changed();slashCheck()});
 ed.addEventListener('click',slashHide);
 titleEl.addEventListener('input',()=>{dirty=true;setState('Salvando…');clearTimeout(saveT);saveT=setTimeout(saveLocal,800)});
-titleEl.addEventListener('blur',()=>{ if(!titleEl.value.trim()){titleEl.value=DEFAULT_TITLE} renderState() });
+titleEl.addEventListener('blur',()=>{ if(!titleEl.value.trim()){titleEl.value=nbT(DEFAULT_TITLE)} renderState() });
 $('#modeVis').onclick=()=>setMode('vis'); $('#modeMd').onclick=()=>setMode('md');
 let guardNext=null;
 function guard(next){ if(!dirty||!hasContent()){next();return} guardNext=next; $('#guardModal').classList.add('show') }
@@ -1762,9 +1766,9 @@ $$('[data-tpl]').forEach(b=>b.addEventListener('click',()=>{
 function newFromTpl(key){
   const b={dataset:{tpl:key}};
   const prevDoc={t:titleEl.value,h:cleanHTML(),p:{...PG}}, had=hasContent(), tpl=TEMPLATES[b.dataset.tpl];
-  setDoc(tpl.t,tpl.h,{...PG});
+  setDoc(nbT(tpl.t),nbTH(tpl.h),{...PG}); /* [Nebulosa] idiomas */
   toast(b.dataset.tpl==='blank'?'Documento novo.':'Modelo "'+tpl.t+'" pronto para editar.',had?{label:'Desfazer',run:()=>{setDoc(prevDoc.t,prevDoc.h,prevDoc.p);dirty=true}}:null);
-  ed.focus(); if(b.dataset.tpl==='blank'){titleEl.value=DEFAULT_TITLE} renderState();
+  ed.focus(); if(b.dataset.tpl==='blank'){titleEl.value=nbT(DEFAULT_TITLE)} renderState();
 }
 $$('[data-exp]').forEach(b=>b.addEventListener('click',()=>exportAs(b.dataset.exp)));
 $('#btnFocus').onclick=()=>{document.body.classList.toggle('focus');applyScale();schedulePaginate(50)};
@@ -1787,7 +1791,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dz.classList.remove('show
 
 /* ---------- início ---------- */
 const savedDoc=lsGet(DOC_KEY);
-if(savedDoc&&typeof savedDoc.html==='string'){titleEl.value=savedDoc.title||'Documento sem nome';PG={...DEFAULT_PG,...(savedDoc.page||{})};ed.innerHTML=sanitize(savedDoc.html)} else {ed.innerHTML=TAB_ID?'':WELCOME; if(TAB_ID) titleEl.value=DEFAULT_TITLE}
+if(savedDoc&&typeof savedDoc.html==='string'){titleEl.value=savedDoc.title||'Documento sem nome';PG={...DEFAULT_PG,...(savedDoc.page||{})};ed.innerHTML=sanitize(savedDoc.html)} else {ed.innerHTML=TAB_ID?'':nbTH(WELCOME); if(TAB_ID) titleEl.value=nbT(DEFAULT_TITLE)}
 ensureTrail(); syncPageControls(); applyMode(); lastWC=wordCount(); updateTOC(); refresh(true); commitHist();
 try{document.execCommand('defaultParagraphSeparator',false,'p')}catch(e){}
 paginate(); dirty=false; renderState();

@@ -12,7 +12,9 @@
 
   /** Tutorial de uso. */
   ajuda.tutorial = function () {
-    const corpo = el('div', { class: 'tutorial', html: `
+    // [Nebulosa] idiomas (0.6): o tutorial em inglês e espanhol fica em nebulosa-idiomas.js (window.__lpmTutorial)
+    const I = window.NebulosaIdiomas, trad = I && window.__lpmTutorial && window.__lpmTutorial[I.atual()];
+    const corpo = el('div', { class: 'tutorial', html: trad || `
       <h3>Primeiros passos</h3>
       <ol>
         <li>Clique em <b>Abrir arquivo</b> (ou arraste arquivos para a janela) e escolha um livro, documento ou audiobook.</li>

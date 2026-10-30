@@ -72,3 +72,10 @@ footer.rodape a { color: var(--ink2); }
 .embed .topo { display: none; }
 .embed nav.indice { top: 12px; }
 .embed main section { scroll-margin-top: 12px; }
+/* (0.6) seletor de idioma no alto das páginas: PT · EN · ES */
+.topo .idiomas { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.topo .idiomas a { padding: 5px 9px; border-radius: 8px; font: 700 12.5px var(--ui); letter-spacing: .04em; color: var(--ink3); text-decoration: none; }
+.topo .idiomas a:hover { color: var(--ink); }
+.topo .idiomas a[aria-current] { background: var(--accent); color: #fff; }
+@media print { .topo .idiomas { display: none; } }
+:root[data-theme="dark"] .topo .idiomas a[aria-current] { color: #1f2140; }

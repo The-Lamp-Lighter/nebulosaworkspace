@@ -574,10 +574,10 @@
      ================================================================== */
   function duplicate() {
     const doc = IMG.app.doc, UI = IMG.UI; if (!doc) return;
-    let merged = false; const nameIn = el('input.inp', { type: 'text', value: doc.name + ' cópia' });
+    let merged = false; const nameIn = el('input.inp', { type: 'text', value: doc.name + ' ' + (window.NebulosaIdiomas ? NebulosaIdiomas.t('cópia') : 'cópia') });
     UI.dialog({ title: 'Duplicar imagem', width: 380, body: [UI.row('Como', nameIn), UI.row('', UI.check('Duplicar somente camadas mescladas', false, (v) => { merged = v; }).el)],
       buttons: [{ label: 'Cancelar' }, { label: 'OK', primary: true, onClick: () => {
-        const D = new IMG.Doc({ name: nameIn.value.trim() || doc.name + ' cópia', width: doc.width, height: doc.height, dpi: doc.dpi });
+        const D = new IMG.Doc({ name: nameIn.value.trim() || doc.name + ' ' + (window.NebulosaIdiomas ? NebulosaIdiomas.t('cópia') : 'cópia'), width: doc.width, height: doc.height, dpi: doc.dpi });
         if (merged) { const L = new IMG.Layer('raster', { name: 'Fundo', canvas: IMG.Engine.flatten(doc) }); D.layers = [L]; }
         else D.layers = doc.layers.map((L) => { const C = Layers.clone(L, ''); C.name = L.name; C.isBg = L.isBg; C.lockPos = L.lockPos; C.lockAlpha = L.lockAlpha; C.parent = null; return C; });
         D.guides = IMG.jclone(doc.guides); D.paths = IMG.jclone(doc.paths || []); D.dpi = doc.dpi; D.mode = doc.mode; D.bits = doc.bits; D.info = IMG.jclone(doc.info || null);

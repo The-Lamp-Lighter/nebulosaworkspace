@@ -100,7 +100,7 @@
         if (escolhas[nome] !== true) {
           const ok = await LPM.ui.perguntar('Baixar o componente de ' + a.titulo + '?',
             (op.explicacao ? op.explicacao + ' ' : '') +
-            'O LêPraMim baixa este componente uma única vez (cerca de ' + a.mb.toLocaleString('pt-BR') + ' MB) e o guarda neste navegador; ' +
+            'O LêPraMim baixa este componente uma única vez (cerca de ' + a.mb.toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR') + ' MB) e o guarda neste navegador; ' +
             'das próximas vezes ele funciona na hora, mesmo sem internet. O conteúdo dos seus livros nunca sai do computador.',
             'Baixar', op.textoNao || 'Agora não');
           escolhas[nome] = ok || (op.lembrarNao ? false : undefined);
@@ -110,7 +110,7 @@
         }
       }
       const janela = guardada ? null : LPM.ui.progresso('Baixando: ' + a.titulo);
-      const mb = n => (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+      const mb = n => (n / 1048576).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR', { maximumFractionDigits: 1 });
       try {
         const blobs = [];
         for (let i = 0; i < a.lista.length; i++) {

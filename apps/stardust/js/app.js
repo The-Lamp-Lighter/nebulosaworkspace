@@ -137,7 +137,7 @@
   function marcarSujo() { sujo = true; estadoDoc(); agendarRecuperacao(); }
   function estadoDoc() {
     const e = $('#docEstado');
-    e.textContent = sujo ? 'Alterações não salvas' : salvoEm ? 'Salvo às ' + salvoEm.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : recuperado ? 'Recuperado' : 'Novo';
+    e.textContent = sujo ? 'Alterações não salvas' : salvoEm ? 'Salvo às ' + salvoEm.toLocaleTimeString(SD.local(), { hour: '2-digit', minute: '2-digit' }) : recuperado ? 'Recuperado' : 'Novo';
     e.classList.toggle('sujo', sujo);
     document.title = (sujo ? '● ' : '') + wb.name + ' — Stardust';
   }
@@ -525,7 +525,7 @@
   }
   function autoSoma(fn) {
     fn = fn || 'SUM';
-    const nomePt = SD.F.PT[fn] || fn;
+    const nomePt = SD.F.nome(fn); // [Nebulosa] idiomas
     const g = G.boundSel(), sh = sheet();
     const isNum = (r, c) => { const cl = sh.cells.get(r + ',' + c); const v = cl ? (cl.f ? cl.val : cl.v) : null; return typeof v === 'number'; };
     if (g.r1 === g.r2 && g.c1 === g.c2) {
@@ -842,7 +842,7 @@
   function irPlanilha(i) { if (i === V.si || i < 0 || i >= wb.sheets.length) return; G.setSheet(i); renderAbas(); onSelection(); }
   function novaPlanilha() {
     U.inicio('Nova planilha'); U.pasta();
-    const s = SD.newSheet(SD.uniqueSheetName(wb, 'Planilha' + (wb.sheets.length + 1)));
+    const s = SD.newSheet(SD.uniqueSheetName(wb, SD.baseNomePlanilha() + (wb.sheets.length + 1)) /* [Nebulosa] idiomas */);
     wb.sheets.splice(V.si + 1, 0, s);
     U.fim();
     irPlanilha(V.si + 1);
@@ -993,7 +993,7 @@
     }
   }
   function inserirFuncao(fn) {
-    const nome = SD.F.PT[fn] || fn;
+    const nome = SD.F.nome(fn); // [Nebulosa] idiomas
     if (G.editando()) { const ed = G.editor; const p = ed.selectionStart; const t = ed.value; G.setEditorValue(t.slice(0, p) + nome + '(' + t.slice(ed.selectionEnd)); ed.setSelectionRange(p + nome.length + 1, p + nome.length + 1); }
     else G.startEdit('=' + nome + '()', 'editar');
     const ed = G.editor; if (ed.value.endsWith('()')) ed.setSelectionRange(ed.value.length - 1, ed.value.length - 1);
@@ -1067,7 +1067,7 @@
   }
   function menuAutoSoma(el) {
     const r = el.getBoundingClientRect();
-    abrirPop([['SUM', 'Soma'], ['AVERAGE', 'Média'], ['COUNT', 'Contar números'], ['MAX', 'Máximo'], ['MIN', 'Mínimo']].map(([f, t]) => `<button class="mi" data-f="${f}">${t}<kbd>${SD.F.PT[f]}</kbd></button>`).join('') + '<hr><button class="mi" data-f="mais">Mais funções…</button>', r.left, r.bottom + 4);
+    abrirPop([['SUM', 'Soma'], ['AVERAGE', 'Média'], ['COUNT', 'Contar números'], ['MAX', 'Máximo'], ['MIN', 'Mínimo']].map(([f, t]) => `<button class="mi" data-f="${f}">${t}<kbd>${SD.F.nome(f)}</kbd></button>`).join('') + '<hr><button class="mi" data-f="mais">Mais funções…</button>', r.left, r.bottom + 4);
     $('#menupop').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; fecharPop(); if (b.dataset.f === 'mais') abrirPainel('funcoes'); else autoSoma(b.dataset.f); };
   }
   function atualizarFerramentas() {
@@ -1240,7 +1240,7 @@
     if (ctrl && k === 'h') { e.preventDefault(); dlgLocalizar(true); return true; }
     if (ctrl && k === 'd') { e.preventDefault(); preencherDir('baixo'); return true; }
     if (ctrl && k === 'r') { e.preventDefault(); preencherDir('direita'); return true; }
-    if (ctrl && (e.key === ';' || e.code === 'Semicolon' || e.code === 'Slash' && e.shiftKey)) { e.preventDefault(); const d = new Date(); G.startEdit(e.shiftKey ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('pt-BR'), 'entrar'); return true; }
+    if (ctrl && (e.key === ';' || e.code === 'Semicolon' || e.code === 'Slash' && e.shiftKey)) { e.preventDefault(); const d = new Date(); G.startEdit(e.shiftKey ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('pt-BR') /* data digitada: formato brasileiro, que o Stardust lê */, 'entrar'); return true; }
     if (e.altKey && (e.key === '=' || e.code === 'Equal')) { e.preventDefault(); autoSoma('SUM'); return true; }
     if (e.shiftKey && e.key === 'F11') { e.preventDefault(); novaPlanilha(); return true; }
     if (e.shiftKey && e.key === 'F2') { e.preventDefault(); dlgComentario(); return true; } // [Nebulosa]
@@ -1306,7 +1306,7 @@
       { t: 'Gráfico…', i: 'grafico', a: () => abrirPainel('grafico') },
       { t: 'Função…', i: 'manual', a: () => abrirPainel('funcoes') },
       { t: temNota() ? 'Editar comentário…' : 'Comentário…', i: 'comentario', k: 'Shift+F2', a: dlgComentario }, '-',
-      { t: 'Data de hoje', k: 'Ctrl+;', a: () => G.startEdit(new Date().toLocaleDateString('pt-BR'), 'entrar') },
+      { t: 'Data de hoje', k: 'Ctrl+;', a: () => G.startEdit(new Date().toLocaleDateString('pt-BR') /* data digitada: formato brasileiro, que o Stardust lê */, 'entrar') },
       { t: 'AutoSoma', k: 'Alt+=', a: () => autoSoma('SUM') }
     ],
     formatar: () => [
@@ -1356,7 +1356,8 @@
       { t: 'Lista de funções', i: 'manual', a: () => abrirPainel('funcoes') }, '-',
       { t: 'Termos de uso', a: () => nbAjuda('termos') },          // [Nebulosa] 0.5
       { t: 'Privacidade', a: () => nbAjuda('privacidade') },
-      { t: 'Créditos e licenças', a: () => nbAjuda('creditos') }, '-',
+      { t: 'Créditos e licenças', a: () => nbAjuda('creditos') },
+      { t: '🌐 Idioma', a: () => nbAjuda('idioma') }, '-',             // [Nebulosa] idiomas 0.6
       { t: 'Sobre o Stardust', i: 'info', a: dlgSobre }
     ]
   };
@@ -1734,7 +1735,9 @@
   };
   function montarModelo(id) {
     const w = SD.newWorkbook(); const s = w.sheets[0];
-    const put = (a, v, st) => { const p = SD.parseAddr(a); const cell = {}; if (typeof v === 'string' && v[0] === '=') { cell.v = null; cell.f = SD.F.toCanonical(v.slice(1)); } else cell.v = v; if (st) cell.s = st; s.cells.set(SD.key(p.r, p.c), cell); };
+    // [Nebulosa] idiomas (0.6): o conteúdo do modelo nasce no idioma escolhido (textos e textos entre aspas das fórmulas)
+    const tt = x => (window.NebulosaIdiomas ? window.NebulosaIdiomas.t(x) : x);
+    const put = (a, v, st) => { const p = SD.parseAddr(a); const cell = {}; if (typeof v === 'string' && v[0] === '=') { cell.v = null; cell.f = SD.F.toCanonical(v.slice(1).replace(/"([^"]*)"/g, (m, q) => '"' + tt(q) + '"')); } else cell.v = typeof v === 'string' ? tt(v) : v; if (st) cell.s = st; s.cells.set(SD.key(p.r, p.c), cell); };
     const H = { b: true, bg: '#4d8fd6', fc: '#ffffff' }, R = { z: '"R$" #,##0.00;[Red]-"R$" #,##0.00' }, T = { b: true, bd: { t: 'thin' } };
     if (id === 'orcamento') {
       w.name = 'Orçamento mensal'; s.name = 'Orçamento';
@@ -1783,6 +1786,7 @@
       put('C11', 'Falta comprar'); put('D11', '=SOMASE(E2:E8;"não";D2:D8)', R);
       s.colW = { 0: 180, 1: 100, 2: 120, 3: 120, 4: 100 };
     }
+    w.name = tt(w.name); s.name = tt(s.name); s.charts.forEach(c => { c.titulo = tt(c.titulo); }); // [Nebulosa] idiomas
     return w;
   }
   function dlgModelos() {
@@ -1910,7 +1914,7 @@
   function verificarRecuperacao() {
     let o = null; try { o = JSON.parse(localStorage.getItem(REC_KEY) || 'null'); } catch (e) { o = null; }
     if (!o || !o.wb) return;
-    const qd = new Date(o.quando).toLocaleString('pt-BR');
+    const qd = new Date(o.quando).toLocaleString(SD.local());
     dialogo({ titulo: 'Recuperar planilha?', corpo: `<p>Encontrei uma cópia de <b>${esc(o.wb.name || 'Planilha')}</b> que não foi salva em arquivo (${esc(qd)}).</p><p style="color:var(--text-dim)">Ela foi guardada automaticamente neste navegador.</p>`, botoes: [{ t: 'Descartar', acao: () => limparRecuperacao(true) }, { t: 'Recuperar', pri: true, acao: () => { const w = SD.wbFromJSON(o.wb); carregar(w, { recuperado: true }); toast('Planilha recuperada. Lembre de salvar em arquivo.'); } }] });
   }
 
@@ -1924,6 +1928,9 @@
   }
   function aparencia() { if (NS && NS.openDialog) NS.openDialog(); else alternarModo(); }
   function retema() { G.lerTema(); G.redrawCharts(); G.render(); }
+  // [Nebulosa] idiomas (0.6): ao trocar o idioma, redesenha a grade (erros, VERDADEIRO/TRUE, nomes de meses),
+  // os gráficos, a barra de fórmulas e o painel de funções
+  if (window.NebulosaIdiomas) window.NebulosaIdiomas.aoMudar(() => { try { if (['Planilha sem nome', 'Untitled spreadsheet', 'Hoja de cálculo sin nombre'].includes(wb.name)) { wb.name = SD.newWorkbook().name; $('#docNome').value = wb.name; } G.refresh(true); G.redrawCharts(); G.render(); onSelection(); renderPainel(); estadoDoc(); } catch (e) { /* ignora */ } });
 
   /* ======================================================================
      Avisos
@@ -1963,6 +1970,7 @@
     $('#novaAba').innerHTML = ic('mais'); $('#fecharPainel').innerHTML = ic('fechar');
     $('[data-cmd="zoomMenos"]').innerHTML = ic('menos'); $('[data-cmd="zoomMais"]').innerHTML = ic('mais');
     $('#btnMarca').onclick = dlgSobre;
+    $('#docNome').value = wb.name; // [Nebulosa] idiomas: nome inicial no idioma escolhido
     $('#docNome').addEventListener('change', e => { const v = e.target.value.trim() || 'Planilha sem nome'; e.target.value = v; if (v !== wb.name) { wb.name = v; marcarSujo(); } });
     $('#docNome').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); G.focus(); } });
     // caixa de nome

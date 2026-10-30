@@ -7,6 +7,10 @@
 <meta name="description" content="O Imaginarium é um editor gráfico completo que roda inteiro no navegador: camadas, máscaras, estilos, objetos inteligentes, pincéis, textos, vetores, seleções, ajustes e filtros. Ele segue o jeito de trabalhar do Photopea e do Photoshop — mesmas ferramentas, menus e atalhos — e abre e salva…">
 <!-- seo -->
 <link rel="canonical" href="https://nebulosaworkspace.com.br/manuais/imaginarium.html">
+<link rel="alternate" hreflang="pt-BR" href="https://nebulosaworkspace.com.br/manuais/imaginarium.html">
+<link rel="alternate" hreflang="en" href="https://nebulosaworkspace.com.br/manuais/imaginarium.en.html">
+<link rel="alternate" hreflang="es" href="https://nebulosaworkspace.com.br/manuais/imaginarium.es.html">
+<link rel="alternate" hreflang="x-default" href="https://nebulosaworkspace.com.br/manuais/imaginarium.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nebulosa Workspace">
 <meta property="og:locale" content="pt_BR">
@@ -33,7 +37,7 @@
 if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
 </head>
 <body>
-<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/imaginarium/" target="_blank" rel="noopener">Abrir o Imaginarium</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
+<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><nav class="idiomas" aria-label="Idioma"><a href="imaginarium.html" lang="pt-BR" hreflang="pt-BR" aria-current="true">PT</a><a href="imaginarium.en.html" lang="en" hreflang="en">EN</a><a href="imaginarium.es.html" lang="es" hreflang="es">ES</a></nav><a class="bt" href="../apps/imaginarium/" target="_blank" rel="noopener">Abrir o Imaginarium</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
 <div class="capa"><div class="in"><span class="tag">Mídia &amp; Criatividade</span><h1>Imaginarium<small>by Nebulosa Workspace</small></h1><p class="funcao">Editor Multifuncional de Imagens</p><p>O Imaginarium é um editor gráfico completo que roda inteiro no navegador: camadas, máscaras, estilos, objetos inteligentes, pincéis, textos, vetores, seleções, ajustes e filtros. Ele segue o jeito de trabalhar do Photopea e do Photoshop — mesmas ferramentas, menus e atalhos — e abre e salva arquivos PSD.</p>
 <div class="acoes"><a href="../index.html#app=imaginarium">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
 <div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. Como a tela é organizada</a><a href="#s2">2. Primeiros passos</a><a href="#s3">3. Movendo-se pela imagem</a><a href="#s4">4. Abrir, salvar e exportar</a><a href="#s5">5. Camadas</a><a href="#s6">6. Seleções, pintura e retoque</a><a href="#s7">7. Transformar, ajustes e filtros</a><a href="#s8">8. Aparências e atalhos</a><a href="#s9">9. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Como a tela é organizada</h2>
@@ -58,7 +62,8 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <ul><li>Tipos: imagem, texto, forma, ajuste, preenchimento, grupo e objeto inteligente.</li>
 <li>Opacidade, preenchimento, modos de mesclagem, bloqueios, máscaras de camada e vetoriais, máscaras de corte.</li>
 <li><b>Estilos de camada</b>: sombra, brilho, chanfro, contorno, sobreposições e mais.</li>
-<li><b>Objetos inteligentes</b> e <b>filtros inteligentes</b>: editar sem perder o original.</li></ul></section><section id="s6"><h2><span class="num">6</span>Seleções, pintura e retoque</h2>
+<li><b>Objetos inteligentes</b> e <b>filtros inteligentes</b>: editar sem perder o original.</li>
+<li>Os nomes padrão (Fundo, Camada 1, Sem título…) nascem no idioma escolhido; os nomes que você digita ficam como estão.</li></ul></section><section id="s6"><h2><span class="num">6</span>Seleções, pintura e retoque</h2>
 <ul><li>Seleção retangular, elíptica, laço, laço poligonal e magnético, varinha mágica, seleção rápida e de objeto; menu Selecionar com expandir, contrair, suavizar, inverter, gama de cores e máscara rápida.</li>
 <li>Pincel, lápis, borracha, balde, degradê, carimbo, pincel de recuperação, corretivo, olhos vermelhos, desfocar, nitidez, borrar, subexpor e superexpor.</li>
 <li>Formas, caneta e demarcadores; textos com fonte, tamanho, espaçamento e textos em caminho.</li></ul></section><section id="s7"><h2><span class="num">7</span>Transformar, ajustes e filtros</h2>
@@ -68,14 +73,15 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <p>O Imaginarium tem três aparências: <b>Imaginarium</b> (padrão, grafite com azul), <b>Nebulosa</b> e <b>Photopea</b>. Troque pelo botão Aparência do Workspace ou dentro do programa.</p>
 <p>Os atalhos são os mesmos do Photoshop e do Photopea: <kbd>V</kbd> mover, <kbd>M</kbd> seleção, <kbd>L</kbd> laço, <kbd>W</kbd> varinha, <kbd>C</kbd> recorte, <kbd>B</kbd> pincel, <kbd>E</kbd> borracha, <kbd>T</kbd> texto, <kbd>P</kbd> caneta, <kbd>U</kbd> formas… A lista completa está em <b>Ajuda › Manual</b>, dentro do programa (com busca).</p></section><section id="s9"><h2><span class="num">9</span>Dentro do Nebulosa Workspace</h2>
 <ul>
-<li><b>Menu Ajuda</b>: O menu <b>Ajuda</b> tem: <b>Manual do usuário</b>, <b>Manual do Imaginarium</b> (<kbd>F1</kbd>), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b>, <b>Créditos e licenças</b> e <b>Sobre o Imaginarium</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</li>
+<li><b>Menu Ajuda</b>: O menu <b>Ajuda</b> tem: <b>Manual do usuário</b>, <b>Manual do Imaginarium</b> (<kbd>F1</kbd>), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b>, <b>Créditos e licenças</b>, <b>🌐 Idioma</b> e <b>Sobre o Imaginarium</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</li>
 <li>Abra o Imaginarium pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Imaginarium entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
+<li>O botão <b>Idioma</b> (🌐), no alto do Workspace — ou <b>Ajuda › 🌐 Idioma</b>, dentro do programa —, troca a língua dos menus e textos entre <b>Português do Brasil</b> (o padrão), <b>English</b> e <b>Español</b>. A escolha vale para todos os programas e fica guardada. O que você escreveu nos seus arquivos não é traduzido.</li>
 <li>Ao fechar a aba do Imaginarium com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
 <li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
 <li>O Imaginarium também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/imaginarium/</code>) ou pelo arquivo HTML único.</li>
 </ul></section></main></div>
-<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.5</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.6</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
 <script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

@@ -813,7 +813,7 @@
           for (let i = 0; i < R.w * R.h; i++) { const al = r.a[i]; if (al <= 0.02 || al >= 0.98) continue; for (let q = 0; q < 3; q++) d.data[i * 4 + q] += (r.F[i * 3 + q] - d.data[i * 4 + q]) * k * (1 - al); }
           x.putImageData(d, R.x, R.y);
         }
-        const NL = IMG.Layers.fromCanvas(doc, c, L.name + ' cópia', 0, 0);
+        const NL = IMG.Layers.fromCanvas(doc, c, L.name + ' ' + (window.NebulosaIdiomas ? NebulosaIdiomas.t('cópia') : 'cópia'), 0, 0);
         if (p.output === 'layer') { x.globalCompositeOperation = 'destination-in'; x.drawImage(full, 0, 0); IMG.markDirty(NL); }
         else NL.mask = IMG.Layers.makeMask(full, 0, 0, 0);
         L.visible = false;

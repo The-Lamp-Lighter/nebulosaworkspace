@@ -98,8 +98,8 @@
     if (!ms) return 'nunca';
     const d = new Date(ms), hoje = new Date();
     const mesmoDia = d.toDateString() === hoje.toDateString();
-    if (mesmoDia) return 'hoje, ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    if (mesmoDia) return 'hoje, ' + d.toLocaleTimeString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }); // [Nebulosa] idiomas
   };
 
   /** "2026-10-05" (dia local) — chave usada no histórico. */

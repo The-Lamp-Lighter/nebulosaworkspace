@@ -856,6 +856,9 @@
         frame.style.height = '520px';
         this.dialog({ title: 'Créditos', body: frame, width: 440, flush: true, buttons: [{ label: 'Fechar', primary: true }], noFocus: true });
       } else {
+        // [Nebulosa] idiomas (0.6): o manual interno está em português; em inglês e espanhol abre o manual traduzido do site
+        const I = window.NebulosaIdiomas, N = window.NebulosaSkin;
+        if (I && I.atual() !== 'pt-BR' && N && N.abrirAjuda) return N.abrirAjuda('manual');
         const frame = el('iframe.help-frame', { src: 'help/manual.html', title: 'Manual do Imaginarium' });
         frame.style.height = 'min(74vh, 720px)';
         this.dialog({ title: 'Manual do Imaginarium', body: frame, width: Math.min(980, window.innerWidth - 40), flush: true, buttons: [], noFocus: true });

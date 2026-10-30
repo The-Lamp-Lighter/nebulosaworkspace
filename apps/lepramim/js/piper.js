@@ -126,7 +126,7 @@
       const janela = ui.progresso('Baixando a voz ' + nomeDaVoz(v));
       garantirWorker();
       const id = proximoId++;
-      const mb = n => (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: n < 10485760 ? 1 : 0 });
+      const mb = n => (n / 1048576).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR', { maximumFractionDigits: n < 10485760 ? 1 : 0 });
       const pronto = new Promise((resolve, reject) => downloads.set(id, {
         resolve, reject,
         progresso: m => janela.atualizar(

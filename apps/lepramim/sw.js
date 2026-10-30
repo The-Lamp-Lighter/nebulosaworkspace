@@ -5,9 +5,9 @@
    e sem internet. Só atende arquivos da própria pasta do app;
    nenhum dado do usuário passa por aqui.
    ============================================================ */
-const CACHE = 'lepramim-v6'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js
+const CACHE = 'lepramim-v7'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js · v7: nebulosa-idiomas.js
 const ESSENCIAIS = [
-  './', 'index.html', 'manifest.webmanifest', 'favicon.ico', 'css/estilo.css', 'css/aparencia-nebulosa.css',
+  './', 'index.html', 'nebulosa-idiomas.js', 'manifest.webmanifest', 'favicon.ico', 'css/estilo.css', 'css/aparencia-nebulosa.css',
   'assets/icone-96.png', 'assets/icone-192.png', 'assets/icone-512.png', 'assets/favicon.png', 'assets/logo-vertical.png',
   'js/config.js', 'js/util.js', 'js/armazenamento.js', 'js/zip.js', 'js/capitulos.js', 'js/limpeza.js', 'js/livro.js',
   'js/metadados-audio.js', 'js/bibliotecas-web.js', 'js/importadores.js', 'js/voz.js', 'js/piper.js', 'js/piper-worker.js', 'js/interface.js', 'js/estatisticas.js', 'js/temporizador.js',

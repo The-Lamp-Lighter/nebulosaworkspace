@@ -268,6 +268,7 @@
     C('help.nbTermos', 'Termos de uso', () => nbAjuda('termos'));
     C('help.nbPrivacidade', 'Privacidade', () => nbAjuda('privacidade'));
     C('help.nbCreditos', 'Créditos e licenças', () => nbAjuda('creditos'));
+    C('help.nbIdioma', '🌐 Idioma', () => nbAjuda('idioma')); // [Nebulosa] idiomas (0.6)
 
     /* ---------- módulos ---------- */
     IMG.onInit.forEach((fn) => { try { fn(C, IMG.cmdHelpers); } catch (err) { console.error(err); } });
@@ -320,7 +321,7 @@
         'view.rulers', '-', 'view.snap', { label: 'Encaixar em', items: ['view.snapGuides', 'view.snapLayers', 'view.snapBounds', 'view.snapGrid'] }, '-',
         'view.lockGuides', 'view.clearGuides', 'view.newGuide', 'view.newGuideLayout', 'view.guidesFromShape', '-', 'view.lockSlices', 'view.clearSlices', '-', 'view.printSize', 'view.fullscreen', 'view.hideUI'] },
       { label: 'Janela', items: () => UI.panelOrder.slice().sort((a, b) => UI.panels[a].title.localeCompare(UI.panels[b].title)).map((id) => 'window.' + id).concat(['-', 'window.dock', 'window.reset']) },
-      { label: 'Ajuda', items: ['help.nbManual', 'help.manual', 'help.shortcuts', '-', 'help.nbTermos', 'help.nbPrivacidade', 'help.nbCreditos', '-', 'help.credits'] } // [Nebulosa] menu Ajuda (0.5)
+      { label: 'Ajuda', items: ['help.nbManual', 'help.manual', 'help.shortcuts', '-', 'help.nbTermos', 'help.nbPrivacidade', 'help.nbCreditos', '-', 'help.nbIdioma', 'help.credits'] } // [Nebulosa] menu Ajuda (0.5)
     ];
   }
   IMG.buildMenus = menus;

@@ -7,6 +7,10 @@
 <meta name="description" content="O Flyde cria apresentações de dois jeitos: slides clássicos, um depois do outro, ou um mapa com zoom, em que a câmera voa, gira e aproxima de um ponto ao outro. Tudo com animações e transições.">
 <!-- seo -->
 <link rel="canonical" href="https://nebulosaworkspace.com.br/manuais/flyde.html">
+<link rel="alternate" hreflang="pt-BR" href="https://nebulosaworkspace.com.br/manuais/flyde.html">
+<link rel="alternate" hreflang="en" href="https://nebulosaworkspace.com.br/manuais/flyde.en.html">
+<link rel="alternate" hreflang="es" href="https://nebulosaworkspace.com.br/manuais/flyde.es.html">
+<link rel="alternate" hreflang="x-default" href="https://nebulosaworkspace.com.br/manuais/flyde.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nebulosa Workspace">
 <meta property="og:locale" content="pt_BR">
@@ -33,7 +37,7 @@
 if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('embed');document.addEventListener('DOMContentLoaded',function(){[].forEach.call(document.querySelectorAll('a[href]'),function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)!=='#'&&!/^mailto:/.test(h)){a.target='_blank';a.rel='noopener'}})})}</script>
 </head>
 <body>
-<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><a class="bt" href="../apps/flyde/" target="_blank" rel="noopener">Abrir o Flyde</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
+<header class="topo"><a class="marca" href="index.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuais <small>Nebulosa Workspace</small></span></a><span class="esp"></span><nav class="idiomas" aria-label="Idioma"><a href="flyde.html" lang="pt-BR" hreflang="pt-BR" aria-current="true">PT</a><a href="flyde.en.html" lang="en" hreflang="en">EN</a><a href="flyde.es.html" lang="es" hreflang="es">ES</a></nav><a class="bt" href="../apps/flyde/" target="_blank" rel="noopener">Abrir o Flyde</a><a class="bt" href="../index.html">Abrir o Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
 <div class="capa"><div class="in"><span class="tag">Mídia &amp; Criatividade</span><h1>Flyde<small>by Nebulosa Workspace</small></h1><p class="funcao">Apresentações em Slides</p><p>O Flyde cria apresentações de dois jeitos: slides clássicos, um depois do outro, ou um mapa com zoom, em que a câmera voa, gira e aproxima de um ponto ao outro. Tudo com animações, transições e trilhas de áudio — e exporta em HTML, PowerPoint, vídeo (MP4 ou WebM), imagens e PDF.</p>
 <div class="acoes"><a href="../index.html#app=flyde">Abrir no Workspace</a><a class="sec" href="index.html">Outros manuais</a></div></div></div>
 <div class="layout"><nav class="indice" aria-label="Índice"><b>Neste manual</b><a href="#s1">1. Como começar</a><a href="#s2">2. Inserir conteúdo</a><a href="#s3">3. Animações e transições</a><a href="#s4">4. Trilhas de áudio</a><a href="#s5">5. Fundo do mapa com zoom</a><a href="#s6">6. Apresentar</a><a href="#s7">7. Exportar</a><a href="#s8">8. Vídeo</a><a href="#s9">9. Atalhos de teclado</a><a href="#s10">10. Menu Ajuda</a><a href="#s11">11. Dentro do Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Como começar</h2>
@@ -42,10 +46,11 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <li><b>Mapa com zoom</b> — um espaço gigante com tudo dentro; a câmera voa, gira e dá zoom de um ponto ao outro.</li>
 <li><b>Abrir uma apresentação</b> feita antes no Flyde: o arquivo <b>.html</b> exportado ou o <b>projeto .json</b>.</li></ul>
 <p>Dê um nome à apresentação no campo do alto. O selo ao lado mostra o modo (Slides ou Mapa).</p></section><section id="s2"><h2><span class="num">2</span>Inserir conteúdo</h2>
-<p>O painel <b>Inserir</b> (à esquerda) traz textos, imagens e formas: retângulo, arredondado, círculo, triângulo, losango, pentágono, hexágono, estrela, seta, chevron, coração, mais, balão, anel, linha e seta fina. Em <b>Modelos</b> há slides prontos (capa, título e texto, imagem…).</p>
+<p>O painel <b>Inserir</b> (à esquerda) traz textos, imagens e formas: retângulo, arredondado, círculo, triângulo, losango, pentágono, hexágono, estrela, seta, chevron, coração, mais, balão, anel, linha e seta fina. Em <b>Modelos</b> há slides prontos (capa, título e texto, imagem…), com os textos no idioma escolhido no Workspace.</p>
 <ul><li>Clique duas vezes num texto (ou <kbd>Enter</kbd>) para editar.</li>
 <li>Arraste para mover; as alças mudam o tamanho; setas movem (com <kbd>Shift</kbd>, mais rápido).</li>
-<li>No painel da direita (<b>Formato</b>), mude fonte (inclusive as fontes do tema), cores, alinhamentos e camadas.</li></ul></section><section id="s3"><h2><span class="num">3</span>Animações e transições</h2>
+<li>No painel da direita (<b>Formato</b>), mude fonte (inclusive as fontes do tema), cores, alinhamentos e camadas.</li></ul>
+<p><b>Faixa de slides</b> (embaixo): clique numa miniatura para ir até ela e arraste para mudar a ordem. O botão <b>⧉</b> duplica o slide — a cópia é <b>independente</b>: o que você muda nela não muda o original, e vice-versa (no mapa com zoom, os objetos do quadro são copiados para uma área livre do mapa). O botão <b>＋ Slide</b>, no fim da faixa, insere um slide novo logo depois do atual: na apresentação clássica você escolhe um modelo; no mapa com zoom ele cria um quadro vazio numa área livre, já pronto para receber textos, imagens e formas.</p></section><section id="s3"><h2><span class="num">3</span>Animações e transições</h2>
 <ul>
 <li><b>Entrada</b>: surgir, subir, descer, da esquerda, da direita, crescer, pop, girar, virar, desfocar, revelar, quicar e esticar.</li>
 <li><b>Ênfase</b>: pulsar, tremer, balançar, girar 360°, piscar, batida e pêndulo.</li>
@@ -96,16 +101,17 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <tr><td><kbd>Enter</kbd> ou duplo clique</td><td>Editar texto</td></tr>
 <tr><td><kbd>Espaço</kbd> + arrastar</td><td>Mover a tela</td></tr>
 <tr><td><kbd>Ctrl</kbd> + <kbd>roda</kbd></td><td>Zoom</td></tr></table></section><section id="s10"><h2><span class="num">10</span>Menu Ajuda</h2>
-<p>O botão <b>Ajuda</b>, no alto, tem: <b>Manual do usuário</b> (este manual), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b> e <b>Créditos e licenças</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</p></section>
+<p>O botão <b>Ajuda</b>, no alto, tem: <b>Manual do usuário</b> (este manual), <b>Atalhos do teclado</b>, <b>Termos de uso</b>, <b>Privacidade</b>, <b>Créditos e licenças</b> e <b>🌐 Idioma</b>. O manual e as páginas legais abrem numa janela dentro do próprio programa (dá para trocar entre elas pelos botões do alto da janela; <kbd>Esc</kbd> fecha).</p></section>
 <section id="s11"><h2><span class="num">11</span>Dentro do Nebulosa Workspace</h2>
 <ul>
 <li>Abra o Flyde pelo menu lateral, pelo cartão na página inicial ou pela busca (<kbd>Alt</kbd> + <kbd>K</kbd>).</li>
 <li>O botão <b>Aparência</b>, no alto do Workspace, troca o visual do Flyde entre o visual original e o <b>Nebulosa Default</b> (roxo, azul-marinho, laranja e amarelo). A escolha vale só para este programa e fica guardada.</li>
+<li>O botão <b>Idioma</b> (🌐), no alto do Workspace — ou <b>Ajuda › 🌐 Idioma</b>, dentro do programa —, troca a língua dos menus e textos entre <b>Português do Brasil</b> (o padrão), <b>English</b> e <b>Español</b>. A escolha vale para todos os programas e fica guardada. O que você escreveu nos seus arquivos não é traduzido.</li>
 <li>Ao fechar a aba do Flyde com alterações que ainda não foram salvas em arquivo, o Workspace pergunta antes de fechar.</li>
 <li>Os atalhos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> e <kbd>Alt</kbd> + <kbd>0</kbd> (início) funcionam mesmo com o foco dentro do programa.</li>
 <li>O Flyde também abre sozinho, fora do Workspace, pelo endereço da pasta dele (por exemplo <code>…/apps/flyde/</code>) ou pelo arquivo HTML único.</li>
 </ul></section></main></div>
-<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.5</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+<footer class="rodape"><p>Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.6</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade · Equipe de Produção Lamp Lighter</p><p><a href="index.html">Todos os manuais</a> · <a href="../index.html">Página inicial do Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.html">Termos de uso</a> · <a href="../legal/privacidade.html">Privacidade</a> · <a href="../legal/creditos.html">Créditos e licenças</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
 <script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

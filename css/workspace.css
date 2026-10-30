@@ -402,3 +402,18 @@ a.chip.mail{text-decoration:none}
 /* (0.5) créditos na janela "Sobre o Workspace" */
 #about p.creditos{font-size:13px;color:var(--ink2);margin:6px 0 2px;line-height:1.5}
 #about p.legal span[aria-hidden]{margin:0 .4em}
+
+/* (0.6) idioma: botão do globo no cabeçalho e painel com os três idiomas */
+.chip.lang{padding:0 10px;gap:6px}
+.chip.lang .t{font-weight:700;font-size:12px;letter-spacing:.04em}
+#langPanel{right:14px;top:calc(var(--top) + 8px);width:min(320px,calc(100vw - 28px));padding:18px 18px 16px}
+#langPanel h3{margin:0 0 4px;font:700 18px var(--display)}
+#langPanel .ltxt{margin:0 0 12px;color:var(--ink2);font-size:13px}
+#langPanel .lopts{display:grid;gap:8px}
+#langPanel .lopt{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:none;color:var(--ink);font:inherit;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s}
+#langPanel .lopt:hover{border-color:var(--p);transform:translateX(2px)}
+#langPanel .lopt[aria-pressed="true"]{border-color:var(--p);box-shadow:0 0 0 1px var(--p) inset}
+#langPanel .lopt i{font-style:normal;font:700 11px var(--ui);background:rgba(167,120,255,.22);border-radius:6px;padding:3px 6px}
+#langPanel .lopt b{flex:1;font-weight:600}
+#langPanel .lopt .ck{color:var(--p);font-weight:800}
+@media (max-width:820px){.chip.lang .t{display:none}}

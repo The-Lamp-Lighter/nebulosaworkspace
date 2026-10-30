@@ -16,6 +16,7 @@
        set-skin       { skin }  troca a aparência do programa
        open-skin      abre a janela de aparência do próprio programa
        query-dirty    pergunta se há alterações não salvas
+       set-lang       { idioma }  (0.6) troca o idioma ('pt-BR' | 'en' | 'es')
      programa → Workspace
        hello / skin   { app, skins:[{id,name,desc,swatch}], skin }
        dirty          { dirty: true|false }  resposta ao query-dirty
@@ -24,6 +25,12 @@
        notify         { title, text, kind, ttl, always }  aviso no canto de notificações
                       (kind: info | sucesso | aviso | erro). Se o programa está
                       na tela, o aviso vai só para o sino, a menos que always = true.
+       lang           { idioma }  (0.6) o idioma foi trocado dentro do programa (Ajuda › Idioma)
+
+   Idiomas (0.6): o motor fica em shared/nebulosa-bridge.js (carregado com data-host no
+   index.html) e os textos do Workspace em js/idiomas.js. Os textos daqui continuam em
+   português; a tradução é feita na tela. Para textos montados em JavaScript que precisam
+   ser comparados (busca), use T('texto').
 
    Um programa que não fala esse "idioma" (sem shared/nebulosa-bridge.js)
    abre e funciona normalmente; ele só não oferece aparências pelo Workspace
@@ -59,6 +66,13 @@
   const IFRAME_ALLOW = 'clipboard-read; clipboard-write; fullscreen; display-capture; autoplay; microphone';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  // (0.6) idiomas
+  const IDI = window.NebulosaIdiomas;
+  const T = (...a) => IDI ? IDI.t(...a) : String(a[0]);
+  const idioma = () => IDI ? IDI.atual() : 'pt-BR';
+  const localNum = () => IDI ? IDI.local() : 'pt-BR';
+  // páginas traduzidas: manuais/typee.en.html, legal/termos.es.html…
+  const comIdioma = u => { const l = idioma(), x = l === 'en' ? '.en' : l === 'es' ? '.es' : ''; return x ? u.replace(/\.html(#|$)/, x + '.html$1') : u; };
 
   /* ---------- programas (vêm de js/apps.js) ---------- */
   const APPS = (window.NEBULOSA_APPS || [])
@@ -148,8 +162,8 @@
     return 'há ' + Math.round(h / 24) + ' d';
   }
   // (0.4) termos de uso, privacidade e créditos (pasta legal/)
-  const LEGAL_LINKS = '<a href="legal/termos.html" target="_blank" rel="noopener">Termos de uso</a><span aria-hidden="true">·</span><a href="legal/privacidade.html" target="_blank" rel="noopener">Privacidade</a><span aria-hidden="true">·</span><a href="legal/creditos.html" target="_blank" rel="noopener">Créditos e licenças</a>';
-  const manualUrl = id => 'manuais/' + (id && byId[id] ? id + '.html' : 'index.html');
+  const legalLinks = () => `<a href="${comIdioma('legal/termos.html')}" target="_blank" rel="noopener">Termos de uso</a><span aria-hidden="true">·</span><a href="${comIdioma('legal/privacidade.html')}" target="_blank" rel="noopener">Privacidade</a><span aria-hidden="true">·</span><a href="${comIdioma('legal/creditos.html')}" target="_blank" rel="noopener">Créditos e licenças</a>`;
+  const manualUrl = id => comIdioma('manuais/' + (id && byId[id] ? id + '.html' : 'index.html'));
   function cardHtml(a, i) {
     const nome = a.nomeCartao || a.name;
     return `<button class="card ${a.soon ? 'off' : ''}" data-open="${a.id}" style="animation-delay:${i * 60 + 60}ms" aria-label="Abrir ${esc(nome)}${a.funcao ? ': ' + esc(a.funcao) : ''}"><div class="art" style="background:${grad(a)}">${ICONS[a.icon]}<span class="tag">${esc(a.tag)}</span></div><div class="cbody"><h3>${esc(nome)}${ST[a.id].open ? '<span class="badge">aberto</span>' : ''}${a.soon ? '<span class="badge soon">em breve</span>' : ''}</h3>${a.funcao ? `<p class="fn">${esc(a.funcao)}</p>` : ''}<p>${esc(a.desc)}</p><span class="go">${a.soon ? 'Saiba mais' : 'Abrir'} <i>→</i></span></div></button>`;
@@ -178,7 +192,7 @@
     });
     h += `<div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div>
   <p class="rodape">${esc(RODAPE)}</p>
-  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Estatística de acessos do site: domínio, página inicial e cada programa">Acessos</button><span aria-hidden="true">·</span>${LEGAL_LINKS}</div></div></div>`;
+  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Estatística de acessos do site: domínio, página inicial e cada programa">Acessos</button><span aria-hidden="true">·</span>${legalLinks()}</div></div></div>`;
     $('#home').innerHTML = h;
   }
   $('#home').addEventListener('click', e => {
@@ -239,6 +253,7 @@
         const l = $('.loading', v);
         if (l) { l.style.opacity = '0'; setTimeout(() => l.remove(), 520); }
         post(a.id, { nebulosa: 'ping' });
+        post(a.id, { nebulosa: 'set-lang', idioma: idioma() });
       }, { once: true });
       s.iframe = f;
       v.insertBefore(f, v.firstChild);
@@ -377,6 +392,9 @@
       if ($('#skinPanel').classList.contains('show')) renderSkinPanel();
     } else if (d.nebulosa === 'key') {
       handleKeyCode(d.code);
+    } else if (d.nebulosa === 'lang' && IDI) {
+      IDI.definir(d.idioma); // o resto (outros programas, telas) é feito em aoMudarIdioma
+      aoMudarIdioma();
     } else if (d.nebulosa === 'new-window') {
       const hash = typeof d.hash === 'string' ? d.hash.replace(/^#/, '') : 'novo';
       const w = window.open(location.href.split('#')[0] + '#app=' + encodeURIComponent(a.id) + (hash ? '&h=' + encodeURIComponent(hash) : ''), '_blank');
@@ -454,7 +472,7 @@
   }
 
   /* ---------- painéis e janelas ---------- */
-  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel'];
+  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel', 'langPanel'];
   function openPop(el) {
     const sc = $('#scrim');
     sc.classList.add('show');
@@ -535,7 +553,7 @@
 
   function openAbout() {
     const a = $('#about');
-    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><p class="creditos"><b>Autores e idealizadores:</b> ${esc(CREDITOS.autores)}<br><b>Equipe de produção:</b> ${esc(CREDITOS.equipe)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${LEGAL_LINKS} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
+    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><p class="creditos"><b>Autores e idealizadores:</b> ${esc(CREDITOS.autores)}<br><b>Equipe de produção:</b> ${esc(CREDITOS.equipe)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${legalLinks()} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
     closeOthers('about'); openPop(a);
     $('#abOk').onclick = closePops;
     $('#abMail').onclick = openMail;
@@ -551,7 +569,7 @@
     if (visto === TERMOS_VERSAO) return;
     const bar = document.createElement('div');
     bar.id = 'termosBar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Termos de uso e privacidade');
-    bar.innerHTML = `<p><b>Programas gratuitos, de código aberto e sem cadastro.</b> Seus arquivos ficam no seu computador. Ao usar o Nebulosa Workspace, você concorda com os <a href="legal/termos.html" target="_blank" rel="noopener">Termos de uso</a> e a <a href="legal/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="chip prim" id="termosOk">Entendi</button>`;
+    bar.innerHTML = `<p><b>Programas gratuitos, de código aberto e sem cadastro.</b> Seus arquivos ficam no seu computador. Ao usar o Nebulosa Workspace, você concorda com os <a href="${comIdioma('legal/termos.html')}" target="_blank" rel="noopener">Termos de uso</a> e a <a href="${comIdioma('legal/privacidade.html')}" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="chip prim" id="termosOk">Entendi</button>`;
     document.body.appendChild(bar);
     requestAnimationFrame(() => bar.classList.add('on'));
     $('#termosOk').onclick = () => {
@@ -568,7 +586,7 @@
     const el = $('#acessos');
     const linhas = [{ id: 'inicio', nome: 'Página inicial do Workspace', icone: `<span class="ric" style="background:linear-gradient(135deg,var(--p),var(--o));color:#1b1d38">${ICONS.home}</span>` }]
       .concat(APPS.filter(a => !a.soon).map(a => ({ id: a.id, nome: a.nomeCartao || a.name, icone: ric(a) })));
-    const fmt = v => v == null ? '—' : Number(v).toLocaleString('pt-BR');
+    const fmt = v => v == null ? '—' : Number(v).toLocaleString(localNum());
     const desenhar = (dados, carregando) => {
       const online = dados && dados._online;
       const val = id => !dados || !online ? null : dados[id];
@@ -602,7 +620,7 @@
       catch (e) { qrSvg = ''; }
     }
     const curto = DOA.pix.length > 30 ? DOA.pix.slice(0, 22) + '…' + DOA.pix.slice(-4) : DOA.pix;
-    const texto = esc(DOA.texto || '').replace('Nebulosa Workspace', '<strong>Nebulosa Workspace</strong>');
+    const texto = esc(T(DOA.texto || '')).replace('Nebulosa Workspace', '<strong>Nebulosa Workspace</strong>'); // (0.6) traduzido antes de separar o negrito
     const d = $('#donate');
     d.innerHTML = `<div class="faixa"></div><div class="dcorpo">
       <div class="dtopo">
@@ -731,11 +749,49 @@
   /** Aviso do próprio Workspace no canto de notificações. */
   function notificar(op) { return NOTIF ? NOTIF.mostrar(Object.assign({ origem: 'Nebulosa Workspace' }, op)) : null; }
 
+  /* ---------- (0.6) idioma ---------- */
+  // Português do Brasil é o padrão. A escolha fica em localStorage "nebulosa.idioma" e vale
+  // para o Workspace e para todos os programas (os abertos recebem "set-lang" na hora).
+  const curto = () => ((IDI && IDI.lista.find(x => x.id === idioma())) || {}).curto || 'PT';
+  function renderLangPanel() {
+    const p = $('#langPanel'), atual = idioma();
+    p.innerHTML = `<h3>Idioma</h3><p class="ltxt">Vale para o Workspace e para todos os programas.</p><div class="lopts" translate="no">` +
+      (IDI ? IDI.lista : []).map(l => `<button class="lopt" data-lang="${l.id}" lang="${l.id}" aria-pressed="${l.id === atual}"><i>${l.curto}</i><b>${esc(l.nome)}</b>${l.id === atual ? '<span class="ck">✓</span>' : ''}</button>`).join('') + '</div>';
+  }
+  function openLang() {
+    const p = $('#langPanel');
+    if (p.classList.contains('show')) { closePops(); return; }
+    renderLangPanel(); closeOthers('langPanel'); openPop(p);
+    setTimeout(() => { const b = $('.lopt[aria-pressed="true"]', p); if (b) b.focus(); }, 40);
+  }
+  function trocarIdioma(id) { if (!IDI) return; IDI.definir(id); aoMudarIdioma(); }
+  function aoMudarIdioma() {
+    const l = idioma();
+    APPS.forEach(a => post(a.id, { nebulosa: 'set-lang', idioma: l }));
+    $('#langCurto').textContent = curto();
+    renderRail(); renderTabs();
+    if (active === null) renderHome();
+    if ($('#langPanel').classList.contains('show')) renderLangPanel();
+    if ($('#palette').classList.contains('show')) renderPalette();
+    if ($('#about').classList.contains('show')) openAbout();
+    if ($('#skinPanel').classList.contains('show')) renderSkinPanel();
+  }
+  $('#btnLang').addEventListener('click', openLang);
+  $('#langPanel').addEventListener('click', e => {
+    const b = e.target.closest('[data-lang]');
+    if (b) { trocarIdioma(b.dataset.lang); setTimeout(closePops, 180); }
+  });
+  if (IDI) {
+    $('#langCurto').textContent = curto();
+    // trocado em outra aba ou dentro de um programa (evento "storage"): repassa e redesenha
+    addEventListener('storage', e => { if (e.key === 'nebulosa.idioma') setTimeout(aoMudarIdioma, 0); });
+  } else $('#btnLang').remove();
+
   /* ---------- busca rápida (Alt+K) ---------- */
   let pItems = [], pSel = 0;
   function actions() {
     const L = [];
-    APPS.forEach((a, i) => L.push({ t: 'Abrir ' + a.name, s: a.tag + ' · ' + a.desc.split('.')[0], kw: a.name + ' ' + a.tag + ' ' + a.keywords, icon: ric(a), k: i < 9 ? 'Alt ' + (i + 1) : '', run: () => { closePops(); openApp(a.id); } }));
+    APPS.forEach((a, i) => L.push({ t: 'Abrir ' + a.name, s: T(a.tag) + ' · ' + T(a.desc).split('.')[0], kw: a.name + ' ' + a.tag + ' ' + a.keywords + (idioma() === 'pt-BR' ? '' : ' ' + T(a.keywords)), icon: ric(a), k: i < 9 ? 'Alt ' + (i + 1) : '', run: () => { closePops(); openApp(a.id); } }));
     L.push({ t: 'Ir para o Início', s: 'Ver todos os programas', kw: 'inicio home principal voltar', icon: plainRic(ICONS.home), k: 'Alt 0', run: () => { closePops(); goHome(); } });
     if (active) {
       const a = byId[active];
@@ -747,18 +803,20 @@
     L.push({ t: 'Usar Nebulosa Default em todos os programas', s: 'Mesmo visual em tudo', kw: 'aparencia skin nebulosa todos', icon: `<span class="ric" style="background:var(--p)">${ICONS.paint}</span>`, run: () => { closePops(); applyAll('nebulosa'); } });
     L.push({ t: 'Voltar cada programa ao visual padrão', s: 'Desfaz a aparência Nebulosa', kw: 'aparencia skin padrao original todos', icon: plainRic(ICONS.paint), run: () => { closePops(); applyAll(null); } });
     L.push({ t: H.theme === 'dark' ? 'Workspace em modo claro' : 'Workspace em modo escuro', s: 'Muda só o Workspace', kw: 'tema claro escuro modo', icon: plainRic(ICONS.moon), run: () => { closePops(); setTheme(H.theme === 'dark' ? 'light' : 'dark'); } });
+    (IDI ? IDI.lista : []).forEach(l => { if (l.id !== idioma()) L.push({ t: 'Idioma: ' + l.nome, s: 'Muda o idioma do Workspace e de todos os programas', kw: 'idioma lingua language idiom ingles english espanol espanhol portugues traducao ' + l.nome, icon: plainRic(ICONS.globe), run: () => { closePops(); trocarIdioma(l.id); } }); });
     L.push({ t: 'Tela cheia', s: 'Ocupa a tela inteira', kw: 'tela cheia fullscreen', icon: plainRic('⤢'), run: () => { closePops(); $('#btnFs').click(); } });
     if (DOA) L.push({ t: 'Doe com Pix', s: 'Apoie o Nebulosa Workspace com qualquer valor', kw: 'doar doacao doe pix apoiar apoio contribuir ajudar retribuir', icon: heartRic(), run: () => { closePops(); setTimeout(openDonate, 180); } });
     L.push({ t: 'Notificações', s: 'Avisos recentes dos programas', kw: 'notificacoes avisos alertas sino historico', icon: plainRic(ICONS.bell), run: () => { closePops(); setTimeout(openNotifs, 180); } });
     L.push({ t: 'Sobre o Workspace', s: 'Apresentação, versão e créditos', kw: 'sobre ajuda creditos autor manifesto', icon: plainRic(ICONS.info), run: () => { closePops(); setTimeout(openAbout, 180); } });
     L.push({ t: 'Manual do Nebulosa Workspace', s: 'Como usar o Workspace e cada programa', kw: 'manual ajuda guia como usar tutorial', icon: plainRic(ICONS.manual), run: () => { closePops(); window.open(manualUrl(), '_blank', 'noopener'); } });
-    APPS.filter(a => !a.soon).forEach(a => L.push({ t: 'Manual de ' + a.name, s: a.funcao || a.tag, kw: 'manual ajuda guia como usar ' + a.name + ' ' + a.keywords, icon: ric(a), run: () => { closePops(); window.open(manualUrl(a.id), '_blank', 'noopener'); } }));
+    APPS.filter(a => !a.soon).forEach(a => L.push({ t: 'Manual de ' + a.name, s: a.funcao || a.tag, kw: 'manual ajuda guia como usar ' + a.name + ' ' + a.keywords + (idioma() === 'pt-BR' ? '' : ' manual help guide ' + T(a.keywords)), icon: ric(a), run: () => { closePops(); window.open(manualUrl(a.id), '_blank', 'noopener'); } }));
     L.push({ t: 'Acessos', s: 'Estatística do site: acessos ao domínio e a cada programa', kw: 'acessos visitas contador estatisticas', icon: plainRic(ICONS.chart), run: () => { closePops(); setTimeout(openAcessos, 180); } });
     return L;
   }
   function renderPalette() {
     const q = norm($('#pq').value.trim()), all = actions();
-    pItems = q ? all.filter(x => q.split(/\s+/).every(w => norm(x.t + ' ' + x.s + ' ' + x.kw).includes(w))) : all.slice(0, 9);
+    // (0.6) a busca vale para o texto em português e para o texto traduzido
+    pItems = q ? all.filter(x => { const alvo = norm(x.t + ' ' + x.s + ' ' + x.kw + (idioma() === 'pt-BR' ? '' : ' ' + T(x.t) + ' ' + T(x.s) + ' ' + T(x.kw))); return q.split(/\s+/).every(w => alvo.includes(w)); }) : all.slice(0, 9);
     pSel = Math.min(pSel, Math.max(0, pItems.length - 1));
     $('#plist').innerHTML = pItems.length
       ? pItems.map((x, i) => `<button class="pit ${i === pSel ? 'on' : ''}" data-i="${i}">${x.icon}<span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span>${x.k ? `<span class="k">${x.k}</span>` : ''}</button>`).join('')
@@ -815,7 +873,7 @@
 
   // acesso para depuração no console
   window.__nebulosa = {
-    APPS, ST, openApp, goHome, closeApp, showApp, applyAll, openDonate, openNotifs, notificar, openAcessos, openAbout,
+    APPS, ST, openApp, goHome, closeApp, showApp, applyAll, trocarIdioma, openDonate, openNotifs, notificar, openAcessos, openAbout,
     lembrete: { conferir: conferirLembrete, get estado() { return lemb; } },
     get active() { return active; }, get order() { return order; }
   };

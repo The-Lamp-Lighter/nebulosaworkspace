@@ -172,7 +172,7 @@
     if (meta.duracao) linha('Duração', formatarDuracao(meta.duracao));
     if (meta.capitulosAudio && meta.capitulosAudio.length) linha('Capítulos', String(meta.capitulosAudio.length));
     if (aberto) {
-      linha('Páginas', L.dados.paginas.length.toLocaleString('pt-BR'));
+      linha('Páginas', L.dados.paginas.length.toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR'));
       linha('Capítulos', L.dados.capitulos.length ? String(L.dados.capitulos.length) : 'nenhum detectado');
     }
     linha('Adicionado', formatarData(meta.adicionado));
@@ -193,7 +193,7 @@
         [r.cabecalhos, 'cabeçalhos repetidos'], [r.rodapes, 'rodapés repetidos'], [r.numeros, 'números de página'],
         [r.urls, 'URLs repetidas'], [r.copyrights, 'avisos de copyright'], [r.isbn, 'linhas de ISBN'],
         [r.propagandas, 'propagandas e assinaturas'], [r.repetidos, 'créditos e notas repetidos'], [r.sumarios, 'sumários/índices']
-      ].filter(x => x[0] > 0).map(x => `${x[0].toLocaleString('pt-BR')} ${x[1]}`);
+      ].filter(x => x[0] > 0).map(x => `${x[0].toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR')} ${x[1]}`);
       corpo.appendChild(el('p', { class: 'nota destaque', text: !LPM.dados.cfg.limpeza.ativa
         ? 'Limpeza automática desligada nas Configurações: o texto é lido como está no arquivo.'
         : (itens.length ? 'Limpeza automática — removidos da leitura: ' + itens.join(', ') + '.' : 'Limpeza automática: nada precisou ser removido neste livro.') }));

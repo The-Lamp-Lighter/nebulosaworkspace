@@ -46,11 +46,15 @@
   /* ------------------------------------------------------------------
      Camada
      ------------------------------------------------------------------ */
+  // [Nebulosa] idiomas (0.6): nomes padrão (Fundo, Camada 1, Sem título…) nascem no idioma escolhido
+  const nbT = (t) => (window.NebulosaIdiomas ? window.NebulosaIdiomas.t(t) : t);
+  const NB_PADRAO = /^(Fundo|Camada|Texto|Sem título|Grupo|Forma|Prancheta|Cor sólida|Gradiente|Padrão)( \d+|-\d+)?$/;
+  const nbNome = (n) => (NB_PADRAO.test(n) ? nbT(n) : n);
   class Layer {
     constructor(type, o = {}) {
       this.id = o.id || U.uid('L');
       this.type = type;                 // raster | text | shape | group | adjust | fill | smart
-      this.name = o.name || 'Camada';
+      this.name = nbNome(o.name || 'Camada');
       this.visible = true;
       this.opacity = 1;
       this.fill = 1;
@@ -158,7 +162,7 @@
   class Doc {
     constructor(o = {}) {
       this.id = U.uid('D');
-      this.name = o.name || 'Sem título';
+      this.name = nbNome(o.name || 'Sem título');
       this.width = Math.max(1, Math.round(o.width || 1280));
       this.height = Math.max(1, Math.round(o.height || 720));
       this.layers = [];                 // índice 0 = camada de baixo
@@ -211,6 +215,7 @@
 
     /** Próximo nome livre para uma camada: "Camada 2", "Retângulo 1"... */
     name(doc, base) {
+      base = nbNome(base);
       let max = 0;
       const prefix = base + ' ';
       this.walk(doc.layers, (L) => {
@@ -299,6 +304,7 @@
     },
 
     clone(L, suffix) {
+      if (suffix === ' cópia') suffix = ' ' + nbT('cópia');
       const C = new Layer(L.type, { name: L.name + (suffix || ''), canvas: L.canvas ? U.cloneCanvas(L.canvas) : undefined, x: L.x, y: L.y });
       IMG.copyLayerProps(C, L);
       C.name = L.name + (suffix || '');

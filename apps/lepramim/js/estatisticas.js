@@ -45,7 +45,7 @@
   };
   estat.gravarAgora = function () { sujo = true; gravar(); };
 
-  const horas = seg => (seg / 3600).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const horas = seg => (seg / 3600).toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const dataCurta = dia => {
     const p = dia.split('-');
     return dia === LPM.util.diaDeHoje() ? 'Hoje' : `${p[2]}/${p[1]}/${p[0]}`;
@@ -61,7 +61,7 @@
         numero(horas(e.lidos), 'horas lidas (texto e voz)'),
         numero(String(e.concluidos.length), 'livros concluídos'),
         numero(String(e.capitulos), 'capítulos concluídos'),
-        numero(e.paginas.toLocaleString('pt-BR'), 'páginas lidas'),
+        numero(e.paginas.toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR'), 'páginas lidas'),
         numero(String(new Set(e.historico.map(r => r.dia)).size), 'dias com leitura')
       ])
     ]);

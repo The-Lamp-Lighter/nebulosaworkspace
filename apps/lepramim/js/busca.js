@@ -56,7 +56,7 @@
     alvo.textContent = '';
     if (!total) { LPM.ui.vazio(alvo, `Nenhum resultado para "${termo}".`); return; }
     alvo.appendChild(el('div', { class: 'painel-cab', text:
-      total === 1 ? '1 resultado' : `${total.toLocaleString('pt-BR')} resultados` + (total > LIMITE ? ` (mostrando os primeiros ${LIMITE})` : '') }));
+      total === 1 ? '1 resultado' : `${total.toLocaleString(window.NebulosaIdiomas ? NebulosaIdiomas.local() : 'pt-BR')} resultados` + (total > LIMITE ? ` (mostrando os primeiros ${LIMITE})` : '') }));
     achados.forEach(a => {
       const texto = paginas[a.p].paragrafos[a.i].t;
       alvo.appendChild(el('button', { class: 'item', onclick: () => {

@@ -52,7 +52,7 @@
         const emUso = atual && atual.voiceURI === v.voiceURI;
         const situacao = v.origem === 'local' ? 'instalada no computador' : pronta ? 'guardada neste navegador' : 'ainda não baixada · cerca de ' + (v.mb || 60) + ' MB';
         const linha = el('div', { class: 'nbvoz' + (pronta ? ' pronta' : '') }, [
-          el('div', { class: 'nbvoz-nome' }, [el('b', { text: nome(v) }), el('small', { text: [generoTxt(v.genero), situacao].filter(Boolean).join(' · ') })]),
+          el('div', { class: 'nbvoz-nome' }, [el('b', { text: nome(v) }), el('small', { text: [window.NebulosaIdiomas ? NebulosaIdiomas.t(generoTxt(v.genero)) : generoTxt(v.genero), situacao].filter(Boolean).join(' · ') })]),
           pronta ? null : el('button', { class: 'bt primario', type: 'button', onclick: async () => {
             const ok = await LPM.piper.garantir(v, { perguntar: true });
             if (ok) { if (LPM.voz.aoMudar) LPM.voz.aoMudar(); desenhar(); }
@@ -108,6 +108,7 @@
       item('Termos de uso', '', () => abrirSite('termos')),
       item('Privacidade', '', () => abrirSite('privacidade')),
       item('Créditos e licenças', '', () => abrirSite('creditos')),
+      item('🌐 Idioma', 'Português (Brasil), English, Español', () => abrirSite('idioma')), // [Nebulosa] idiomas 0.6
       item('Sobre o LêPraMim', 'Versão, autores e equipe', () => LPM.ajuda.creditos())
     ]);
     const r = botao.getBoundingClientRect();

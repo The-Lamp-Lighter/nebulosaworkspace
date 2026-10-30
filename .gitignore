@@ -2,3 +2,6 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# [Nebulosa] 0.6: saída do ferramentas/gerar-html-unico.py
+html-unico/
