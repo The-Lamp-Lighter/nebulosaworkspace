@@ -33,11 +33,7 @@
 
 /* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
    Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
-<<<<<<< HEAD
-window.NEBULOSA_VERSAO = '0.7';
-=======
-window.NEBULOSA_VERSAO = '0.8';
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+window.NEBULOSA_VERSAO = '0.9';
 
 /* Temáticas da página inicial, na ordem em que aparecem. */
 window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];

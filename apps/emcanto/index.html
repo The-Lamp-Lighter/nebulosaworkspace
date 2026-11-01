@@ -9305,11 +9305,7 @@ EC.importer.readHeader = function (score, lines, pg) {
       h('section', { 'aria-labelledby': 'h-demo' }, h('h2', { id: 'h-demo' }, 'Experimente com uma demonstração'),
         h('div', { class: 'cards' }, EC.DEMOS.map(function (d) { return h('button', { type: 'button', class: 'card', onclick: function () { A.setProject(d.build(), { name: d.name.split(' — ')[0] }); } }, h('b', null, d.name), h('span', null, d.desc)); }))),
       h('section', { 'aria-labelledby': 'h-rec', id: 'recents' }),
-<<<<<<< HEAD
-      h('div', { class: 'foot' }, h('span', null, EC.APP.slogan), h('span', null, 'Versão ' + EC.APP.version), h('span', null, 'Autores e idealizadores: ' + EC.APP.author), h('span', null, EC.APP.team), h('span', null, 'Funciona sem internet: nada sai do seu aparelho.'), h('span', { class: 'nb-rodape' }, 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + ((window.NebulosaSkin && NebulosaSkin.versao) || '0.7')))); /* [Nebulosa] rodapé */
-=======
-      h('div', { class: 'foot' }, h('span', null, EC.APP.slogan), h('span', null, 'Versão ' + EC.APP.version), h('span', null, 'Autores e idealizadores: ' + EC.APP.author), h('span', null, EC.APP.team), h('span', null, 'Funciona sem internet: nada sai do seu aparelho.'), h('span', { class: 'nb-rodape' }, 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + ((window.NebulosaSkin && NebulosaSkin.versao) || '0.8')))); /* [Nebulosa] rodapé */
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+      h('div', { class: 'foot' }, h('span', null, EC.APP.slogan), h('span', null, 'Versão ' + EC.APP.version), h('span', null, 'Autores e idealizadores: ' + EC.APP.author), h('span', null, EC.APP.team), h('span', null, 'Funciona sem internet: nada sai do seu aparelho.'), h('span', { class: 'nb-rodape' }, 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ' + ((window.NebulosaSkin && NebulosaSkin.versao) || '0.9')))); /* [Nebulosa] rodapé */
     main.appendChild(home);
     ui.bindDrop(drop);
     ui.updateBar(); ui.loadRecents();

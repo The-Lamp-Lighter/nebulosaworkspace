@@ -508,7 +508,7 @@
     'O que aconteceu:': ['What happened:', 'Qué pasó:'],
     'O que você esperava que acontecesse:': ['What you expected to happen:', 'Qué esperabas que pasara:'],
     'Passos para repetir o problema:': ['Steps to reproduce the problem:', 'Pasos para repetir el problema:'],
-    'Problema no {1}': ['Problem in {1}', 'Problema en {1}'],
+    'Problema: {1}': ['Problem: {1}', 'Problema: {1}'],
     'Mandar para…': ['Send to…', 'Enviar a…']
   });
 
@@ -557,11 +557,7 @@
   if (me && me.hasAttribute('data-host')) return; // (0.6) no Workspace a ponte só fornece os idiomas
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
-<<<<<<< HEAD
-  var VERSAO = '0.7';
-=======
-  var VERSAO = '0.8';
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+  var VERSAO = '0.9';
   var I = window.NebulosaIdiomas;
   function T(s) { var a = arguments; return I ? I.t.apply(null, a) : String(s).replace(/\{(\d+)\}/g, function (x, n) { return a[+n] != null ? a[+n] : x; }); }
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }
@@ -895,7 +891,7 @@
   function relatar() {
     if (inFrame) { responder('relatar'); return true; }
     var corpo = T('O que aconteceu:') + '\n\n\n' + T('O que você esperava que acontecesse:') + '\n\n\n' + T('Passos para repetir o problema:') + '\n1.\n2.\n\n---\n' + infoTecnica();
-    location.href = 'mailto:nebulosaworkspace@gmail.com?subject=' + encodeURIComponent(T('Problema no {1}', NAME) + ' (Nebulosa Workspace ' + VERSAO + ')') + '&body=' + encodeURIComponent(corpo);
+    location.href = 'mailto:nebulosaworkspace@gmail.com?subject=' + encodeURIComponent(T('Problema: {1}', NAME) + ' (Nebulosa Workspace ' + VERSAO + ')') + '&body=' + encodeURIComponent(corpo);
     return true;
   }
   api.relatar = relatar;
@@ -907,6 +903,10 @@
     if (inFrame || !src || !/^https?:/.test(src) || !/shared\/nebulosa-bridge\.js(\?|#|$)/.test(src) || !('serviceWorker' in navigator)) return;
     var base = src.replace(/shared\/nebulosa-bridge\.js.*$/, '');
     window.addEventListener('load', function () { try { navigator.serviceWorker.register(base + 'sw.js', { scope: base }).catch(function () { /* ignora */ }); } catch (e) { /* ignora */ } });
+    // (0.9) programa aberto sozinho: pede para guardar também o que ele só carrega na hora de usar
+    function extras() { try { var c = navigator.serviceWorker.controller; if (c && navigator.onLine !== false) c.postMessage({ nebulosa: 'guardar-extras', app: APP }); } catch (e) { /* ignora */ } }
+    try { navigator.serviceWorker.addEventListener('controllerchange', extras); } catch (e) { /* ignora */ }
+    window.addEventListener('load', function () { setTimeout(extras, 3000); });
   })();
 
   /* ---------- (0.6) idioma ---------- */

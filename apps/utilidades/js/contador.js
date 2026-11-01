@@ -87,14 +87,14 @@
   UT.registrar('contador', {
     montar,
     abrir() { if (!matchMedia('(max-width:760px)').matches) ta.focus({ preventScroll: true }); },
-    conteudos: () => ta && ta.value.trim() ? [{ id: 'texto', rotulo: 'Texto', detalhe: T('{1} palavras', num((ta.value.match(PALAVRA) || []).length, 0)), tipo: 'texto', nome: T('texto') + '.txt', obter: () => new Blob([ta.value], { type: 'text/plain;charset=utf-8' }) }] : [],
+    conteudos: () => ta && ta.value.trim() ? [{ id: 'texto', rotulo: 'Texto', detalhe: UT.Q((ta.value.match(PALAVRA) || []).length, '{1} palavra', '{1} palavras'), tipo: 'texto', nome: T('texto') + '.txt', obter: () => new Blob([ta.value], { type: 'text/plain;charset=utf-8' }) }] : [],
     aceita: info => info.tipoUtil === 'texto',
     receber: async info => {
       const t = await info.arquivo.text();
       if (ta.value.trim() && info.acao === 'inserir') { antes = ta.value; ta.value = ta.value.replace(/\s+$/, '') + '\n\n' + t; $('#ctDesfazer', el).hidden = false; }
       else { if (ta.value.trim()) { antes = ta.value; $('#ctDesfazer', el).hidden = false; } ta.value = t; }
       contar(); guardarDepois();
-      UT.aviso(T('Texto recebido: {1} palavras.', num((t.match(PALAVRA) || []).length, 0)));
+      UT.aviso(T('Texto recebido: {1}.', UT.Q((t.match(PALAVRA) || []).length, '{1} palavra', '{1} palavras')));
       return true;
     }
   });

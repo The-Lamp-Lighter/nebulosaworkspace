@@ -139,7 +139,7 @@
     try {
       matriz = NebulosaQR.matriz(texto, op.nivel);
       img.innerHTML = svg();
-      inf.textContent = T('{1} caracteres · {2}×{3} módulos', [...texto].length, matriz.length, matriz.length);
+      inf.textContent = UT.Q([...texto].length, '{1} caractere', '{1} caracteres') + ' · ' + T('{1}×{2} módulos', matriz.length, matriz.length);
     } catch (e) {
       matriz = null; img.innerHTML = vazioSvg();
       inf.textContent = T('Texto longo demais para um QR Code. Tente encurtar ou baixar a correção de erros.');

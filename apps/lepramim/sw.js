@@ -5,7 +5,7 @@
    e sem internet. Só atende arquivos da própria pasta do app;
    nenhum dado do usuário passa por aqui.
    ============================================================ */
-const CACHE = 'lepramim-v8'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js · v7: nebulosa-idiomas.js · v8: Mammoth incluído (0.8)
+const CACHE = 'lepramim-v9'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js · v7: nebulosa-idiomas.js · v8: Mammoth incluído (0.8) · v9: só devolve o app para páginas do app (0.9)
 const ESSENCIAIS = [
   './', 'index.html', 'nebulosa-idiomas.js', 'manifest.webmanifest', 'favicon.ico', 'css/estilo.css', 'css/aparencia-nebulosa.css',
   'assets/icone-96.png', 'assets/icone-192.png', 'assets/icone-512.png', 'assets/favicon.png', 'assets/logo-vertical.png',
@@ -66,8 +66,13 @@ self.addEventListener('fetch', evento => {
       if (r.ok && r.status === 200) cache.put(req, r.clone()).catch(() => {});
       return r;
     } catch (e) {
-      const guardado = await cache.match(req, { ignoreSearch: true }) || await cache.match('index.html');
+      // [Nebulosa] 0.9: procura também na cópia do Workspace (sw.js da raiz: ponte, manuais…) e só devolve
+      // a página do LêPraMim no lugar de páginas do próprio LêPraMim (antes um script ou o manual
+      // recebiam a página do app, e dava "Unexpected token '<'")
+      const guardado = await cache.match(req, { ignoreSearch: true }) || await caches.match(req, { ignoreSearch: true });
       if (guardado) return guardado;
+      const doApp = req.mode === 'navigate' && new URL(req.url).pathname.startsWith(new URL('./', self.location).pathname);
+      if (doApp) { const app = await cache.match('index.html'); if (app) return app; }
       throw e;
     }
   })());

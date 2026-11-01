@@ -187,7 +187,7 @@
   function mostrarDoc() {
     $$('[data-doc]', el).forEach(box => {
       $('.solte', box).hidden = !!doc; $('[data-barra-doc]', box).hidden = !doc;
-      if (doc) { $('[data-nome]', box).textContent = doc.nome; $('[data-info]', box).textContent = T('{1} páginas · {2}', doc.n, tam(doc.file.size)); }
+      if (doc) { $('[data-nome]', box).textContent = doc.nome; $('[data-info]', box).textContent = UT.Q(doc.n, '{1} página', '{1} páginas') + ' · ' + tam(doc.file.size); }
     });
     $$('[data-com-doc]', el).forEach(x => { x.hidden = !doc; });
     if (sub === 'dividir') pagsDividir();
@@ -239,12 +239,12 @@
   function renderJ() {
     const ul = $('#pjLista', el);
     ul.innerHTML = lista.map((x, i) => `<li data-id="${x.id}" draggable="true"><span class="th">${x.img ? `<img src="${x.url}" alt="">` : '<canvas></canvas>'}</span>
-      <span class="nm"><b title="${esc(x.nome)}">${i + 1}. ${esc(x.nome)}</b><small${x.erro ? ' style="color:var(--err)"' : ''}>${esc(x.erro || (x.img ? T('imagem · 1 página') : T('{1} páginas', x.pags)) + ' · ' + tam(x.file.size))}</small></span>
+      <span class="nm"><b title="${esc(x.nome)}">${i + 1}. ${esc(x.nome)}</b><small${x.erro ? ' style="color:var(--err)"' : ''}>${esc(x.erro || (x.img ? T('imagem · 1 página') : UT.Q(x.pags, '{1} página', '{1} páginas')) + ' · ' + tam(x.file.size))}</small></span>
       <button class="btn peq so" data-cima title="Subir" aria-label="Subir" ${i ? '' : 'disabled'}>${ICO.cima}</button><button class="btn peq so" data-baixo title="Descer" aria-label="Descer" ${i < lista.length - 1 ? '' : 'disabled'}>${ICO.baixo}</button><button class="btn peq so" data-tirar title="Tirar" aria-label="Tirar">${ICO.x}</button></li>`).join('');
     lista.forEach(x => { if (x.mini) { const c = $('li[data-id="' + x.id + '"] canvas', ul); if (c) { c.width = x.mini.width; c.height = x.mini.height; c.getContext('2d').drawImage(x.mini, 0, 0); } } });
     $('#pjOpc', el).hidden = !lista.length;
     const tot = lista.filter(x => !x.erro).reduce((s, x) => s + x.pags, 0);
-    $('#pjConta', el).textContent = T('{1} arquivos · {2} páginas', lista.length, tot);
+    $('#pjConta', el).textContent = UT.Q(lista.length, '{1} arquivo', '{1} arquivos') + ' · ' + UT.Q(tot, '{1} página', '{1} páginas');
   }
   async function imagemParaPdf(PL, out, f) {
     let bytes = new Uint8Array(await f.arrayBuffer()), img;
@@ -318,7 +318,7 @@
       const m = /^(\d+)\s*(?:-|–|a|até|to|hasta)\s*(\d+|fim|end|final)?$/i.exec(t) || /^(\d+)$/.exec(t);
       if (!m) return { erro: T('Não entendi “{1}”. Use números e hifens, como 1-3, 5, 8-10.', t) };
       const a = +m[1], b = m[2] == null ? (/-|–/.test(t) ? n : a) : /^\d+$/.test(m[2]) ? +m[2] : n;
-      if (a < 1 || b > n || a > b) return { erro: T('O intervalo “{1}” não existe neste PDF (ele tem {2} páginas).', t, n) };
+      if (a < 1 || b > n || a > b) return { erro: T('O intervalo “{1}” não existe neste PDF (ele tem {2}).', t, UT.Q(n, '{1} página', '{1} páginas')) };
       R.push([a - 1, b - 1]);
     }
     return { R };
@@ -328,10 +328,10 @@
     $('#pdIntBox', el).hidden = pdModo !== 'intervalos';
     if (!doc) return;
     const n = doc.sel.size, inf = $('#pdInfo', el);
-    if (pdModo === 'selecao') inf.textContent = n ? T('{1} páginas selecionadas viram um PDF.', n) : T('Clique nas páginas que quer tirar (Shift seleciona várias).');
-    else if (pdModo === 'remover') inf.textContent = n ? T('O PDF fica com {1} páginas.', doc.n - n) : T('Clique nas páginas que quer remover.');
-    else if (pdModo === 'todas') inf.textContent = T('{1} arquivos, um por página, num .zip.', doc.n);
-    else { const r = intervalos($('#pdInt', el).value, doc.n); inf.textContent = r.erro || (r.R.length ? T('{1} arquivos.', r.R.length) : T('Escreva os intervalos.')); }
+    if (pdModo === 'selecao') inf.textContent = n ? (n === 1 ? T('1 página selecionada vira um PDF.') : T('{1} páginas selecionadas viram um PDF.', n)) : T('Clique nas páginas que quer tirar (Shift seleciona várias).');
+    else if (pdModo === 'remover') inf.textContent = n ? T('O PDF fica com {1}.', UT.Q(doc.n - n, '{1} página', '{1} páginas')) : T('Clique nas páginas que quer remover.');
+    else if (pdModo === 'todas') inf.textContent = doc.n === 1 ? T('O PDF tem só 1 página.') : T('{1} arquivos, um por página, num .zip.', doc.n);
+    else { const r = intervalos($('#pdInt', el).value, doc.n); inf.textContent = r.erro || (r.R.length ? UT.Q(r.R.length, '{1} arquivo.', '{1} arquivos.') : T('Escreva os intervalos.')); }
   }
   async function dividir() {
     if (!doc) return;

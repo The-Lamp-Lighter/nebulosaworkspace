@@ -1720,11 +1720,7 @@
     window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank');
   }
   function dlgSobre() {
-<<<<<<< HEAD
-    const v = (NS && NS.versao) || '0.7';
-=======
-    const v = (NS && NS.versao) || '0.8';
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+    const v = (NS && NS.versao) || '0.9';
     dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p style="font-size:12px">Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade<br>Equipe de Produção Lamp Lighter</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual do usuário', acao: () => nbAjuda('manual') }, { t: 'Créditos e licenças', acao: () => nbAjuda('creditos') }, { t: 'Fechar', pri: true }] });
   }
 
@@ -1922,7 +1918,7 @@
     dialogo({ titulo: 'Recuperar planilha?', corpo: `<p>Encontrei uma cópia de <b>${esc(o.wb.name || 'Planilha')}</b> que não foi salva em arquivo (${esc(qd)}).</p><p style="color:var(--text-dim)">Ela foi guardada automaticamente neste navegador.</p>`, botoes: [{ t: 'Descartar', acao: () => limparRecuperacao(true) }, { t: 'Recuperar', pri: true, acao: () => { const w = SD.wbFromJSON(o.wb); carregar(w, { recuperado: true }); toast('Planilha recuperada. Lembre de salvar em arquivo.'); } }] });
   }
 
-  /* ---------- [Nebulosa] 0.8: "Mandar para…" — gráfico, planilha atual e pasta de trabalho; recebe arquivos ---------- */
+  /* ---------- [Nebulosa] 0.8: "Mandar para…" — gráfico e planilha atual (tabela); recebe arquivos ---------- */
   if (NS && NS.conteudos) {
     NS.conteudos(() => {
       const L = [];
@@ -1933,7 +1929,7 @@
         obter: () => new Promise(res => SD.G.imagem(wb, ch, ch.w, ch.h, 2, SD.temaGraficoImpressao()).toBlob(res, 'image/png'))
       });
       L.push({ id: 'tabela', rotulo: 'Planilha atual como tabela (CSV)', detalhe: sheet().name || '', tipo: 'tabela', nome: nomeBase + '.csv', obter: () => SD.IO.gerar(wb, 'csv') });
-      L.push({ id: 'xlsx', rotulo: 'Pasta de trabalho do Excel (.xlsx)', tipo: '.xlsx', nome: nomeBase + '.xlsx', obter: () => SD.IO.gerar(wb, 'xlsx') });
+      // (0.9) a pasta de trabalho inteira (.xlsx) saiu daqui: nenhum outro programa a recebe; para isso há Arquivo › Salvar
       return L;
     });
     // com alterações não salvas, a pergunta "Descartar / Salvar antes" fica com a pessoa: o Workspace já recebe o "ok"

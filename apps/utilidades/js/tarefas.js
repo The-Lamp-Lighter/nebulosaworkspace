@@ -54,7 +54,7 @@
     $('#taKanban', v).addEventListener('keydown', e => { if (e.key === 'Escape' && editando) { editando = null; render(); } });
     $('#taLimpaFeitas', v).addEventListener('click', () => {
       const n = D.cartoes.filter(c => c.col === 'feito').length; if (!n) return;
-      if (!confirm(T('Apagar as {1} tarefas feitas?', n))) return;
+      if (!confirm(n === 1 ? T('Apagar a tarefa feita?') : T('Apagar as {1} tarefas feitas?', n))) return;
       D.cartoes = D.cartoes.filter(c => c.col !== 'feito'); guardar(); render();
     });
     arrastar($('#taKanban', v));
@@ -79,7 +79,7 @@
         const limpaN = n => ({ id: ids.has(n.id) || !n.id ? id() : String(n.id), t: String(n.t || '').slice(0, 300), x: String(n.x || '').slice(0, 20000), cor: NCOR.includes(n.cor) ? n.cor : NCOR[0], fixa: !!n.fixa, at: +n.at || Date.now() });
         const nc = (j.cartoes || []).filter(c => c && c.t).map(limpaC), nn = (j.notas || []).filter(n => n && (n.t || n.x)).map(limpaN);
         D.cartoes = D.cartoes.concat(nc); D.notas = D.notas.concat(nn); guardar(); render();
-        UT.aviso(T('Importado: {1} tarefas e {2} notas.', nc.length, nn.length));
+        UT.aviso(T('Importado: {1} e {2}.', UT.Q(nc.length, '{1} tarefa', '{1} tarefas'), UT.Q(nn.length, '{1} nota', '{1} notas')));
       } catch (e) { UT.aviso(T('Esse arquivo não é uma exportação de Tarefas e notas.'), true); }
     }));
     render();
@@ -188,7 +188,7 @@
   UT.registrar('tarefas', {
     montar,
     abrir() { render(); },
-    conteudos: () => D.cartoes.length ? [{ id: 'lista', rotulo: 'Lista de tarefas (texto)', detalhe: T('{1} tarefas', D.cartoes.length), tipo: 'texto', nome: T('tarefas') + '.txt',
+    conteudos: () => D.cartoes.length ? [{ id: 'lista', rotulo: 'Lista de tarefas (texto)', detalhe: UT.Q(D.cartoes.length, '{1} tarefa', '{1} tarefas'), tipo: 'texto', nome: T('tarefas') + '.txt',
       obter: () => COLS.map(([k, n]) => { const cs = D.cartoes.filter(c => c.col === k); return cs.length ? T(n) + '\n' + cs.map(c => (k === 'feito' ? '[x] ' : '[ ] ') + c.t + (c.prazo ? ' (' + dataCurta(c.prazo) + ')' : '') + (c.n ? '\n    ' + c.n.replace(/\n/g, '\n    ') : '')).join('\n') : ''; }).filter(Boolean).join('\n\n') + '\n' }] : []
   });
   if (UT.N && UT.N.idiomas) UT.N.idiomas.aoMudar(() => { if (el) render(); });

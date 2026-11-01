@@ -148,7 +148,7 @@
     if (!ok.length) { p.hidden = true; return; }
     const a = ok.reduce((s, x) => s + x.file.size, 0), b = ok.reduce((s, x) => s + x.res.blob.size, 0);
     p.hidden = false;
-    p.textContent = T('{1} imagens: {2} → {3} ({4}% a menos)', ok.length, tam(a), tam(b), num(Math.max(0, (1 - b / a) * 100), 0));
+    p.textContent = T('{1}: {2} → {3} ({4}% a menos)', UT.Q(ok.length, '{1} imagem', '{1} imagens'), tam(a), tam(b), num(Math.max(0, (1 - b / a) * 100), 0));
   }
   async function baixarZip() {
     const ok = itens.filter(x => x.res && !x.proc);

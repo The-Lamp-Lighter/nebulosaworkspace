@@ -52,11 +52,7 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-<<<<<<< HEAD
-  const VERSION = window.NEBULOSA_VERSAO || '0.7';
-=======
-  const VERSION = window.NEBULOSA_VERSAO || '0.8';
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+  const VERSION = window.NEBULOSA_VERSAO || '0.9';
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
   // (0.5) créditos: os mesmos em todos os programas (a ponte tem a mesma informação)
@@ -347,6 +343,7 @@
     const s = ST[id];
     if (!s.open) {
       s.open = true; order.push(id);
+      guardarParaSemInternet(id);
       const v = buildView(a, hash);
       s.view = s.view || v;
       if (!v.parentNode) appsEl.appendChild(v);
@@ -565,8 +562,14 @@
 
   /* ---------- painéis e janelas ---------- */
   const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel', 'langPanel', 'sendPanel', 'backup', 'novidades'];
+  /* (0.9) abrir logo depois de fechar: o fechamento animado em andamento é cancelado
+     (antes, a janela reaberta sumia quando a animação de fechar terminava) */
+  let popTk = 0;
+  const visivel = el => el.classList.contains('show') && !el._saindo;
+  function cancelarSaida(el) { el._tk = ++popTk; el._saindo = false; el.getAnimations().forEach(a => a.cancel()); }
   function openPop(el) {
     const sc = $('#scrim');
+    cancelarSaida(sc); cancelarSaida(el);
     sc.classList.add('show');
     sc.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, fill: 'forwards' });
     el.classList.add('show');
@@ -575,20 +578,18 @@
       { opacity: 1, transform: el.dataset.to || 'none' }
     ], { duration: 260, easing: 'cubic-bezier(.22,.9,.24,1)', fill: 'forwards' });
   }
-  function closePops() {
-    POPS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el.classList.contains('show')) return;
-      const an = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
-      an.finished.then(() => { el.classList.remove('show'); an.cancel(); }).catch(() => el.classList.remove('show'));
-    });
-    const sc = $('#scrim');
-    if (sc.classList.contains('show')) {
-      const an = sc.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
-      an.finished.then(() => { sc.classList.remove('show'); an.cancel(); }).catch(() => sc.classList.remove('show'));
-    }
+  function fecharAnimado(el) {
+    if (!visivel(el)) return;
+    const tk = el._tk = ++popTk; el._saindo = true;
+    const an = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
+    const fim = () => { if (el._tk === tk) { el.classList.remove('show'); el._saindo = false; an.cancel(); } };
+    an.finished.then(fim, fim);
   }
-  function closeOthers(keep) { POPS.forEach(id => { if (id !== keep) document.getElementById(id).classList.remove('show'); }); }
+  function closePops() {
+    POPS.forEach(id => fecharAnimado(document.getElementById(id)));
+    fecharAnimado($('#scrim'));
+  }
+  function closeOthers(keep) { POPS.forEach(id => { if (id !== keep) { const el = document.getElementById(id); el._tk = ++popTk; el._saindo = false; el.classList.remove('show'); } }); }
   $('#scrim').addEventListener('mousedown', () => { if (confirmRes) { confirmRes(false); confirmRes = null; } closePops(); });
   $('#palette').dataset.from = 'translate(-50%,-10px) scale(.98)'; $('#palette').dataset.to = 'translate(-50%,0) scale(1)';
   $('#about').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#about').dataset.to = 'translate(-50%,-50%) scale(1)';
@@ -597,7 +598,7 @@
   $('#acessos').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#acessos').dataset.to = 'translate(-50%,-50%) scale(1)';
   ['backup', 'novidades'].forEach(id => { $('#' + id).dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#' + id).dataset.to = 'translate(-50%,-50%) scale(1)'; }); // (0.8)
   function openSkinPanel() { renderSkinPanel(); closeOthers('skinPanel'); openPop($('#skinPanel')); }
-  $('#btnSkin').addEventListener('click', () => { if ($('#skinPanel').classList.contains('show')) closePops(); else openSkinPanel(); });
+  $('#btnSkin').addEventListener('click', () => { if (visivel($('#skinPanel'))) closePops(); else openSkinPanel(); });
   $('#btnFs').addEventListener('click', () => {
     try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { /* ignora */ }
   });
@@ -832,7 +833,7 @@
   }
   function openNotifs() {
     const p = $('#notifPanel');
-    if (p.classList.contains('show')) { closePops(); return; }
+    if (visivel(p)) { closePops(); return; }
     if (NOTIF) NOTIF.fecharTodas(); // o que estava no canto já está na lista
     renderNotifPanel(); closeOthers('notifPanel'); openPop(p);
     setTimeout(() => { if (NOTIF && p.classList.contains('show')) NOTIF.marcarLidas(); }, 1500);
@@ -858,7 +859,7 @@
   }
   function openLang() {
     const p = $('#langPanel');
-    if (p.classList.contains('show')) { closePops(); return; }
+    if (visivel(p)) { closePops(); return; }
     renderLangPanel(); closeOthers('langPanel'); openPop(p);
     setTimeout(() => { const b = $('.lopt[aria-pressed="true"]', p); if (b) b.focus(); }, 40);
   }
@@ -989,11 +990,15 @@
   const extDe = n => { const m = /\.([a-z0-9]+)$/i.exec(String(n || '')); return m ? '.' + m[1].toLowerCase() : ''; };
   const IMG_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg', '.avif'];
   /** O programa aceita este conteúdo? (campo "aceita" de js/apps.js) */
+  const CATEGORIAS = ['imagem', 'texto', 'tabela', 'video', 'audio'];
   function aceita(a, tipo, nome, mime) {
     const L = a.aceita || [];
     if (!L.length) return false;
     const ext = extDe(nome);
     if (tipo && L.includes(tipo)) return true;
+    // (0.9) conteúdo de uma categoria (um gráfico é "imagem") só vai para quem aceita a categoria,
+    // não para quem só aceita a extensão (o EmCanto abre .png de partitura, não gráficos e QR Codes)
+    if (CATEGORIAS.includes(tipo)) return false;
     if (ext && L.includes(ext)) return true;
     if (L.includes('imagem') && (tipo === 'imagem' || /^image\//.test(mime || '') || IMG_EXT.includes(ext))) return true;
     if (L.includes('video') && /^video\//.test(mime || '')) return true;
@@ -1008,9 +1013,9 @@
     const a = byId[id];
     if (!a || !arquivo) return false;
     const pronto = await esperarPronto(id);
-    if (!pronto) { toast(T('O {1} não ficou pronto a tempo. Tente de novo.', a.name)); return false; }
+    if (!pronto) { toast(T('Não deu tempo de abrir {1}. Tente de novo.', a.name)); return false; }
     const r = await pedir(id, { nebulosa: 'receber', arquivo, nome: op.nome || arquivo.name || 'arquivo', tipo: op.tipo || '', acao: op.acao || 'abrir', origem: op.origem || '' }, 30000);
-    if (!r || r.ok === false) { toast(T('O {1} não conseguiu receber “{2}”.', a.name, op.nome || arquivo.name || '')); return false; }
+    if (!r || r.ok === false) { toast(T('Não foi possível entregar “{2}” para {1}.', a.name, op.nome || arquivo.name || '')); return false; }
     return true;
   }
   /** Ação dentro de um programa (ex.: abrir uma ferramenta de Utilidades). */
@@ -1053,7 +1058,8 @@
   /* ---------- (0.8) arquivos recentes ---------- */
   function arquivoDoPrograma(a, d) {
     if (!d.nome) return;
-    if (RECENTES) RECENTES.registrar({ app: a.id, nome: d.nome, acao: d.acao, handle: d.handle || null });
+    // (0.9) só os programas principais: o que as Utilidades baixam (PNG, ZIP, PDF prontos) não é documento para continuar
+    if (RECENTES && a.principal !== false) RECENTES.registrar({ app: a.id, nome: d.nome, acao: d.acao, handle: d.handle || null });
     if (d.acao === 'salvou') momentoUtil();
   }
   async function abrirRecente(rid, fromEl) {
@@ -1063,7 +1069,7 @@
     const f = x.atalho ? await RECENTES.reabrir(x) : null;
     if (f) { entregar(x.app, f, { acao: 'abrir' }); RECENTES.registrar({ app: x.app, nome: x.nome, acao: 'abriu' }); return; }
     openApp(x.app, fromEl);
-    toast(T('Para continuar em “{1}”, abra o arquivo pelo botão Abrir do {2}.', x.nome, byId[x.app].name));
+    toast(T('Para continuar em “{1}”, abra o arquivo pelo botão Abrir de {2}.', x.nome, byId[x.app].name));
   }
   if (RECENTES) RECENTES.aoMudar(() => { if (active === null && document.body.dataset.view === 'home') renderHome(); });
 
@@ -1078,8 +1084,8 @@
     if (!id || !ST[id] || !ST[id].iframe) { toast(T('Abra um programa para mandar conteúdo dele a outro.')); return; }
     mandarDe = id; mandarSel = null;
     const p = $('#sendPanel');
-    p.innerHTML = `<h3>Mandar para…</h3><p class="stxt">${esc(T('Buscando o que o {1} pode mandar…', byId[id].name))}</p>`;
-    closeOthers('sendPanel'); if (!p.classList.contains('show')) openPop(p);
+    p.innerHTML = `<h3>Mandar para…</h3><p class="stxt">${esc(T('Vendo o que dá para mandar de {1}…', byId[id].name))}</p>`;
+    closeOthers('sendPanel'); if (!visivel(p)) openPop(p);
     if (item) mandarItens = [item];
     else { const r = await pedir(id, { nebulosa: 'conteudos?' }, 5000); mandarItens = (r && Array.isArray(r.itens)) ? r.itens : []; }
     if (mandarItens.length === 1) mandarSel = mandarItens[0];
@@ -1090,7 +1096,7 @@
     if (!a) return;
     let h = `<h3>Mandar para…</h3>`;
     if (!mandarItens.length) {
-      h += `<p class="stxt">${esc(T('O {1} não tem nada para mandar agora. Abra ou crie algo nele e tente de novo.', a.name))}</p>`;
+      h += `<p class="stxt">${esc(T('Nada para mandar de {1} agora. Abra ou crie algo e tente de novo.', a.name))}</p>`;
     } else {
       h += `<p class="stit">O que mandar</p><div class="sopts">` + mandarItens.map((x, i) => `<button class="sopt" data-si="${i}" aria-pressed="${mandarSel === x}">${ric(a)}<span><b>${esc(x.rotulo)}</b><small>${esc(x.detalhe || x.nome || '')}</small></span>${mandarSel === x ? '<span class="ck">✓</span>' : ''}</button>`).join('') + `</div>`;
       if (mandarSel) {
@@ -1110,14 +1116,14 @@
     const de = mandarDe, item = mandarSel, para = sd.dataset.sd;
     $('#sendPanel').innerHTML = `<h3>Mandar para…</h3><p class="stxt">${esc(T('Preparando “{1}”…', item.rotulo))}</p>`;
     const r = await pedir(de, { nebulosa: 'conteudo', id: item.id }, 60000);
-    if (!r || !r.ok || !r.arquivo) { closePops(); toast(T('Não foi possível pegar o conteúdo do {1}.', byId[de].name)); return; }
+    if (!r || !r.ok || !r.arquivo) { closePops(); toast(T('Não foi possível pegar o conteúdo de {1}.', byId[de].name)); return; }
     closePops();
     const nome = r.nome || item.nome || 'arquivo';
     const arq = (typeof File !== 'undefined' && r.arquivo instanceof File) ? r.arquivo : new File([r.arquivo], nome, { type: r.arquivo.type || '' });
     const ok = await entregar(para, arq, { nome, tipo: r.tipo || item.tipo, acao: 'inserir', origem: de });
-    if (ok && NOTIF) NOTIF.mostrar({ titulo: T('Mandado para o {1}', byId[para].name), texto: nome, tipo: 'sucesso', app: para, origem: byId[de].name, naTela: true, duracao: 5000, aoClicar: () => openApp(para) });
+    if (ok && NOTIF) NOTIF.mostrar({ titulo: T('Mandado para {1}', byId[para].name), texto: nome, tipo: 'sucesso', app: para, origem: byId[de].name, naTela: true, duracao: 5000, aoClicar: () => openApp(para) });
   });
-  $('#btnSend').addEventListener('click', () => { if ($('#sendPanel').classList.contains('show')) closePops(); else openMandar(active); });
+  $('#btnSend').addEventListener('click', () => { if (visivel($('#sendPanel'))) closePops(); else openMandar(active); });
 
   /* ---------- (0.8) programas parados descansam para poupar memória ----------
      Só os marcados com "dorme" em js/apps.js (eles reabrem do ponto em que estavam salvos),
@@ -1138,7 +1144,7 @@
     if (!s || !s.view) return;
     if (s.iframe) { try { s.iframe.src = 'about:blank'; } catch (e) { /* ignora */ } s.iframe.remove(); }
     Object.assign(s, { iframe: null, ready: false, hello: false, envia: false, dormindo: true });
-    s.view.innerHTML = `<div class="soonview" style="height:100%"><div class="box">${ric(a)}<span class="badge zz">${esc(T('descansando'))}</span><h2>${esc(T('{1} está descansando', a.name))}</h2><p>${esc(T('Ele ficou um tempo sem uso e foi fechado para poupar a memória do computador. Nada se perdeu: ao acordar, ele abre do ponto em que estava salvo.'))}</p><div class="ra"><button class="chip prim" data-acordar="${id}">${esc(T('Acordar'))}</button></div></div></div>`;
+    s.view.innerHTML = `<div class="soonview" style="height:100%"><div class="box">${ric(a)}<span class="badge zz">${esc(T('descansando'))}</span><h2>${esc(T('{1} em descanso', a.name))}</h2><p>${esc(T('Depois de um tempo sem uso, a aba descansou para poupar a memória do computador. Nada se perdeu: ao acordar, ela abre do ponto em que estava salva.'))}</p><div class="ra"><button class="chip prim" data-acordar="${id}">${esc(T('Acordar'))}</button></div></div></div>`;
     renderRail(); renderTabs();
   }
   function acordar(id) {
@@ -1169,7 +1175,7 @@
   function openRelato(id) {
     const p = $('#mailPanel');
     const info = infoTecnica(id);
-    const assunto = T('Problema no {1}', id && byId[id] ? byId[id].name : 'Nebulosa Workspace') + ' (Nebulosa Workspace ' + VERSION + ')';
+    const assunto = T('Problema: {1}', id && byId[id] ? byId[id].name : 'Nebulosa Workspace') + ' (Nebulosa Workspace ' + VERSION + ')';
     const corpo = T('O que aconteceu:') + '\n\n\n' + T('O que você esperava que acontecesse:') + '\n\n\n' + T('Passos para repetir o problema:') + '\n1.\n2.\n\n---\n' + info;
     const su = encodeURIComponent(assunto), bo = encodeURIComponent(corpo), to = encodeURIComponent(CONTATO_EMAIL);
     p.innerHTML = `<h3>Relatar um problema</h3><p class="mtxt">Conte o que aconteceu. As informações técnicas abaixo já vão no e-mail; nenhum arquivo seu é enviado.</p>
@@ -1179,7 +1185,7 @@
 <a class="mopt" href="https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}&body=${bo}" target="_blank" rel="noopener"><b>Outlook / Hotmail</b><small>abre no navegador</small></a>
 <a class="mopt" href="mailto:${CONTATO_EMAIL}?subject=${su}&body=${bo}"><b>Programa de e-mail</b><small>do computador ou celular</small></a>
 </div><div class="skrow" style="margin-top:10px"><button class="chip" id="mCopInfo">${ICONS.copy}<span>Copiar as informações</span></button></div>`;
-    closeOthers('mailPanel'); if (!p.classList.contains('show')) openPop(p);
+    closeOthers('mailPanel'); if (!visivel(p)) openPop(p);
     p.querySelectorAll('a.mopt').forEach(a => a.addEventListener('click', () => setTimeout(closePops, 150)));
     $('#mCopInfo').onclick = async () => {
       let ok = false;
@@ -1209,7 +1215,7 @@
       </div>
       <p class="bstat" id="bkStat" role="status"></p>
       <div class="ra"><button class="chip" id="bkOk">Fechar</button></div>`;
-    closeOthers('backup'); if (!el.classList.contains('show')) openPop(el);
+    closeOthers('backup'); if (!visivel(el)) openPop(el);
     $('#bkOk').onclick = closePops;
     const stat = m => { const s = $('#bkStat'); if (s) s.textContent = m; };
     $('#bkFazer').onclick = async () => {
@@ -1266,6 +1272,15 @@
   addEventListener('online', () => toast(T('A internet voltou.')));
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* sem cópia offline */ }); });
+    // (0.9) quando a cópia começa a valer (1ª visita), guarda também os extras dos programas já abertos
+    navigator.serviceWorker.addEventListener('controllerchange', () => order.forEach(guardarParaSemInternet));
+  }
+  /** (0.9) pede ao sw.js para guardar o que o programa só carrega na hora de usar (PDF, .zip…) e o manual dele. */
+  function guardarParaSemInternet(id) {
+    try {
+      const c = navigator.serviceWorker && navigator.serviceWorker.controller;
+      if (c && navigator.onLine !== false) c.postMessage({ nebulosa: 'guardar-extras', app: id });
+    } catch (e) { /* sem cópia offline */ }
   }
 
   /* ---------- atalhos ---------- */

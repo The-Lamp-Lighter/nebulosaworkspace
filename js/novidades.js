@@ -7,6 +7,19 @@
    ========================================================================== */
 window.NEBULOSA_NOVIDADES = [
   {
+    versao: '0.9',
+    itens: [
+      'Sem internet: abrir PDF no Typee, o PDF e o .zip das Utilidades, o backup, a exportação para PowerPoint do Flyde e a Ajuda do Imaginarium funcionam também sem conexão, depois de abertos uma vez com internet.',
+      'Página ainda não guardada, sem internet, mostra o aviso certo e um botão Tentar de novo, em vez de “Esta página não existe”.',
+      'Com a internet lenta, o Workspace usa a cópia guardada depois de alguns segundos, em vez de ficar esperando.',
+      'LêPraMim sem internet: o manual da Ajuda e os arquivos do Workspace abrem certo.',
+      'Mandar para…: gráficos, QR Codes e slides não aparecem mais como destino para o EmCanto, que só entende partituras.',
+      'Uma janela reaberta logo depois de fechada não some mais sozinha.',
+      'Arquivos recentes mostram só os documentos dos programas; os arquivos baixados das Utilidades ficam de fora.',
+      'Textos corrigidos: plurais (“1 página”) e frases com o nome das Utilidades.'
+    ]
+  },
+  {
     versao: '0.8',
     itens: [
       'Utilidades: um lugar novo, separado dos programas, com mini-ferramentas: QR Code, conversor de unidades, imagens, gerador de senha, contador de palavras, cores, PDF (juntar, dividir, girar e assinar), tarefas e notas e quadro branco.',

@@ -185,11 +185,7 @@ def bloco_inicial(app, app_dir):
         js.append('Object.defineProperty(window,%s,{configurable:true,get:function(){return window.__nbArq(%s)}});'
                   % (json.dumps(g), json.dumps(rel)))
     js.append('})();')
-<<<<<<< HEAD
-    return '<script>/* [Nebulosa] HTML único 0.7: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
-=======
-    return '<script>/* [Nebulosa] HTML único 0.8: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
->>>>>>> b96f402 (Adição das Utilidades ao workspace)
+    return '<script>/* [Nebulosa] HTML único 0.9: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
 
 
 def pagina_programa(p, app_dir):

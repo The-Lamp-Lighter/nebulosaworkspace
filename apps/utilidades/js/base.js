@@ -34,6 +34,8 @@
     if (a !== 0 && (a >= 1e15 || a < 1e-6)) return v.toExponential(4).replace('.', local() === 'en-US' ? '.' : ',');
     return new Intl.NumberFormat(local(), { maximumFractionDigits: casas == null ? 4 : casas }).format(v);
   }
+  /** (0.9) singular ou plural: Q(1, '{1} página', '{1} páginas') */
+  function Q(n, um, varios) { return T(n === 1 ? um : varios, num(n, 0)); }
   function tam(b) {
     if (b < 1024) return num(b, 0) + ' B';
     if (b < 1048576) return num(b / 1024, 1) + ' KB';
@@ -247,7 +249,7 @@
   window.__nebulosaOcupado = () => Object.keys(FERR).some(k => { try { return !!(FERR[k].ocupado && FERR[k].ocupado()); } catch (e) { return false; } });
 
   window.UT = {
-    $, $$, esc, T, local, num, tam, ler, guardar, ICO, icone, aviso, baixar, copiar, copiarImagem, nomeSeguro, semExt,
+    $, $$, esc, T, Q, local, num, tam, ler, guardar, ICO, icone, aviso, baixar, copiar, copiarImagem, nomeSeguro, semExt,
     escolher, zona, ehImagem, ehPdf, lib, pdfjs, pdflib, jszip, registrar, ir, mostrar, info, LISTA, FERR, N,
     get atual() { return atual; }, get sub() { return atualSub; }
   };

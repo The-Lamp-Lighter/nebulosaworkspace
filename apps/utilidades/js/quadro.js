@@ -499,7 +499,7 @@
   UT.registrar('quadro', {
     montar,
     abrir() { requestAnimationFrame(redimensionar); },
-    conteudos: () => objs.length ? [{ id: 'quadro', rotulo: 'Quadro branco (imagem)', detalhe: T('{1} elementos', objs.length), tipo: 'imagem', nome: T('quadro') + '.png', obter: () => pngQuadro() }] : [],
+    conteudos: () => objs.length ? [{ id: 'quadro', rotulo: 'Quadro branco (imagem)', detalhe: UT.Q(objs.length, '{1} elemento', '{1} elementos'), tipo: 'imagem', nome: T('quadro') + '.png', obter: () => pngQuadro() }] : [],
     aceita: info => info.tipoUtil === 'imagem',
     receber: info => inserirImagem(info.arquivo),
     ocupado: () => !!acao || !!editandoObj

@@ -5,6 +5,19 @@
 (function () {
   var I = window.NebulosaIdiomas; if (!I) return;
   I.registrar({
+    /* (0.9) singular e plural */
+    '{1} palavra': ['{1} word', '{1} palabra'], '{1} imagem': ['{1} image', '{1} imagen'], '{1} imagens': ['{1} images', '{1} imágenes'],
+    '{1}: {2} → {3} ({4}% a menos)': ['{1}: {2} → {3} ({4}% smaller)', '{1}: {2} → {3} ({4}% menos)'],
+    'Texto recebido: {1}.': ['Text received: {1}.', 'Texto recibido: {1}.'],
+    '{1} caractere': ['{1} character', '{1} carácter'], '{1} caracteres': ['{1} characters', '{1} caracteres'], '{1}×{2} módulos': ['{1}×{2} modules', '{1}×{2} módulos'],
+    '{1} página': ['{1} page', '{1} página'], '{1} arquivo': ['{1} file', '{1} archivo'], '{1} arquivos': ['{1} files', '{1} archivos'], '{1} arquivo.': ['{1} file.', '{1} archivo.'],
+    'O intervalo “{1}” não existe neste PDF (ele tem {2}).': ['The range “{1}” doesn’t exist in this PDF (it has {2}).', 'El intervalo “{1}” no existe en este PDF (tiene {2}).'],
+    '1 página selecionada vira um PDF.': ['1 selected page becomes a PDF.', '1 página seleccionada se vuelve un PDF.'],
+    'O PDF fica com {1}.': ['The PDF will have {1}.', 'El PDF quedará con {1}.'],
+    'O PDF tem só 1 página.': ['The PDF has only 1 page.', 'El PDF tiene solo 1 página.'],
+    '{1} elemento': ['{1} item', '{1} elemento'], '{1} tarefa': ['{1} task', '{1} tarea'], '{1} nota': ['{1} note', '{1} nota'], '{1} notas': ['{1} notes', '{1} notas'],
+    'Apagar a tarefa feita?': ['Delete the finished task?', '¿Borrar la tarea hecha?'],
+    'Importado: {1} e {2}.': ['Imported: {1} and {2}.', 'Importado: {1} y {2}.'],
     /* ---------- estrutura ---------- */
     'Utilidades': ['Utilities', 'Utilidades'],
     'Utilidades — Nebulosa Workspace': ['Utilities — Nebulosa Workspace', 'Utilidades — Nebulosa Workspace'],
