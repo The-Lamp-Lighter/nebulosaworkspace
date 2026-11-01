@@ -49,7 +49,8 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <li>It works best with printed, sharp and straight scores at 300 dpi. For photos with shadows, check “It is a phone photo” when importing.</li>
 <li>With “Recognize lyrics and title”, the text under each staff is read (Portuguese, English or Latin) and each syllable is attached to its note. Several lines of lyrics become verses. Doubtful syllables are shown in orange.</li>
 <li>Measures whose count does not add up appear with a reddish background; the “measures to review” button takes you from one to the next.</li>
-<li><b>Help › Recognition self-test</b> checks that everything works on your device.</li></ul>
+<li><b>Help › Recognition self-test</b> checks that everything works on your device.</li>
+<li>On the website, lyrics recognition (OCR, about 9 MB) is downloaded the first time a score’s lyrics are read and stays stored in the browser. Without internet that first time, the notes are recognized as usual and the lyrics can be typed in <b>Edit › Lyrics</b>. In the single HTML file the OCR is already included.</li></ul>
 <div class="nota">Handwritten scores, old copies, blurry photos and dense piano scores need more correction. Always compare with the original.</div></section><section id="s3"><h2><span class="num">3</span>Voices</h2>
 <ul><li>Each staff becomes a voice; staves with two voices (stems up and down) are separated. The voice type (soprano, alto, tenor, bass…) is deduced; SATB, SAB, SSA and TTBB ensembles are recognized.</li>
 <li>In the voices panel: the eye shows or hides, <b>M</b> mutes, <b>S</b> solos.</li>
@@ -78,6 +79,8 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <li>The <b>Language</b> button (🌐) at the top of the Workspace — or <b>Help › 🌐 Language</b> inside the program — switches the menus and texts between <b>Português do Brasil</b> (the default), <b>English</b> and <b>Español</b>. The choice applies to all programs and is remembered. The scores and lyrics are not translated.</li>
 <li>If you close EmCanto's tab with changes not yet saved to a file, the Workspace asks before closing.</li>
 <li>The shortcuts <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> and <kbd>Alt</kbd> + <kbd>0</kbd> (home) work even with the focus inside the program.</li>
+<li><b>Send to…</b>: EmCanto receives scores as PDF or images sent by other programs (for example, a finished PDF from Utilities) and opens the import as if the file had been dragged onto the window. The search (<kbd>Alt</kbd> + <kbd>K</kbd>) also has the “Open sheet music” task.</li>
+<li><b>Without internet</b>: after being opened once online, EmCanto keeps working when the connection drops; only lyrics recognition (OCR) must have been downloaded before (section 2).</li>
 <li>EmCanto also opens on its own, outside the Workspace, at its folder's address (for example <code>…/apps/emcanto/</code>) or from the single HTML file.</li>
 </ul></section></main></div>
 <footer class="rodape"><p>Nebulosa Workspace - a suite of simple, beautiful programs that run right in the browser. Version 0.9</p><p>Authors and creators: Márcio Willians Barreto de Andrade and Raul Goulart de Andrade · Lamp Lighter Production Team</p><p><a href="index.en.html">All manuals</a> · <a href="../index.html">Workspace home page</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.en.html">Terms of use</a> · <a href="../legal/privacidade.en.html">Privacy</a> · <a href="../legal/creditos.en.html">Credits and licenses</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>

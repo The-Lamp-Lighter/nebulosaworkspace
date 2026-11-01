@@ -19,6 +19,10 @@
      usada (a rede continua e atualiza a cópia).
    - (0.9) Página nunca aberta, sem internet: aparece o aviso de "sem internet"
      (404.html com a marca nebulosa-sem-internet), e não "página não existe".
+   - (0.9) Sempre confere com o site se o arquivo mudou (cache: 'no-cache'; o
+     GitHub Pages responde "não mudou" rapidinho). Sem isso, nos 10 minutos depois
+     de uma atualização o navegador podia misturar arquivos novos com cópias
+     antigas da memória dele, e a página inicial ficava vazia.
    - As fontes do Google também são guardadas, para as letras não mudarem.
    - O contador de acessos e os componentes que os programas baixam de outros
      sites (vozes do LêPraMim etc.) não passam por aqui.
@@ -103,10 +107,20 @@ async function paginaSemInternet() {
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
 }
 
+/* (0.9) pedido que sempre confere com o site se o arquivo mudou (em vez de aceitar a cópia da memória do
+   navegador). Páginas (navigate) não aceitam opções no pedido original, então vão como um pedido novo;
+   com redirect 'manual' o redirecionamento (ex.: /manuais → /manuais/) continua com o navegador. */
+function conferindo(req) {
+  try {
+    if (req.mode === 'navigate') return new Request(req.url, { cache: 'no-cache', credentials: 'same-origin', redirect: 'manual' });
+    return new Request(req, { cache: 'no-cache' });
+  } catch (x) { return req; }
+}
+
 function redePrimeiro(req) {
   const cacheP = caches.open(CACHE);
   // a cópia para guardar é feita antes de a resposta seguir para a página
-  const rede = fetch(req).then(r => [r, guardavel(r) && !req.headers.get('range') ? r.clone() : null]);
+  const rede = fetch(conferindo(req)).then(r => [r, guardavel(r) && !req.headers.get('range') ? r.clone() : null]);
   const fim = rede.then(async x => { if (x[1]) await (await cacheP).put(req, x[1]); }).catch(() => {});
   const guardado = () => cacheP.then(c => c.match(req).then(g => g || c.match(req, { ignoreSearch: true })));
   const resposta = (async () => {

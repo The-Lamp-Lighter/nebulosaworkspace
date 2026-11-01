@@ -16,7 +16,8 @@ window.NEBULOSA_NOVIDADES = [
       'Mandar para…: gráficos, QR Codes e slides não aparecem mais como destino para o EmCanto, que só entende partituras.',
       'Uma janela reaberta logo depois de fechada não some mais sozinha.',
       'Arquivos recentes mostram só os documentos dos programas; os arquivos baixados das Utilidades ficam de fora.',
-      'Textos corrigidos: plurais (“1 página”) e frases com o nome das Utilidades.'
+      'Textos corrigidos: plurais (“1 página”) e frases com o nome das Utilidades.',
+      'Fluxo: as batidas da música agora se editam na linha do tempo: arraste para mover, dois cliques na régua põem ou tiram, Delete apaga, e o painel Projeto ajusta o tempo e a força de cada uma.'
     ]
   },
   {

@@ -17,6 +17,7 @@ window.NEBULOSA_DICAS = [
   { app: 'pratododia', texto: 'No #pratododia, informe quantas vezes vai fazer a receita e as quantidades são recalculadas.' },
   { app: 'imaginarium', texto: 'O Imaginarium usa os mesmos atalhos do Photoshop: V mover, B pincel, T texto e Ctrl+T para transformar.' },
   { app: 'fluxo', texto: 'No Fluxo, a tecla Tab alterna entre os modos Simples e Pro sem perder nada do projeto.' },
+  { app: 'fluxo', texto: 'No Fluxo, as batidas da régua da linha do tempo se arrastam: acerte o ritmo à mão, e dois cliques na régua põem ou tiram uma batida.' },
   { app: 'emcanto', texto: 'No EmCanto, a tecla G abre a criação de vozes: dá para completar um coral SATB a partir de uma melodia.' },
   { app: '', texto: 'O botão Mandar para…, no alto, leva conteúdo de um programa para outro: um gráfico do Stardust para um slide do Flyde, por exemplo.' },
   { app: 'stardust', texto: 'No Stardust, F4 alterna entre A1, $A$1, A$1 e $A1 enquanto você escreve uma fórmula.' },
