@@ -1720,7 +1720,7 @@
     window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank');
   }
   function dlgSobre() {
-    const v = (NS && NS.versao) || '0.3';
+    const v = (NS && NS.versao) || '0.7';
     dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p style="font-size:12px">Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade<br>Equipe de Produção Lamp Lighter</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual do usuário', acao: () => nbAjuda('manual') }, { t: 'Créditos e licenças', acao: () => nbAjuda('creditos') }, { t: 'Fechar', pri: true }] });
   }
 
@@ -2013,8 +2013,9 @@
     // arrastar arquivo para a janela
     document.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
     document.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) { e.preventDefault(); seguroDescartar(() => abrirArquivoObj(f)); } });
-    // aviso ao fechar sozinho (fora do Workspace)
-    window.addEventListener('beforeunload', e => { if (sujo && !(NS && NS.inWorkspace)) { e.preventDefault(); e.returnValue = ''; } });
+    // aviso ao fechar ou recarregar a página do navegador com alterações não salvas — também dentro
+    // do Workspace, como nos outros programas (fechar só a aba do Stardust continua com a pergunta do Workspace)
+    window.addEventListener('beforeunload', e => { if (sujo) { e.preventDefault(); e.returnValue = ''; } });
     // tema
     new MutationObserver(retema).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-skin'] });
     matchMedia('(prefers-color-scheme: light)').addEventListener('change', retema);

@@ -139,6 +139,7 @@
     'Quebrar texto automaticamente': ['Wrap text automatically', 'Ajustar texto automáticamente'],
     'Centralizar': ['Center', 'Centrar'],
     'Separador de milhar': ['Thousands separator', 'Separador de miles'],
+    'Formato de moeda (R$)': ['Currency format (R$)', 'Formato de moneda (R$)'],
     'Outras funções rápidas': ['Other quick functions', 'Otras funciones rápidas'],
     'Mostrar ou esconder o painel de funções e gráficos': ['Show or hide the functions and charts panel', 'Mostrar u ocultar el panel de funciones y gráficos'],
     'Mais cores…': ['More colors…', 'Más colores…'],

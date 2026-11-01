@@ -141,6 +141,7 @@
     'O Workspace procurou o programa em': ['The Workspace looked for the program at', 'El Workspace buscó el programa en'],
     'e não achou.': ['and did not find it.', 'y no lo encontró.'],
     'Confira se a pasta do programa foi enviada com esse nome (maiúsculas e minúsculas contam) ou corrija o campo': ['Check that the program folder was uploaded with this name (upper and lower case matter) or fix the field', 'Comprueba que la carpeta del programa se haya subido con ese nombre (mayúsculas y minúsculas cuentan) o corrige el campo'],
+    'em': ['in', 'en'], // o " em " entre <code>path</code> e <code>js/apps.js</code> da frase acima
     'Fechar {1}?': ['Close {1}?', '¿Cerrar {1}?'],
     'Há alterações que ainda não foram salvas em arquivo. Se fechar agora, elas serão perdidas.': ['There are changes that have not been saved to a file yet. If you close now, they will be lost.', 'Hay cambios que todavía no se guardaron en un archivo. Si cierras ahora, se perderán.'],
     'Fechar sem salvar': ['Close without saving', 'Cerrar sin guardar'],

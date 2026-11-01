@@ -550,7 +550,7 @@
   if (me && me.hasAttribute('data-host')) return; // (0.6) no Workspace a ponte só fornece os idiomas
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
-  var VERSAO = '0.6';
+  var VERSAO = '0.7';
   var I = window.NebulosaIdiomas;
   function T(s) { var a = arguments; return I ? I.t.apply(null, a) : String(s).replace(/\{(\d+)\}/g, function (x, n) { return a[+n] != null ? a[+n] : x; }); }
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }

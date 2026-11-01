@@ -181,7 +181,7 @@ def bloco_inicial(app, app_dir):
         js.append('Object.defineProperty(window,%s,{configurable:true,get:function(){return window.__nbArq(%s)}});'
                   % (json.dumps(g), json.dumps(rel)))
     js.append('})();')
-    return '<script>/* [Nebulosa] HTML único 0.6: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
+    return '<script>/* [Nebulosa] HTML único 0.7: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
 
 
 def pagina_programa(p, app_dir):

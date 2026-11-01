@@ -42,7 +42,7 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-  const VERSION = window.NEBULOSA_VERSAO || '0.5';
+  const VERSION = window.NEBULOSA_VERSAO || '0.7';
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
   // (0.5) créditos: os mesmos em todos os programas (a ponte tem a mesma informação)
@@ -360,6 +360,9 @@
       if (!ok) return;
     }
     const v = s.view, idx = order.indexOf(id);
+    // dois cliques rápidos no × (com o programa ocupado): o segundo chega aqui depois do primeiro
+    // já ter fechado; sem esta conferência, order.splice(-1, 1) tirava a aba de OUTRO programa
+    if (!s.open || idx < 0) return;
     order.splice(idx, 1);
     Object.assign(s, { open: false, ready: false, iframe: null, view: null, skins: null, skin: null });
     const done = () => { if (v) v.remove(); };
