@@ -2178,3 +2178,11 @@
     "Sobre o Imaginarium": ["About Imaginarium", "Acerca de Imaginarium"]
   }, { ignorar: '.lname, .doc-name, .help-frame' });
 })();
+
+/* [Nebulosa] 0.8: "Mandar para…" */
+(function () {
+  var I = window.NebulosaIdiomas; if (!I) return;
+  I.registrar({
+    "Imagem do documento (PNG)": ["Document image (PNG)", "Imagen del documento (PNG)"]
+  });
+})();

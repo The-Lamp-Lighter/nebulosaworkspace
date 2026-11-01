@@ -19,6 +19,13 @@
      funcao      função prática oficial, mostrada no cartão da página inicial
      nomeCartao  nome escrito no cartão, quando for diferente de "name" (opcional)
      soon        true = aparece como "em breve" e não abre (opcional)
+     aceita      (0.8) o que o programa recebe pelo "Mandar para…" e pela busca:
+                 'imagem', 'texto', 'tabela', 'video', 'audio' e/ou extensões ('.pdf')
+     dorme       (0.8) true = pode descansar depois de muito tempo escondido, sem nada
+                 pendente (ele reabre sozinho do ponto em que estava salvo)
+     principal   (0.8) false = não é um dos programas principais: não entra nos cartões
+                 das temáticas, na contagem nem nos atalhos Alt+1…9 (ex.: Utilidades)
+     ferramentas (0.8) só em Utilidades: as mini-ferramentas, na ordem da página inicial
 
    A ordem da lista é a ordem do menu e dos atalhos Alt+1, Alt+2...
    O manual de cada programa fica em manuais/<id>.html.
@@ -26,7 +33,11 @@
 
 /* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
    Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
+<<<<<<< HEAD
 window.NEBULOSA_VERSAO = '0.7';
+=======
+window.NEBULOSA_VERSAO = '0.8';
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
 
 /* Temáticas da página inicial, na ordem em que aparecem. */
 window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];
@@ -44,7 +55,9 @@ window.NEBULOSA_APPS = [
     colors: ['#A778FF', '#7f63e8'],
     defaultSkin: 'default',
     tema: 'Produtividade & Dados',
-    funcao: 'Editor de Texto, Leitor e Conversor de PDF'
+    funcao: 'Editor de Texto, Leitor e Conversor de PDF',
+    aceita: ['imagem', 'texto', 'tabela', '.docx', '.pdf', '.md', '.markdown', '.txt'],
+    dorme: true
   },
   {
     id: 'flyde',
@@ -58,7 +71,9 @@ window.NEBULOSA_APPS = [
     colors: ['#FF9C54', '#A778FF'],
     defaultSkin: 'default',
     tema: 'Mídia & Criatividade',
-    funcao: 'Apresentações em Slides'
+    funcao: 'Apresentações em Slides',
+    aceita: ['imagem'],
+    dorme: true
   },
   {
     id: 'stardust',
@@ -72,7 +87,8 @@ window.NEBULOSA_APPS = [
     colors: ['#4d8fd6', '#a244f5'],
     defaultSkin: 'default',
     tema: 'Produtividade & Dados',
-    funcao: 'Planilhas de Cálculo e Gráficos'
+    funcao: 'Planilhas de Cálculo e Gráficos',
+    aceita: ['tabela', '.xlsx', '.xlsm', '.xlsb', '.xls', '.ods', '.csv']
   },
   {
     id: 'emcanto',
@@ -86,7 +102,8 @@ window.NEBULOSA_APPS = [
     colors: ['#FEFF36', '#FF9C54'],
     defaultSkin: 'default',
     tema: 'Arte & Estilo de Vida',
-    funcao: 'Importador e Editor de Partituras'
+    funcao: 'Importador e Editor de Partituras',
+    aceita: ['.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff', '.musicxml', '.mxl', '.xml', '.gp3', '.gp4', '.gp5', '.emcanto']
   },
   {
     id: 'lepramim',
@@ -100,7 +117,9 @@ window.NEBULOSA_APPS = [
     colors: ['#A778FF', '#FEFF36'],
     defaultSkin: 'default',
     tema: 'Produtividade & Dados',
-    funcao: 'Leitor de Textos e Audiolivros'
+    funcao: 'Leitor de Textos e Audiolivros',
+    aceita: ['texto', '.pdf', '.epub', '.docx', '.txt', '.rtf', '.html', '.htm', '.mp3', '.m4a', '.m4b', '.aac', '.ogg', '.oga', '.opus', '.wav', '.flac'],
+    dorme: true
   },
   {
     id: 'paznobolso',
@@ -143,7 +162,8 @@ window.NEBULOSA_APPS = [
     colors: ['#A778FF', '#FF9C54'],
     defaultSkin: 'imaginarium',
     tema: 'Mídia & Criatividade',
-    funcao: 'Editor Multifuncional de Imagens'
+    funcao: 'Editor Multifuncional de Imagens',
+    aceita: ['imagem', '.psd', '.psb']
   },
   {
     id: 'fluxo',
@@ -157,6 +177,37 @@ window.NEBULOSA_APPS = [
     colors: ['#A778FF', '#323559'],
     defaultSkin: 'default',
     tema: 'Mídia & Criatividade',
-    funcao: 'Editor de Vídeo e Motion Design'
+    funcao: 'Editor de Vídeo e Motion Design',
+    aceita: ['imagem', 'video', 'audio']
+  },
+  /* (0.8) Utilidades: um lugar separado dos programas principais, com mini-ferramentas.
+     Abre numa aba como os outros, mas fica fora das temáticas e dos atalhos Alt+1…9. */
+  {
+    id: 'utilidades',
+    name: 'Utilidades',
+    path: 'apps/utilidades/',
+    group: 'Utilidades',
+    tag: 'Utilidades',
+    desc: 'Mini-ferramentas do dia a dia: QR Code, unidades, imagens, senhas, palavras, cores, PDF, tarefas e quadro branco.',
+    keywords: 'utilidades ferramentas qr code unidades converter imagem comprimir senha contador palavras cores pdf juntar dividir assinar tarefas notas quadro branco',
+    icon: 'tools',
+    colors: ['#FEFF36', '#A778FF'],
+    defaultSkin: 'default',
+    tema: '',
+    funcao: 'Mini-ferramentas do dia a dia',
+    principal: false,
+    aceita: ['imagem', 'texto', '.pdf'],
+    dorme: true,
+    ferramentas: [
+      { id: 'qr', nome: 'QR Code', desc: 'Links, textos, Wi-Fi e contatos.', icon: 'qr' },
+      { id: 'unidades', nome: 'Conversor de unidades', desc: 'Medidas, temperatura, cozinha e mais.', icon: 'ruler' },
+      { id: 'imagem', nome: 'Imagens', desc: 'Comprima e redimensione fotos.', icon: 'image' },
+      { id: 'senha', nome: 'Gerador de senha', desc: 'Senhas fortes e frases-senha.', icon: 'key' },
+      { id: 'contador', nome: 'Contador de palavras', desc: 'Palavras, caracteres e tempo de leitura.', icon: 'count' },
+      { id: 'cores', nome: 'Cores', desc: 'Conversões, paletas e contraste.', icon: 'paint' },
+      { id: 'pdf', nome: 'PDF', desc: 'Juntar, dividir, girar e assinar.', icon: 'pdf' },
+      { id: 'tarefas', nome: 'Tarefas e notas', desc: 'A fazer, fazendo e feito.', icon: 'kanban' },
+      { id: 'quadro', nome: 'Quadro branco', desc: 'Esboços, setas e fluxogramas.', icon: 'board' }
+    ]
   }
 ];

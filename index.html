@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nebulosa Workspace — programas gratuitos que funcionam no navegador</title>
-<meta name="description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, Fluxo, EmCanto, Paz no Bolso e #pratododia.">
+<meta name="description" content="Nebulosa Workspace — suíte de aplicativos web gratuitos, leves e de código aberto que funcionam direto no navegador: Typee, Stardust, LêPraMim, Flyde, Imaginarium, Fluxo, EmCanto, Paz no Bolso e #pratododia, além das Utilidades (QR Code, PDF, imagens, senhas e mais).">
 <!-- seo -->
 <link rel="canonical" href="https://nebulosaworkspace.com.br/">
 <meta property="og:type" content="website">
@@ -43,6 +43,7 @@
     <header id="top">
       <div id="crumb"><span id="crumbT">Início</span></div>
       <div id="tabs" role="tablist" aria-label="Programas abertos"></div>
+      <button class="chip send" id="btnSend" hidden title="Mandar o conteúdo deste programa para outro" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg><span class="t">Mandar para…</span></button>
       <button class="chip doe-top" id="btnDoeTop" title="Doe com Pix" aria-label="Doe com Pix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.4-9.2-9.3C1.7 7.4 3.8 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.3 2.9 4.2 6.2C19.5 15.6 12 20 12 20z"/></svg></button>
       <button class="chip mail" id="btnMail" title="Fale conosco por e-mail: nebulosaworkspace@gmail.com" aria-label="Fale conosco por e-mail (nebulosaworkspace@gmail.com)" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></button>
       <button class="chip sino" id="btnNotif" title="Notificações" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg><span class="nbadge" id="nbadge" hidden>0</span></button>
@@ -68,18 +69,27 @@
 <div class="pop" id="notifPanel" role="dialog" aria-label="Notificações"></div>
 <div class="pop" id="mailPanel" role="dialog" aria-label="Fale conosco"></div>
 <div class="pop" id="langPanel" role="dialog" aria-label="Idioma"></div>
+<div class="pop" id="sendPanel" role="dialog" aria-label="Mandar para…"></div>
+<div class="pop modal backup" id="backup" role="dialog" aria-label="Backup"></div>
+<div class="pop modal novidades" id="novidades" role="dialog" aria-label="Novidades"></div>
 <div id="notifs" role="region" aria-label="Notificações" aria-live="polite"></div>
 <div id="toast" role="status"></div>
 
 <noscript><p style="position:fixed;inset:auto 0 0;padding:16px;text-align:center">O Nebulosa Workspace precisa de JavaScript ativado no navegador.</p></noscript>
 
-<!-- Ordem importa: dados (ícones, programas, doação) e módulos (QR, notificações, acessos) antes da lógica do Workspace -->
+<!-- Ordem importa: dados (ícones, programas, doação, tarefas, dicas, novidades) e módulos (QR, notificações, acessos,
+     arquivos recentes, backup) antes da lógica do Workspace -->
 <script src="js/icons.js"></script>
 <script src="js/apps.js"></script>
 <script src="js/doacao.js"></script>
+<script src="js/tarefas.js"></script>
+<script src="js/dicas.js"></script>
+<script src="js/novidades.js"></script>
 <script src="js/qrcode.js"></script>
 <script src="js/notificacoes.js"></script>
 <script src="js/acessos.js"></script>
+<script src="js/recentes.js"></script>
+<script src="js/backup.js"></script>
 <script src="js/workspace.js"></script>
 </body>
 </html>

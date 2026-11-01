@@ -416,6 +416,26 @@
     U.$('#app').classList.add('ready');
     IMG.ready = true;
     bus.emit('app:ready');
+    ligarNebulosa();
+  }
+
+  /* [Nebulosa] 0.8: "Mandar para…" — manda a imagem do documento aberto (achatada, PNG) e recebe imagens:
+     "inserir" coloca como camada nova no documento aberto; "abrir" abre como documento novo */
+  function ligarNebulosa() {
+    const N = window.NebulosaSkin;
+    if (!N || !N.conteudos) return;
+    N.conteudos(() => {
+      const d = app.doc;
+      if (!d) return [];
+      const nome = String(d.name || 'imagem').replace(/\.[a-z0-9]+$/i, '').replace(/[\\/:*?"<>|]+/g, '_') + '.png';
+      return [{ id: 'imagem', rotulo: 'Imagem do documento (PNG)', detalhe: (d.name || '') + ' · ' + d.width + '×' + d.height, tipo: 'imagem', nome, obter: () => U.toBlob(IMG.Engine.flatten(d), 'image/png') }];
+    });
+    N.aoReceber(async ({ arquivo, acao }) => {
+      const Files = IMG.Files;
+      if (acao === 'inserir' && app.doc && !/\.(edt|psd|psb)$/i.test(arquivo.name || '')) await Files.placeFile(app.doc, arquivo);
+      else await Files.openFiles([arquivo]);
+      return true;
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

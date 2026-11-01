@@ -468,3 +468,12 @@
     'Escolha uma cor ou uma imagem para o fundo do mapa, como no fundo dos slides da apresentação clássica.': ['Choose a color or an image for the map background, like the slide background in the classic presentation.', 'Elige un color o una imagen para el fondo del mapa, como el fondo de las diapositivas de la presentación clásica.']
   }, { ignorar: '.slide' });
 })();
+
+/* [Nebulosa] 0.8: "Mandar para…" */
+(function () {
+  var I = window.NebulosaIdiomas; if (!I) return;
+  I.registrar({
+    "Slide atual (imagem)": ["Current slide (image)", "Diapositiva actual (imagen)"],
+    "Quadro atual (imagem)": ["Current frame (image)", "Cuadro actual (imagen)"]
+  });
+})();

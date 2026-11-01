@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página não encontrada · Nebulosa Workspace</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/assets/img/favicon-64.png">
+<!-- (0.8) página de erro do site (GitHub Pages usa este arquivo para endereços que não existem).
+     O service worker (sw.js) também a usa quando não há internet e a página pedida ainda não foi guardada.
+     Endereços começam com "/" porque esta página pode aparecer em qualquer pasta do site. -->
+<style>
+:root{--p:#A778FF;--o:#FF9C54;--y:#FEFF36;--bg:#1f2140;--panel:#2d3053;--line:rgba(190,185,255,.16);--ink:#f3f1ff;--ink2:#b9bce0;--ink3:#8387b8;color-scheme:dark}
+:root[data-theme="light"]{--bg:#f1ecfc;--panel:#fff;--line:rgba(50,53,89,.14);--ink:#323559;--ink2:#5f6396;--ink3:#8588b6;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(900px 600px at 12% -10%,rgba(167,120,255,.28),transparent 60%),radial-gradient(700px 500px at 100% 110%,rgba(255,156,84,.12),transparent 60%),var(--bg);color:var(--ink);font:15px/1.55 Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:24px}
+main{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:34px 30px 26px;text-align:center;box-shadow:0 20px 60px rgba(8,9,26,.35);position:relative;overflow:hidden}
+main::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--p),var(--o),var(--y))}
+img{width:84px;height:84px;object-fit:contain}
+.cod{font:700 13px/1 system-ui,sans-serif;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:14px 0 6px}
+h1{font:700 26px/1.2 Jura,"Century Gothic",system-ui,sans-serif;margin:0 0 10px}
+p{margin:0 0 10px;color:var(--ink2)}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+a.b{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600}
+a.b.prim{background:var(--p);border-color:var(--p);color:#1b1d38}
+a.b:hover{border-color:var(--p)}
+a:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+small{display:block;margin-top:20px;color:var(--ink3);font-size:12.5px}
+</style>
+<script>
+(function () {
+  var t = 'dark', l = 'pt-BR';
+  try { t = (JSON.parse(localStorage.getItem('nebulosa.hub') || '{}') || {}).theme || 'dark'; l = localStorage.getItem('nebulosa.idioma') || (navigator.language || 'pt-BR'); } catch (e) { /* sem armazenamento */ }
+  document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+  window.__lang = /^en/i.test(l) ? 'en' : /^es/i.test(l) ? 'es' : 'pt-BR';
+})();
+</script>
+</head>
+<body>
+<main>
+  <img src="/assets/img/logo-320.png" alt="Nebulosa Workspace">
+  <div class="cod" id="cod">Erro 404</div>
+  <h1 id="tit">Esta página não existe</h1>
+  <p id="txt">O endereço pode estar digitado errado ou a página mudou de lugar. Os programas e os manuais continuam no mesmo lugar de sempre.</p>
+  <div class="ra">
+    <a class="b prim" href="/" id="ini">Voltar ao início</a>
+    <a class="b" href="/manuais/" id="man">Manuais</a>
+  </div>
+  <small id="rod">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão 0.8</small>
+</main>
+<script>
+(function () {
+  var off = navigator.onLine === false;
+  var L = {
+    'pt-BR': { cod: off ? 'Sem internet' : 'Erro 404', tit: off ? 'Esta página ainda não foi guardada' : 'Esta página não existe',
+      txt: off ? 'Sem internet, o Nebulosa abre as páginas e os programas que você já usou neste navegador. Esta ainda não foi aberta aqui; ela volta quando a conexão voltar.' : 'O endereço pode estar digitado errado ou a página mudou de lugar. Os programas e os manuais continuam no mesmo lugar de sempre.',
+      ini: 'Voltar ao início', man: 'Manuais', rod: 'Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. ', ver: 'Versão ', doc: off ? 'Sem internet · Nebulosa Workspace' : 'Página não encontrada · Nebulosa Workspace' },
+    en: { cod: off ? 'Offline' : 'Error 404', tit: off ? 'This page has not been saved yet' : 'This page does not exist',
+      txt: off ? 'Without internet, Nebulosa opens the pages and programs you have already used in this browser. This one has not been opened here yet; it comes back when the connection does.' : 'The address may be mistyped or the page has moved. The programs and manuals are still where they always were.',
+      ini: 'Back to home', man: 'Manuals', rod: 'Nebulosa Workspace - a suite of simple, beautiful programs that run right in your browser. ', ver: 'Version ', doc: off ? 'Offline · Nebulosa Workspace' : 'Page not found · Nebulosa Workspace' },
+    es: { cod: off ? 'Sin internet' : 'Error 404', tit: off ? 'Esta página todavía no se guardó' : 'Esta página no existe',
+      txt: off ? 'Sin internet, Nebulosa abre las páginas y los programas que ya usaste en este navegador. Esta todavía no se abrió aquí; vuelve cuando vuelva la conexión.' : 'La dirección puede estar mal escrita o la página cambió de lugar. Los programas y los manuales siguen en el mismo lugar de siempre.',
+      ini: 'Volver al inicio', man: 'Manuales', rod: 'Nebulosa Workspace - un paquete de programas sencillos, bonitos y que funcionan directamente en el navegador. ', ver: 'Versión ', doc: off ? 'Sin internet · Nebulosa Workspace' : 'Página no encontrada · Nebulosa Workspace' }
+  }[window.__lang];
+  var v = (document.getElementById('rod').textContent.match(/(\d+\.\d+(?:\.\d+)?)\s*$/) || [])[1] || '';
+  ['cod', 'tit', 'txt', 'ini', 'man'].forEach(function (k) { document.getElementById(k).textContent = L[k]; });
+  document.getElementById('rod').textContent = L.rod + L.ver + v;
+  document.getElementById('man').href = '/manuais/' + (window.__lang === 'en' ? 'index.en.html' : window.__lang === 'es' ? 'index.es.html' : '');
+  document.documentElement.lang = window.__lang;
+  document.title = L.doc;
+})();
+</script>
+</body>
+</html>

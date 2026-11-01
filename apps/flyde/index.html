@@ -1739,6 +1739,17 @@ function nbAjuda(k){ const N=window.NebulosaSkin; if(N&&N.abrirAjuda) return N.a
 $$('[data-help]').forEach(b=>b.addEventListener('click',()=>{ $('#helpMenu').open=false; const k=b.dataset.help; if(k==='keys') $('#mKeys').classList.add('show'); else nbAjuda(k) }));
 $$('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.modal').classList.remove('show')));
 $('#startClose').onclick=()=>{ $('#mStart').classList.remove('show'); if(!deck) newDeck('slides','nebulosa') };
+/* [Nebulosa] 0.8: "Mandar para…" — manda o slide (ou quadro) atual como imagem e recebe imagens de outros programas */
+(function(){ const N=window.NebulosaSkin; if(!N||!N.conteudos) return;
+  N.conteudos(()=> deck ? [{ id:'slide', rotulo:isMap()?'Quadro atual (imagem)':'Slide atual (imagem)', detalhe:deck.title||'', tipo:'imagem',
+    nome:slug(deck.title)+'-'+nomeCena()+'-'+(idx+1)+'.png',
+    obter: async()=>{ await exFonts(); const cv=await imgToCanvas(await exStill(idx),W,H); return toBlobP(cv,'image/png',.92); } }] : []);
+  N.aoReceber(({arquivo,tipo})=>{
+    if(!(tipo==='imagem'||/^image\//.test(arquivo.type||''))) return false;
+    if($('#mStart').classList.contains('show')) $('#startClose').click();
+    return Promise.resolve(addImages([arquivo])).then(()=>true);
+  });
+})();
 $('#btnKeys').onclick=()=>$('#mKeys').classList.add('show');
 $('#btnTheme').onclick=()=>{const r=document.documentElement; const dark=(r.dataset.theme?r.dataset.theme==='dark':!matchMedia('(prefers-color-scheme: light)').matches); r.dataset.theme=dark?'light':'dark'};
 $('#btnL').onclick=()=>{document.body.classList.toggle('lopen');document.body.classList.remove('ropen')}; $('#btnR').onclick=()=>{document.body.classList.toggle('ropen');document.body.classList.remove('lopen')};

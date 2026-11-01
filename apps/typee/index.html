@@ -565,10 +565,11 @@ body.focus .main{grid-template-columns:1fr}
 </div></div>
 <div class="dropzone" id="dropzone">Solte o arquivo para abrir</div>
 
-<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.2/turndown.min.js"></script>
+<!-- [Nebulosa] 0.8: bibliotecas dentro do projeto (antes vinham de CDNs): funcionam sem internet e no HTML único -->
+<script src="libs/docx/docx.min.js"></script>
+<script src="libs/mammoth/mammoth.browser.min.js"></script>
+<script src="libs/marked/marked.min.js"></script>
+<script src="libs/turndown/turndown.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1800,6 +1801,40 @@ if(window.claude&&claude.use){claude.use('downloads').then(d=>{downloads=d}).cat
 if(!window.docx||!window.marked||!window.mammoth||!window.TurndownService) setTimeout(()=>{ if(!window.docx||!window.marked||!window.mammoth||!window.TurndownService) toast('Algumas ferramentas não carregaram. Importar e exportar podem falhar.') },2500);
 /* [Nebulosa] integração com o Nebulosa Workspace: aviso de alterações não salvas e botão Aparência */
 window.__nebulosaDirty=function(){return dirty&&hasContent()};
+/* [Nebulosa] 0.8: "Mandar para…" — o que o Typee manda (texto e Word) e como recebe (imagens, textos e documentos) */
+(function(){const N=window.NebulosaSkin; if(!N||!N.conteudos) return;
+  const base=()=>slug(titleEl.value)||'documento';
+  const texto=()=>(mode==='md'?prev:ed).innerText.replace(/ /g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  N.conteudos(()=>{ if(!hasContent()) return [];
+    const L=[{id:'texto',rotulo:'Texto do documento',detalhe:nbT('{1} palavras',wordCount()),tipo:'texto',nome:base()+'.txt',obter:()=>new Blob([texto()+'\n'],{type:'text/plain;charset=utf-8'})}];
+    if(window.docx) L.push({id:'docx',rotulo:'Documento do Word (.docx)',tipo:'.docx',nome:base()+'.docx',obter:()=>buildDocx()});
+    return L; });
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function csvLinhas(t){ /* CSV com ; , ou tab, aspas e quebras de linha dentro de aspas */
+    const p=t.split(/\r?\n/)[0]||''; const sep=[';','\t',','].map(c=>[c,p.split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+    const R=[]; let r=[], c='', q=false;
+    for(let i=0;i<t.length;i++){ const ch=t[i];
+      if(q){ if(ch==='"'){ if(t[i+1]==='"'){c+='"';i++} else q=false } else c+=ch; continue }
+      if(ch==='"') q=true; else if(ch===sep){r.push(c);c=''} else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&t[i+1]==='\n') i++; r.push(c); c=''; if(r.some(x=>x!=='')) R.push(r); r=[] } else c+=ch; }
+    r.push(c); if(r.some(x=>x!=='')) R.push(r); return R; }
+  N.aoReceber(({arquivo,nome,tipo,acao})=>{
+    const n=String(nome||arquivo.name||'').toLowerCase();
+    if(tipo==='imagem'||/^image\//.test(arquivo.type||'')){ if(mode!=='md') ed.focus(); return addImages([arquivo]).then(()=>{changed({fast:1});return true}); }
+    if(tipo==='tabela'||/\.(csv|tsv)$/.test(n)){ /* tabela (CSV) vira uma tabela no fim do documento */
+      return arquivo.text().then(t=>{ const L=csvLinhas(t.replace(/^\uFEFF/,'')).slice(0,500); if(!L.length) return false;
+        const nc=Math.min(30,Math.max(...L.map(r=>r.length)));
+        const linha=(r,tag)=>'<tr>'+Array.from({length:nc},(_,i)=>'<'+tag+'>'+(esc(r[i]||'')||'<br>')+'</'+tag+'>').join('')+'</tr>';
+        const h='<table><tbody>'+linha(L[0],'th')+L.slice(1).map(r=>linha(r,'td')).join('')+'</tbody></table><p><br></p>';
+        if(mode==='md') setMode('vis');
+        ed.insertAdjacentHTML('beforeend',h); changed({fast:1}); toast(nbT('Tabela recebida no fim do documento.')); return true; });
+    }
+    if(acao==='inserir'&&(tipo==='texto'||/\.txt$/.test(n))&&hasContent()){
+      return arquivo.text().then(t=>{ const h=t.split(/\n{2,}/).map(p=>'<p>'+esc(p.trim()).replace(/\n/g,'<br>')+'</p>').join(''); ed.insertAdjacentHTML('beforeend',h); changed({fast:1}); toast(nbT('Texto recebido no fim do documento.')); return true; });
+    }
+    if(dirty&&hasContent()){ guard(()=>openFile(arquivo)); return true; } /* a pergunta "salvar antes?" fica com a pessoa */
+    return openFile(arquivo).then(()=>true,()=>false);
+  });
+})();
 /* [Nebulosa] menu Ajuda (0.5): Manual do usuário, Atalhos, Termos de uso, Privacidade, Créditos e licenças — o conteúdo abre aqui mesmo, numa janela */
 function nbAjuda(k){ const N=window.NebulosaSkin; if(N&&N.abrirAjuda) return N.abrirAjuda(k); const P={manual:'manuais/typee.html',termos:'legal/termos.html',privacidade:'legal/privacidade.html',creditos:'legal/creditos.html'}; window.open('https://nebulosaworkspace.com.br/'+(P[k]||P.manual),'_blank'); }
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-help]'); if(!b) return; e.preventDefault(); const hm=$('#helpMenu'); if(hm) hm.open=false; const k=b.dataset.help;

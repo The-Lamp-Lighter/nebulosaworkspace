@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Utilidades — Nebulosa Workspace</title>
+<meta name="description" content="Mini-ferramentas do dia a dia: QR Code, conversor de unidades, imagens, senhas, contador de palavras, cores, PDF, tarefas e quadro branco. Tudo no navegador, sem enviar nada para lugar nenhum.">
+<link rel="icon" type="image/png" href="favicon.png">
+<!-- [Nebulosa] ponte do Workspace: aparência, idiomas, "Mandar para…" (antes dos estilos) -->
+<script src="../../shared/nebulosa-bridge.js" data-app="utilidades" data-name="Utilidades" data-modes data-preview="#f6f5f1 #ffffff #6a4fd8 #f0b429" data-preview-nebulosa="#1f2140 #2d3053 #A778FF #FF9C54"></script>
+<script src="nebulosa-idiomas.js"></script><!-- [Nebulosa] idiomas: textos em inglês e espanhol -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/util.css">
+<link rel="stylesheet" href="nebulosa-skin.css"><!-- [Nebulosa] aparência Nebulosa Default -->
+</head>
+<body>
+<a class="pular" href="#main">Pular para o conteúdo</a>
+<div id="app">
+  <header class="topo">
+    <button class="marca" data-ir="" title="Todas as ferramentas">
+      <span class="mk" id="mkIcon" aria-hidden="true"></span>
+      <span class="mkt"><b>Utilidades</b><small class="nb-by">by Nebulosa Workspace</small></span>
+    </button>
+    <nav class="trilha" id="trilha" aria-label="Onde você está"></nav>
+    <div class="topo-d">
+      <button class="ib" id="btnModo" title="Modo claro ou escuro" aria-label="Modo claro ou escuro"></button>
+      <div class="menu" id="menuAjuda">
+        <button class="ib txt" id="btnAjuda" aria-haspopup="true" aria-expanded="false"><span class="ico" data-ico="info"></span><span>Ajuda</span></button>
+        <div class="pop" id="popAjuda" role="menu" hidden>
+          <button role="menuitem" data-ajuda="manual">Manual do usuário</button>
+          <button role="menuitem" data-ajuda="atalhos">Atalhos do teclado</button>
+          <button role="menuitem" data-ajuda="aparencia">Aparência</button>
+          <button role="menuitem" data-ajuda="idioma">Idioma</button>
+          <hr>
+          <button role="menuitem" data-ajuda="termos">Termos de uso</button>
+          <button role="menuitem" data-ajuda="privacidade">Privacidade</button>
+          <button role="menuitem" data-ajuda="creditos">Créditos e licenças</button>
+          <hr>
+          <button role="menuitem" data-ajuda="relatar">Relatar um problema</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <nav class="lado" id="lado" aria-label="Ferramentas"></nav>
+  <main id="main" tabindex="-1">
+    <section class="vista" id="v-inicio" data-vista="">
+      <div class="ini">
+        <h1>Mini-ferramentas do dia a dia</h1>
+        <p class="sub">Tudo acontece aqui no navegador: nenhum arquivo, texto ou senha sai do seu computador.</p>
+        <div class="cartoes" id="cartoes"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="modalAtalhos" hidden>
+  <div class="caixa" role="dialog" aria-modal="true" aria-labelledby="atTit">
+    <h2 id="atTit">Atalhos do teclado</h2>
+    <table class="atalhos">
+      <tr><td><kbd>Alt</kbd> + <kbd>←</kbd></td><td>Voltar para todas as ferramentas</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Desfazer / refazer no quadro branco</td></tr>
+      <tr><td><kbd>V</kbd> <kbd>P</kbd> <kbd>R</kbd> <kbd>O</kbd> <kbd>L</kbd> <kbd>A</kbd> <kbd>T</kbd> <kbd>N</kbd> <kbd>E</kbd></td><td>Ferramentas do quadro branco: selecionar, caneta, retângulo, elipse, losango, seta, texto, nota e borracha</td></tr>
+      <tr><td><kbd>Delete</kbd></td><td>Apagar o que está selecionado no quadro branco</td></tr>
+      <tr><td><kbd>Espaço</kbd> + arrastar</td><td>Mover a área do quadro branco</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + roda do mouse</td><td>Aproximar ou afastar o quadro branco</td></tr>
+      <tr><td><kbd>Enter</kbd></td><td>Adicionar a tarefa escrita</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>V</kbd></td><td>Colar uma imagem em Imagens</td></tr>
+    </table>
+    <div class="acoes"><button class="btn pri" data-fechar>Fechar</button></div>
+  </div>
+</div>
+<script src="../../js/icons.js"></script>
+<script src="../../js/apps.js"></script>
+<script src="../../js/qrcode.js"></script>
+<script src="js/base.js"></script>
+<script src="js/qr.js"></script>
+<script src="js/unidades.js"></script>
+<script src="js/imagem.js"></script>
+<script src="js/senha.js"></script>
+<script src="js/contador.js"></script>
+<script src="js/cores.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/tarefas.js"></script>
+<script src="js/quadro.js"></script>
+<script src="js/iniciar.js"></script>
+</body>
+</html>

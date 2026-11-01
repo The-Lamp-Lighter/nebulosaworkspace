@@ -3,6 +3,6 @@
 pdfjs/      PDF.js (Mozilla, Apache 2.0) - já incluído.
 tesseract/  Tesseract.js (OCR) - criado pelo Baixar-Bibliotecas.
 lamejs/     lamejs (MP3) - criado pelo Baixar-Bibliotecas.
-mammoth/    Mammoth.js (DOCX) - criado pelo Baixar-Bibliotecas.
+mammoth/    Mammoth.js 1.6.0 (DOCX, BSD-2-Clause) - já incluído (0.8).
 piper/      Piper (voz neural): motor e vozes - criado pelo Baixar-Bibliotecas.
             O arquivo vozes/vozes.json lista as vozes que o app reconhece.

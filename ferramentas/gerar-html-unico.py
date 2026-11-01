@@ -7,7 +7,7 @@ Cada programa vira um único arquivo .html, que abre com dois cliques, sem
 servidor e sem internet, com os três idiomas (português do Brasil, inglês e
 espanhol). Uso (na raiz do projeto):
 
-    python3 ferramentas/gerar-html-unico.py              # os 9 programas
+    python3 ferramentas/gerar-html-unico.py              # os 9 programas e as Utilidades
     python3 ferramentas/gerar-html-unico.py flyde typee  # só alguns
     python3 ferramentas/gerar-html-unico.py --saida /pasta/de/saida
 
@@ -25,7 +25,9 @@ Como monta:
   - manual, termos de uso, privacidade e créditos, em pt-BR, en e es, vão em
     window.__nbPaginas (chaves 'manual', 'manual.en', 'termos.es'…), e a ponte
     abre a versão do idioma escolhido na janela de Ajuda, sem internet;
-  - o contador de acessos fica desligado (a ponte não tem endereço de arquivo).
+  - o contador de acessos fica desligado (a ponte não tem endereço de arquivo);
+  - (0.8) EmCanto: o OCR, que no site fica em apps/emcanto/ocr/*.js e é baixado só
+    quando a letra é lida, volta para dentro do arquivo (blocos asset-tess…).
 """
 import base64, json, mimetypes, os, re, sys
 
@@ -35,7 +37,7 @@ IDIOMAS = ['', '.en', '.es']
 APPS = {  # id: nome do arquivo
     'typee': 'Typee', 'flyde': 'Flyde', 'stardust': 'Stardust', 'emcanto': 'EmCanto',
     'lepramim': 'LePraMim', 'paznobolso': 'PazNoBolso', 'pratododia': 'pratododia',
-    'imaginarium': 'Imaginarium', 'fluxo': 'Fluxo',
+    'imaginarium': 'Imaginarium', 'fluxo': 'Fluxo', 'utilidades': 'Utilidades',
 }
 IMG_EXT = ('.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp')
 # arquivos carregados sob demanda (viram blob: quando o programa pede)
@@ -44,6 +46,8 @@ SOB_DEMANDA = {
     'flyde': ['libs/pptxgen.bundle.js'],
     'lepramim': ['libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],
     'imaginarium': ['help/manual.html', 'help/credits.html'],
+    # (0.8) Utilidades: bibliotecas do PDF e do .zip (js/base.js usa window.__nbArq)
+    'utilidades': ['libs/pdf-lib.min.js', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js', 'libs/jszip.min.js'],
 }
 # ajustes no código de cada programa (texto exato -> substituto)
 TROCAS = {
@@ -181,7 +185,11 @@ def bloco_inicial(app, app_dir):
         js.append('Object.defineProperty(window,%s,{configurable:true,get:function(){return window.__nbArq(%s)}});'
                   % (json.dumps(g), json.dumps(rel)))
     js.append('})();')
+<<<<<<< HEAD
     return '<script>/* [Nebulosa] HTML único 0.7: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
+=======
+    return '<script>/* [Nebulosa] HTML único 0.8: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
 
 
 def pagina_programa(p, app_dir):
@@ -196,6 +204,22 @@ def pagina_programa(p, app_dir):
         return m.group(1) + data_uri(q) + '"' if os.path.isfile(q) else m.group(0)
     h = re.sub(r'(<(?:img|link)[^>]*?\s(?:src|href)=")([^"]+)"', img, h)
     return base64.b64encode(h.encode('utf-8')).decode()
+
+
+def emcanto_ocr(h, app_dir):
+    """Põe de volta os blocos <script type="application/octet-stream" id="asset-tess…"> do EmCanto."""
+    pasta = os.path.join(app_dir, 'ocr')
+    blocos = []
+    for nome in sorted(os.listdir(pasta)):
+        if not nome.endswith('.js'):
+            continue
+        m = re.search(r'\[\'([a-z0-9-]+)\'\]\s*=\s*"([A-Za-z0-9+/=]+)"', ler(os.path.join(pasta, nome)))
+        if m:
+            blocos.append('<script type="application/octet-stream" id="asset-%s">%s</script>\n' % (m.group(1), m.group(2)))
+    marca = '<script type="application/octet-stream" id="asset-lame">'
+    if not blocos or marca not in h:
+        sys.exit('EmCanto: não achei os arquivos do OCR em %s' % pasta)
+    return h.replace(marca, ''.join(blocos) + marca, 1)
 
 
 def gerar(app, saida):
@@ -245,6 +269,10 @@ def gerar(app, saida):
     csp = re.search(r"script-src ([^;\"]*)", h)
     if csp and "'unsafe-inline'" not in csp.group(1):
         h = h.replace(csp.group(0), csp.group(0) + " 'unsafe-inline'", 1)
+
+    # 4b) (0.8) EmCanto: o OCR volta para dentro do arquivo (no site ele é baixado sob demanda)
+    if app == 'emcanto':
+        h = emcanto_ocr(h, app_dir)
 
     # 5) arquivos sob demanda + páginas de ajuda, antes de todos os scripts
     i = h.find('<script')

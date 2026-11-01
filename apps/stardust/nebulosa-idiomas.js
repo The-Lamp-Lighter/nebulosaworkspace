@@ -879,3 +879,13 @@
     'domingo, 25 de outubro de 2026': ['Sunday, October 25, 2026', 'domingo, 25 de octubre de 2026']
   });
 })();
+
+/* [Nebulosa] 0.8: "Mandar para…" */
+(function () {
+  var I = window.NebulosaIdiomas; if (!I) return;
+  I.registrar({
+    "Gráfico (imagem)": ["Chart (image)", "Gráfico (imagen)"],
+    "Planilha atual como tabela (CSV)": ["Current sheet as a table (CSV)", "Hoja actual como tabla (CSV)"],
+    "Pasta de trabalho do Excel (.xlsx)": ["Excel workbook (.xlsx)", "Libro de Excel (.xlsx)"]
+  });
+})();

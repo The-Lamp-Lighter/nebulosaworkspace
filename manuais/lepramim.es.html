@@ -40,7 +40,7 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <header class="topo"><a class="marca" href="index.es.html"><img src="../assets/img/logo-112.png" alt=""><span>Manuales <small>Nebulosa Workspace</small></span></a><span class="esp"></span><nav class="idiomas" aria-label="Idioma"><a href="lepramim.html" lang="pt-BR" hreflang="pt-BR">PT</a><a href="lepramim.en.html" lang="en" hreflang="en">EN</a><a href="lepramim.es.html" lang="es" hreflang="es" aria-current="true">ES</a></nav><a class="bt" href="../apps/lepramim/" target="_blank" rel="noopener">Abrir LêPraMim</a><a class="bt" href="../index.html">Abrir el Workspace</a><button class="bt" onclick="window.print()">Imprimir</button></header>
 <div class="capa"><div class="in"><span class="tag">Productividad &amp; Datos</span><h1>LêPraMim<small>by Nebulosa Workspace</small></h1><p class="funcao">Lector de Textos y Audiolibros</p><p>LêPraMim (“léelo para mí”) lee en voz alta libros, documentos y textos, y reproduce audiolibros. La biblioteca, el punto de lectura, los marcadores y las estadísticas quedan en tu navegador; ningún texto se envía a internet.</p>
 <div class="acoes"><a href="../index.html#app=lepramim">Abrir en el Workspace</a><a class="sec" href="index.es.html">Otros manuales</a></div></div></div>
-<div class="layout"><nav class="indice" aria-label="Índice"><b>En este manual</b><a href="#s1">1. Primeros pasos</a><a href="#s2">2. Leer un libro en voz alta</a><a href="#s3">3. Voces</a><a href="#s4">4. Escuchar un audiolibro</a><a href="#s5">5. Recursos extra</a><a href="#s6">6. Recursos opcionales: OCR, MP3 y DOCX</a><a href="#s7">7. Atajos de teclado</a><a href="#s8">8. Privacidad</a><a href="#s9">9. Dentro del Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Primeros pasos</h2>
+<div class="layout"><nav class="indice" aria-label="Índice"><b>En este manual</b><a href="#s1">1. Primeros pasos</a><a href="#s2">2. Leer un libro en voz alta</a><a href="#s3">3. Voces</a><a href="#s4">4. Escuchar un audiolibro</a><a href="#s5">5. Recursos extra</a><a href="#s6">6. Recursos opcionales: OCR y MP3</a><a href="#s7">7. Atajos de teclado</a><a href="#s8">8. Privacidad</a><a href="#s9">9. Dentro del Nebulosa Workspace</a></nav><main><section id="s1"><h2><span class="num">1</span>Primeros pasos</h2>
 <ol>
 <li>Haz clic en <b>Abrir archivo</b> (o arrastra archivos a la ventana) y elige un libro, documento o audiolibro.</li>
 <li>El archivo entra en la <b>Biblioteca</b> y se abre en pantalla. La próxima vez, basta con hacer clic en la portada.</li>
@@ -74,15 +74,15 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <li><b>Generar audiolibro</b>: convierte el libro en archivos de audio. Con la voz Piper, los archivos se crean directamente; con las voces del sistema, el navegador pide compartir la pantalla con el audio del sistema y la grabación dura lo mismo que la lectura.</li>
 <li><b>Estadísticas</b>: tiempo de lectura y progreso de los libros.</li>
 <li>En el Workspace, LêPraMim avisa en la esquina de notificaciones cuando un audiolibro está listo y cuando la voz Piper termina de descargarse.</li>
-</ul></section><section id="s6"><h2><span class="num">6</span>Recursos opcionales: OCR, MP3 y DOCX</h2>
-<p>Tres componentes opcionales amplían LêPraMim. <b>Se descargan solos la primera vez que se necesitan</b>, igual que la voz Piper: LêPraMim pide permiso, muestra el progreso y guarda el componente en este navegador. Las veces siguientes funciona al instante, incluso sin internet.</p>
+</ul></section><section id="s6"><h2><span class="num">6</span>Recursos opcionales: OCR y MP3</h2>
+<p>Dos componentes opcionales amplían LêPraMim. <b>Se descargan solos la primera vez que se necesitan</b>, igual que la voz Piper: LêPraMim pide permiso, muestra el progreso y guarda el componente en este navegador. Las veces siguientes funciona al instante, incluso sin internet.</p>
 <table><tr><th>Componente</th><th>Cuándo se descarga</th><th>Tamaño</th><th>Sin él</th></tr>
 <tr><td><b>Tesseract.js</b> (OCR)</td><td>Al abrir un PDF escaneado (páginas que son fotos) y elegir <b>Reconocer texto</b>.</td><td>unos 18 MB, más los datos del idioma</td><td>Los PDF que son solo imagen no tienen texto para leer.</td></tr>
-<tr><td><b>lamejs</b> (MP3)</td><td>Al generar un audiolibro eligiendo <b>MP3</b>.</td><td>unos 0,2 MB</td><td>El audiolibro sale en WAV, que funciona igual pero ocupa mucho más espacio.</td></tr>
-<tr><td><b>Mammoth.js</b> (DOCX)</td><td>Al abrir el primer documento de Word (.docx).</td><td>unos 0,7 MB</td><td>Los DOCX se abren con el lector interno, que ya resuelve la mayoría de los casos.</td></tr></table>
-<ul><li>Solo se descargan los archivos del programa; el contenido de tus libros nunca sale de la computadora.</li>
+<tr><td><b>lamejs</b> (MP3)</td><td>Al generar un audiolibro eligiendo <b>MP3</b>.</td><td>unos 0,2 MB</td><td>El audiolibro sale en WAV, que funciona igual pero ocupa mucho más espacio.</td></tr></table>
+<ul><li>El lector de documentos de Word (<b>Mammoth.js</b>) viene dentro de LêPraMim desde la versión 0.8: los .docx se abren al instante, también sin internet.</li>
+<li>Solo se descargan los archivos del programa; el contenido de tus libros nunca sale de la computadora.</li>
 <li>En <b>Configuración</b> aparece la situación de cada componente (instalado, guardado en este navegador o se descarga al usar) y el botón <b>Olvidar componentes descargados</b>, que libera el espacio.</li>
-<li>Si respondiste “Ahora no”, LêPraMim vuelve a preguntar la próxima vez (en DOCX, la opción “Usar el lector interno” se recuerda hasta que olvides los componentes).</li>
+<li>Si respondiste “Ahora no”, LêPraMim vuelve a preguntar la próxima vez.</li>
 <li>Quien mantiene el sitio también puede ejecutar <code>apps/lepramim/Baixar-Bibliotecas.bat</code> y subir la carpeta <code>apps/lepramim/libs/</code>: así no hace falta descargar nada en el momento.</li></ul></section><section id="s7"><h2><span class="num">7</span>Atajos de teclado</h2>
 <table><tr><th>Teclas</th><th>Qué hace</th></tr>
 <tr><td><kbd>Espacio</kbd></td><td>Leer o pausar</td></tr>
@@ -98,7 +98,11 @@ if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('
 <li>Los atajos <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> y <kbd>Alt</kbd> + <kbd>0</kbd> (inicio) funcionan incluso con el foco dentro del programa.</li>
 <li>LêPraMim también se abre solo, fuera del Workspace, desde la dirección de su carpeta (por ejemplo <code>…/apps/lepramim/</code>) o desde el archivo HTML único.</li>
 </ul></section></main></div>
+<<<<<<< HEAD
 <footer class="rodape"><p>Nebulosa Workspace - un paquete de programas sencillos, bonitos y que funcionan directamente en el navegador. Versión 0.7</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade y Raul Goulart de Andrade · Equipo de Producción Lamp Lighter</p><p><a href="index.es.html">Todos los manuales</a> · <a href="../index.html">Página de inicio del Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.es.html">Términos de uso</a> · <a href="../legal/privacidade.es.html">Privacidad</a> · <a href="../legal/creditos.es.html">Créditos y licencias</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+=======
+<footer class="rodape"><p>Nebulosa Workspace - un paquete de programas sencillos, bonitos y que funcionan directamente en el navegador. Versión 0.8</p><p>Autores e idealizadores: Márcio Willians Barreto de Andrade y Raul Goulart de Andrade · Equipo de Producción Lamp Lighter</p><p><a href="index.es.html">Todos los manuales</a> · <a href="../index.html">Página de inicio del Workspace</a></p><p><a href="https://nebulosaworkspace.com.br/">nebulosaworkspace.com.br</a> · <a href="../legal/termos.es.html">Términos de uso</a> · <a href="../legal/privacidade.es.html">Privacidad</a> · <a href="../legal/creditos.es.html">Créditos y licencias</a> · <a href="mailto:nebulosaworkspace@gmail.com">nebulosaworkspace@gmail.com</a></p></footer>
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
 <script src="../js/acessos.js" data-pagina="dominio" defer></script>
 </body>
 </html>

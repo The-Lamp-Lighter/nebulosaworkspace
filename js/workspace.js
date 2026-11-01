@@ -17,6 +17,11 @@
        open-skin      abre a janela de aparência do próprio programa
        query-dirty    pergunta se há alterações não salvas
        set-lang       { idioma }  (0.6) troca o idioma ('pt-BR' | 'en' | 'es')
+       conteudos?     (0.8) pede a lista do que o programa pode mandar a outro ("Mandar para…")
+       conteudo       { id }  (0.8) pede o conteúdo escolhido (o programa responde com o arquivo)
+       receber        { arquivo, nome, tipo, acao }  (0.8) entrega um arquivo ao programa
+       acao           { nome, dados }  (0.8) ação pedida pela busca (ex.: abrir uma ferramenta)
+       pode-dormir    (0.8) pergunta se o programa pode descansar (nada pendente, nada tocando)
      programa → Workspace
        hello / skin   { app, skins:[{id,name,desc,swatch}], skin }
        dirty          { dirty: true|false }  resposta ao query-dirty
@@ -26,6 +31,11 @@
                       (kind: info | sucesso | aviso | erro). Se o programa está
                       na tela, o aviso vai só para o sino, a menos que always = true.
        lang           { idioma }  (0.6) o idioma foi trocado dentro do programa (Ajuda › Idioma)
+       envia          (0.8) o programa tem conteúdo para o "Mandar para…" (campo envia em todas as mensagens)
+       conteudos / conteudo / recebido / acao-feita / pode-dormir   (0.8) respostas, com { pedido }
+       arquivo        { acao: 'abriu' | 'salvou', nome, handle? }  (0.8) para os arquivos recentes
+       mandar         { item }  (0.8) botão "Mandar para…" do próprio programa
+       relatar        (0.8) Ajuda › Relatar um problema
 
    Idiomas (0.6): o motor fica em shared/nebulosa-bridge.js (carregado com data-host no
    index.html) e os textos do Workspace em js/idiomas.js. Os textos daqui continuam em
@@ -42,7 +52,11 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+<<<<<<< HEAD
   const VERSION = window.NEBULOSA_VERSAO || '0.7';
+=======
+  const VERSION = window.NEBULOSA_VERSAO || '0.8';
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
   // (0.5) créditos: os mesmos em todos os programas (a ponte tem a mesma informação)
@@ -63,6 +77,8 @@
   const LOGO_BIG = '<img src="assets/img/logo-320.png" alt="Nebulosa Workspace" draggable="false">';
   const DOA = window.NEBULOSA_DOACAO && window.NEBULOSA_DOACAO.pix ? window.NEBULOSA_DOACAO : null;
   const NOTIF = window.NebulosaNotificacoes;
+  const RECENTES = window.NebulosaRecentes, BACKUP = window.NebulosaBackup; // (0.8)
+  const TAREFAS = window.NEBULOSA_TAREFAS || [], DICAS = window.NEBULOSA_DICAS || [], NOVIDADES = window.NEBULOSA_NOVIDADES || []; // (0.8)
   const IFRAME_ALLOW = 'clipboard-read; clipboard-write; fullscreen; display-capture; autoplay; microphone';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -82,13 +98,16 @@
       icon: ICONS[a.icon] ? a.icon : 'doc'
     }));
   const byId = Object.fromEntries(APPS.map(a => [a.id, a]));
+  // (0.8) programas principais (os das temáticas e dos atalhos Alt+1…9); Utilidades fica à parte
+  const PRINC = APPS.filter(a => a.principal !== false);
+  const UTIL = byId.utilidades && byId.utilidades.principal === false ? byId.utilidades : null;
   const grad = a => `linear-gradient(135deg,${a.colors[0]},${a.colors[1] || a.colors[0]})`;
   const ric = a => `<span class="ric" style="background:${grad(a)}">${ICONS[a.icon]}</span>`;
   const plainRic = icon => `<span class="ric" style="background:var(--panel2);color:var(--ink)">${icon}</span>`;
 
   // estado de cada programa aberto
   const ST = {};
-  APPS.forEach(a => { ST[a.id] = { open: false, view: null, iframe: null, ready: false, skins: null, skin: null }; });
+  APPS.forEach(a => { ST[a.id] = { open: false, view: null, iframe: null, ready: false, skins: null, skin: null, hello: false, envia: false, dormindo: false, escondido: 0 }; });
 
   // preferências do Workspace (o tema é aplicado cedo por js/theme.js)
   const KEY = 'nebulosa.hub';
@@ -112,14 +131,26 @@
     let g = '';
     APPS.forEach((a, i) => {
       if (a.group !== g) { g = a.group; h += `<div class="grp">${esc(g)}</div>`; }
-      const extra = ST[a.id].open ? '<i class="dot" title="Aberto"></i>' : (a.soon ? '<span class="soon rl">em breve</span>' : '');
-      h += `<button class="ritem" data-go="${a.id}" aria-current="${active === a.id ? 'page' : 'false'}" title="${esc(a.name)}${i < 9 ? ' (Alt+' + (i + 1) + ')' : ''}">${ric(a)}<span class="rl">${esc(a.name)}</span>${extra}</button>`;
+      const k = PRINC.indexOf(a);
+      const extra = ST[a.id].open ? (ST[a.id].dormindo ? '<i class="dot zz" title="Descansando"></i>' : '<i class="dot" title="Aberto"></i>') : (a.soon ? '<span class="soon rl">em breve</span>' : '');
+      h += `<button class="ritem" data-go="${a.id}" aria-current="${active === a.id ? 'page' : 'false'}" title="${esc(a.name)}${k >= 0 && k < 9 ? ' (Alt+' + (k + 1) + ')' : ''}">${ric(a)}<span class="rl">${esc(a.name)}</span>${extra}</button>`;
     });
     h += `<div class="rspacer"></div><div class="rfoot">` +
       (DOA ? `<button class="ritem doe" id="rDoe" title="Apoie o Nebulosa Workspace com um Pix"><span class="ric">${ICONS.heart}</span><span class="rl"><b>Doe com Pix</b></span></button>` : '') +
       `<button class="ritem" id="rAbout"><span class="ric">${ICONS.info}</span><span class="rl">Sobre o Workspace</span></button></div>`;
     $('#rail').innerHTML = h;
+    // (0.8) celular: o item atual sempre à vista na barra de baixo, e o esmaecido indica que dá para rolar
+    if (matchMedia('(max-width:820px)').matches) { const cur = $('#rail [aria-current="page"]'); if (cur) cur.scrollIntoView({ inline: 'nearest', block: 'nearest' }); }
+    dicaRolagem();
   }
+  function dicaRolagem() {
+    const r = $('#rail'); if (!r) return;
+    const pode = r.scrollWidth > r.clientWidth + 4;
+    r.classList.toggle('rola', pode);
+    r.classList.toggle('fim', pode && r.scrollLeft + r.clientWidth >= r.scrollWidth - 4);
+  }
+  $('#rail').addEventListener('scroll', dicaRolagem, { passive: true });
+  addEventListener('resize', dicaRolagem);
   $('#rail').addEventListener('click', e => {
     const g = e.target.closest('[data-go]');
     if (g) { if (g.dataset.go === 'home') goHome(); else openApp(g.dataset.go, g); return; }
@@ -132,10 +163,12 @@
   function renderTabs() {
     $('#tabs').innerHTML = order.map(id => {
       const a = byId[id];
-      return `<div class="tab" role="tab" tabindex="0" data-tab="${id}" aria-selected="${active === id}"><span class="tic" style="background:${grad(a)}">${ICONS[a.icon]}</span><span>${esc(a.name)}</span><button class="x" data-close="${id}" aria-label="Fechar ${esc(a.name)}" title="Fechar ${esc(a.name)}">×</button></div>`;
+      return `<div class="tab${ST[id].dormindo ? ' zz' : ''}" role="tab" tabindex="0" data-tab="${id}" aria-selected="${active === id}"${ST[id].dormindo ? ' title="Descansando"' : ''}><span class="tic" style="background:${grad(a)}">${ICONS[a.icon]}</span><span>${esc(a.name)}</span><button class="x" data-close="${id}" aria-label="Fechar ${esc(a.name)}" title="Fechar ${esc(a.name)}">×</button></div>`;
     }).join('');
     $('#crumbT').textContent = active ? byId[active].name : 'Início';
     $('#crumb').style.display = order.length ? 'none' : 'flex';
+    document.body.classList.toggle('tem-abas', order.length > 0); // (0.8) no celular, as abas ganham uma linha própria
+    atualizarMandar();
   }
   $('#tabs').addEventListener('click', e => {
     const x = e.target.closest('[data-close]');
@@ -171,28 +204,55 @@
   function manifestoHtml(cls) {
     return `<section class="manifesto ${cls || ''}" aria-labelledby="mfT"><h2 id="mfT">${esc(MANIFESTO.titulo)}</h2>${MANIFESTO.paragrafos.map(p => `<p>${esc(p)}</p>`).join('')}</section>`;
   }
+  // (0.8) dica do dia: muda a cada dia; "Outra dica" passa para a próxima (só nesta visita)
+  let dicaPasso = 0;
+  function dicaHtml() {
+    if (!DICAS.length) return '';
+    const hoje = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 864e5);
+    const d = DICAS[((hoje + dicaPasso) % DICAS.length + DICAS.length) % DICAS.length];
+    const a = d.app && byId[d.app];
+    return `<section class="dica" aria-label="Dica do dia"><span class="ric" style="background:${a ? grad(a) : 'linear-gradient(135deg,var(--y),var(--o))'}">${a ? ICONS[a.icon] : ICONS.bulb}</span><div class="dtx"><small>Dica do dia</small><p>${esc(d.texto)}</p></div><div class="dac">${a ? `<button class="chip" data-dica-abrir="${a.id}">Abrir ${esc(a.nomeCartao || a.name)}</button>` : ''}<button class="chip" data-dica-outra>Outra dica</button></div></section>`;
+  }
+  // (0.8) arquivos recentes (js/recentes.js)
+  function arqHtml(x) {
+    const a = byId[x.app];
+    return `<button class="rchip arq" data-arq="${esc(x.id)}" title="${esc(x.nome)}">${`<span class="ric" style="background:${grad(a)}">${ICONS.file}</span>`}<span><b>${esc(x.nome)}</b><small><span>${esc(a.name)}</span> · <span>${x.acao === 'salvou' ? 'salvo' : 'aberto'}</span> <span>${ago(x.t)}</span></small></span><i class="rx" data-arq-x="${esc(x.id)}" role="button" aria-label="Tirar da lista" title="Tirar da lista">×</i></button>`;
+  }
+  // (0.8) Utilidades: seção própria, separada das temáticas
+  function utilHtml(n) {
+    const fs = UTIL.ferramentas || [];
+    return `<h2 class="sec tsec" id="sec-util">${esc(UTIL.name)}</h2><p class="usub">${esc(UTIL.desc)}</p><div class="ugrid">` +
+      fs.map((f, i) => `<button class="ucard" data-ferr="${esc(f.id)}" style="animation-delay:${(n + i) * 40 + 60}ms"><span class="ric" style="background:${grad(UTIL)}">${ICONS[f.icon] || ICONS.tools}</span><span><b>${esc(f.nome)}</b><small>${esc(f.desc)}</small></span></button>`).join('') +
+      `</div>`;
+  }
   function renderHome() {
     const hr = new Date().getHours(), gr = hr < 5 ? 'Boa madrugada' : hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
     const rec = Object.entries(H.recent).filter(([id]) => byId[id] && !byId[id].soon).sort((a, b) => b[1] - a[1]).slice(0, 4);
-    const lastKey = Math.min(APPS.length, 9);
+    const arqs = RECENTES ? RECENTES.lista().filter(x => byId[x.app]).slice(0, 8) : [];
+    const lastKey = Math.min(PRINC.length, 9);
     // temáticas: as de NEBULOSA_TEMAS, na ordem; programas sem temática vão para "Outros programas"
-    const grupos = TEMAS.map(t => ({ t, apps: APPS.filter(a => a.tema === t) })).filter(g => g.apps.length);
-    const resto = APPS.filter(a => !TEMAS.includes(a.tema));
+    const grupos = TEMAS.map(t => ({ t, apps: PRINC.filter(a => a.tema === t) })).filter(g => g.apps.length);
+    const resto = PRINC.filter(a => !TEMAS.includes(a.tema));
     if (resto.length) grupos.push({ t: grupos.length ? 'Outros programas' : 'Seus programas', apps: resto });
     let h = `<div class="wrap"><p class="greet">${gr}!</p><h1 class="big">O que vamos <em>criar</em> hoje?</h1>
   <button class="search" id="homeSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Buscar um programa ou uma ação…</span><kbd>Alt K</kbd></button>`;
     // (0.4) o logotipo com os ícones dos programas ocupa o lugar dos atalhos das temáticas
-    h += `<div class="mfwrap">${manifestoHtml()}<div class="nlogo" role="img" aria-label="Logotipo do Nebulosa Workspace: uma nebulosa com os ícones dos ${APPS.length} programas em órbita"></div></div>`;
+    h += `<div class="mfwrap">${manifestoHtml()}<div class="nlogo" role="img" aria-label="Logotipo do Nebulosa Workspace: uma nebulosa com os ícones dos ${PRINC.length} programas em órbita"></div></div>`;
+    h += dicaHtml();
     if (rec.length) {
       h += `<h2 class="sec">Continue de onde parou</h2><div class="recent">${rec.map(([id, ts]) => `<button class="rchip" data-open="${id}">${ric(byId[id])}<span><b>${esc(byId[id].name)}</b><small>${ST[id].open ? 'aberto agora' : ago(ts)}</small></span></button>`).join('')}</div>`;
+    }
+    if (arqs.length) {
+      h += `<h2 class="sec sarq"><span>Arquivos recentes</span><button class="lnk" data-arq-limpar>Limpar a lista</button></h2><div class="recent arqs">${arqs.map(arqHtml).join('')}</div>`;
     }
     let n = 0;
     grupos.forEach((g, gi) => {
       h += `<h2 class="sec tsec" id="tema-${gi}">${esc(g.t)}</h2><div class="grid">${g.apps.map(a => cardHtml(a, n++)).join('')}</div>`;
     });
+    if (UTIL) h += utilHtml(n);
     h += `<div class="foot"><div class="tips"><span><kbd>Alt K</kbd>buscar</span><span><kbd>Alt 0</kbd>início</span><span><kbd>Alt 1…${lastKey}</kbd>abrir um programa</span></div>
   <p class="rodape">${esc(RODAPE)}</p>
-  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Estatística de acessos do site: domínio, página inicial e cada programa">Acessos</button><span aria-hidden="true">·</span>${legalLinks()}</div></div></div>`;
+  <div class="flinks"><a href="${manualUrl()}" target="_blank" rel="noopener">Manuais</a><span aria-hidden="true">·</span><button class="lnk" id="btnAcessos" title="Estatística de acessos do site: domínio, página inicial e cada programa">Acessos</button><span aria-hidden="true">·</span><button class="lnk" data-novidades>Novidades</button><span aria-hidden="true">·</span><button class="lnk" data-backup>Backup</button><span aria-hidden="true">·</span>${legalLinks()}</div></div></div>`;
     $('#home').innerHTML = h;
   }
   $('#home').addEventListener('click', e => {
@@ -202,6 +262,19 @@
     if (e.target.closest('#btnAcessos')) openAcessos();
     const t = e.target.closest('[data-tema]');
     if (t) { const sec = $('#tema-' + t.dataset.tema); if (sec) sec.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+    // (0.8)
+    const da = e.target.closest('[data-dica-abrir]');
+    if (da) { openApp(da.dataset.dicaAbrir, da); return; }
+    if (e.target.closest('[data-dica-outra]')) { dicaPasso++; const d = $('.dica', homeEl); if (d) { d.outerHTML = dicaHtml(); } return; }
+    const ax = e.target.closest('[data-arq-x]');
+    if (ax) { e.stopPropagation(); if (RECENTES) RECENTES.remover(ax.dataset.arqX); return; }
+    const ar = e.target.closest('[data-arq]');
+    if (ar) { abrirRecente(ar.dataset.arq, ar); return; }
+    if (e.target.closest('[data-arq-limpar]')) { if (RECENTES) RECENTES.limpar(); return; }
+    const fe = e.target.closest('[data-ferr]');
+    if (fe) { abrirFerramenta(fe.dataset.ferr, fe); return; }
+    if (e.target.closest('[data-novidades]')) { openNovidades(); return; }
+    if (e.target.closest('[data-backup]')) { openBackup(); return; }
   });
 
   /* ---------- abrir, mostrar e fechar programas ---------- */
@@ -245,21 +318,25 @@
         s.ready = true;
         return;
       }
-      const f = document.createElement('iframe');
-      f.title = a.name;
-      f.setAttribute('allow', IFRAME_ALLOW);
-      f.addEventListener('load', () => {
-        s.ready = true;
-        const l = $('.loading', v);
-        if (l) { l.style.opacity = '0'; setTimeout(() => l.remove(), 520); }
-        post(a.id, { nebulosa: 'ping' });
-        post(a.id, { nebulosa: 'set-lang', idioma: idioma() });
-      }, { once: true });
-      s.iframe = f;
-      v.insertBefore(f, v.firstChild);
-      f.src = url;
+      montarIframe(a, v, url);
     });
     return v;
+  }
+  function montarIframe(a, v, url) {
+    const s = ST[a.id];
+    const f = document.createElement('iframe');
+    f.title = a.name;
+    f.setAttribute('allow', IFRAME_ALLOW);
+    f.addEventListener('load', () => {
+      s.ready = true;
+      const l = $('.loading', v);
+      if (l) { l.style.opacity = '0'; setTimeout(() => l.remove(), 520); }
+      post(a.id, { nebulosa: 'ping' });
+      post(a.id, { nebulosa: 'set-lang', idioma: idioma() });
+    }, { once: true });
+    s.iframe = f; s.hello = false; s.envia = false;
+    v.insertBefore(f, v.firstChild);
+    f.src = url;
   }
   appsEl.addEventListener('click', e => { if (e.target.closest('[data-back]')) goHome(); });
   const stageRect = () => stage.getBoundingClientRect();
@@ -303,7 +380,10 @@
     o.finished.then(() => ex.remove()).catch(() => ex.remove());
   }
   function showApp(id, first) {
+    if (ST[id] && ST[id].dormindo) acordar(id); // (0.8)
     const prev = active;
+    if (prev && prev !== id && ST[prev]) ST[prev].escondido = Date.now();
+    if (ST[id]) ST[id].escondido = 0;
     const dir = prev && order.indexOf(id) > order.indexOf(prev) ? 1 : -1;
     active = id;
     document.body.dataset.view = 'app';
@@ -324,6 +404,7 @@
   }
   function goHome() {
     if (active === null && document.body.dataset.view === 'home') return;
+    if (active && ST[active]) ST[active].escondido = Date.now(); // (0.8)
     active = null;
     document.body.dataset.view = 'home';
     homeEl.style.visibility = 'visible';
@@ -364,7 +445,7 @@
     // já ter fechado; sem esta conferência, order.splice(-1, 1) tirava a aba de OUTRO programa
     if (!s.open || idx < 0) return;
     order.splice(idx, 1);
-    Object.assign(s, { open: false, ready: false, iframe: null, view: null, skins: null, skin: null });
+    Object.assign(s, { open: false, ready: false, iframe: null, view: null, skins: null, skin: null, hello: false, envia: false, dormindo: false, escondido: 0 });
     const done = () => { if (v) v.remove(); };
     if (active === id) {
       const next = order[idx] || order[idx - 1];
@@ -389,6 +470,14 @@
     const a = APPS.find(x => ST[x.id].iframe && ST[x.id].iframe.contentWindow === e.source);
     if (!a) return;
     const s = ST[a.id];
+    // (0.8) respostas a pedidos (Mandar para…, entregas, ações, descanso)
+    if (d.pedido && esperando[d.pedido]) { const w = esperando[d.pedido]; delete esperando[d.pedido]; clearTimeout(w.to); w.res(d); return; }
+    if (typeof d.envia === 'boolean' && d.envia !== s.envia) { s.envia = d.envia; atualizarMandar(); }
+    if (d.nebulosa === 'hello') s.hello = true;
+    if (d.nebulosa === 'envia') { s.envia = true; atualizarMandar(); return; }
+    if (d.nebulosa === 'arquivo') { arquivoDoPrograma(a, d); return; }
+    if (d.nebulosa === 'mandar') { openMandar(a.id, d.item); return; }
+    if (d.nebulosa === 'relatar') { openRelato(a.id); return; }
     if (d.nebulosa === 'hello' || d.nebulosa === 'skin') {
       s.skins = Array.isArray(d.skins) ? d.skins.filter(k => k && k.id) : null;
       s.skin = d.skin;
@@ -475,7 +564,7 @@
   }
 
   /* ---------- painéis e janelas ---------- */
-  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel', 'langPanel'];
+  const POPS = ['skinPanel', 'palette', 'about', 'confirm', 'donate', 'notifPanel', 'acessos', 'mailPanel', 'langPanel', 'sendPanel', 'backup', 'novidades'];
   function openPop(el) {
     const sc = $('#scrim');
     sc.classList.add('show');
@@ -506,6 +595,7 @@
   $('#confirm').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#confirm').dataset.to = 'translate(-50%,-50%) scale(1)';
   $('#donate').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#donate').dataset.to = 'translate(-50%,-50%) scale(1)';
   $('#acessos').dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#acessos').dataset.to = 'translate(-50%,-50%) scale(1)';
+  ['backup', 'novidades'].forEach(id => { $('#' + id).dataset.from = 'translate(-50%,-48%) scale(.97)'; $('#' + id).dataset.to = 'translate(-50%,-50%) scale(1)'; }); // (0.8)
   function openSkinPanel() { renderSkinPanel(); closeOthers('skinPanel'); openPop($('#skinPanel')); }
   $('#btnSkin').addEventListener('click', () => { if ($('#skinPanel').classList.contains('show')) closePops(); else openSkinPanel(); });
   $('#btnFs').addEventListener('click', () => {
@@ -541,6 +631,7 @@
 <a class="mopt" href="https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}" target="_blank" rel="noopener"><b>Gmail</b><small>abre no navegador</small></a>
 <a class="mopt" href="https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}" target="_blank" rel="noopener"><b>Outlook / Hotmail</b><small>abre no navegador</small></a>
 <a class="mopt" href="${MAILTO}"><b>Programa de e-mail</b><small>do computador ou celular</small></a>
+<button class="mopt rel" id="mRelato"><b>Relatar um problema</b><small>e-mail já preenchido com as informações técnicas</small></button>
 </div>`;
     closeOthers('mailPanel'); openPop(p);
     $('#mCopy').onclick = async () => {
@@ -551,21 +642,24 @@
       const b = $('#mCopy span'); if (b) b.textContent = ok ? 'Copiado!' : 'Selecione e copie';
     };
     p.querySelectorAll('a.mopt').forEach(a => a.addEventListener('click', () => setTimeout(closePops, 150)));
+    $('#mRelato').onclick = () => openRelato(active);
   }
   $('#btnMail').addEventListener('click', openMail);
 
   function openAbout() {
     const a = $('#about');
-    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><p class="creditos"><b>Autores e idealizadores:</b> ${esc(CREDITOS.autores)}<br><b>Equipe de produção:</b> ${esc(CREDITOS.equipe)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${legalLinks()} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
+    a.innerHTML = `<div class="mk">${LOGO_BIG}</div>${manifestoHtml('nobox')}<div class="alist">${APPS.map(x => `<span title="${esc(x.funcao || x.tag)}">${ric(x)}${esc(x.nomeCartao || x.name)}</span>`).join('')}</div><p class="rodape">${esc(RODAPE)}</p><p class="creditos"><b>Autores e idealizadores:</b> ${esc(CREDITOS.autores)}<br><b>Equipe de produção:</b> ${esc(CREDITOS.equipe)}</p><div class="ra"><a class="chip" href="${manualUrl()}" target="_blank" rel="noopener">${ICONS.manual}<span>Manual do Workspace</span></a><a class="chip" href="assets/img/nebulosa-workspace-logo.png" download="nebulosa-workspace-logo.png">${ICONS.image}<span>Baixar logotipo</span></a><button class="chip" id="abNov">${ICONS.spark}<span>Novidades</span></button><button class="chip" id="abBak">${ICONS.archive}<span>Backup</span></button><button class="chip prim" id="abOk">Fechar</button></div><p class="contato">Dúvidas, sugestões ou problemas? Escreva para a gente: <button class="lnk" id="abMail">${CONTATO_EMAIL}</button></p><p class="legal">${legalLinks()} · Código aberto sob a licença MIT</p><p class="legal"><a href="https://nebulosaworkspace.com.br/" target="_blank" rel="noopener">nebulosaworkspace.com.br</a></p>`;
     closeOthers('about'); openPop(a);
     $('#abOk').onclick = closePops;
     $('#abMail').onclick = openMail;
+    $('#abNov').onclick = () => openNovidades();
+    $('#abBak').onclick = () => openBackup();
   }
 
   /* ---------- (0.4) aviso de termos e privacidade: faixa discreta no rodapé, sem popup ----------
      Aparece na primeira visita (e de novo quando TERMOS_VERSAO muda). Não bloqueia nada:
      usar o site já vale como concordância; "Entendi" só esconde a faixa. */
-  const TERMOS_VERSAO = '2026-10-28', TERMOS_KEY = 'nebulosa.termos';
+  const TERMOS_VERSAO = '2026-10-31', TERMOS_KEY = 'nebulosa.termos';
   function avisoTermos() {
     let visto = null;
     try { visto = localStorage.getItem(TERMOS_KEY); } catch (e) { /* sem armazenamento */ }
@@ -680,30 +774,32 @@
     }
   }
 
-  /* ---------- lembrete de doação (20 min depois de abrir, depois a cada 60 min) ---------- */
-  // Tempos em js/doacao.js → lembretes (primeiroAposMinutos, intervaloMinutos).
+  /* ---------- (0.8) lembrete de doação: logo depois de um momento útil, no máximo uma vez por dia ----------
+     Aparece alguns segundos depois de um programa salvar ou exportar um arquivo (a ponte avisa com
+     "arquivo"/"salvou"), nunca com uma janela aberta nem com a aba escondida. Tempos em js/doacao.js. */
   const LEMB = (DOA && DOA.lembretes) || {};
   const LEMB_KEY = 'nebulosa.lembrete';
-  const abertoEm = Date.now();
-  let lemb = { proximo: 0, pausaAte: 0, indice: 0 };
+  let lemb = { ultimo: 0, pausaAte: 0, indice: 0 };
   try { Object.assign(lemb, JSON.parse(localStorage.getItem(LEMB_KEY) || '{}')); } catch (e) { /* sem armazenamento */ }
+  delete lemb.proximo; // (até a 0.7 o lembrete era por tempo)
   const salvarLemb = () => { try { localStorage.setItem(LEMB_KEY, JSON.stringify(lemb)); } catch (e) { /* sem armazenamento */ } };
-  const intervalo = () => {
-    const v = Math.min(50, Math.max(0, +LEMB.variacaoPorcento || 0)) / 100;
-    return Math.max(1, +LEMB.intervaloMinutos || 60) * 60000 * (1 - v + Math.random() * 2 * v);
-  };
-  function adiarLembrete() { lemb.proximo = Date.now() + intervalo(); salvarLemb(); }
+  const intervaloLemb = () => Math.max(1, +LEMB.intervaloMinimoHoras || 24) * 3600000;
+  function adiarLembrete() { lemb.ultimo = Date.now(); salvarLemb(); }
   function pausarLembretes() { lemb.pausaAte = Date.now() + Math.max(0, +LEMB.pausaDepoisDeCopiarHoras || 0) * 3600000; adiarLembrete(); }
-  // A cada vez que a página abre, o primeiro lembrete vem depois de "primeiroAposMinutos"
-  // (a pausa de quem copiou o Pix continua valendo).
-  lemb.proximo = abertoEm + Math.max(0, LEMB.primeiroAposMinutos == null ? 20 : +LEMB.primeiroAposMinutos) * 60000;
-  salvarLemb();
-  function conferirLembrete() {
+  let lembT = null;
+  function momentoUtil() {
+    if (!DOA || !NOTIF || LEMB.ligado === false || LEMB.depoisDeSalvar === false) return;
+    const agora = Date.now();
+    if (agora - (lemb.ultimo || 0) < intervaloLemb() || agora < (lemb.pausaAte || 0)) return;
+    clearTimeout(lembT);
+    lembT = setTimeout(() => conferirLembrete(false), Math.max(1, +LEMB.esperaSegundos || 4) * 1000);
+  }
+  function conferirLembrete(forcar) {
     const msgs = LEMB.mensagens || [];
     if (!DOA || !NOTIF || LEMB.ligado === false || !msgs.length) return;
     const agora = Date.now();
-    if (document.hidden || agora < lemb.proximo || agora < (lemb.pausaAte || 0)) return;
-    if (POPS.some(id => document.getElementById(id).classList.contains('show'))) return; // espera fechar as janelas
+    if (!forcar && (document.hidden || agora - (lemb.ultimo || 0) < intervaloLemb() || agora < (lemb.pausaAte || 0))) return;
+    if (POPS.some(id => document.getElementById(id).classList.contains('show'))) { lembT = setTimeout(() => conferirLembrete(forcar), 15000); return; } // espera fechar as janelas
     const m = msgs[(lemb.indice || 0) % msgs.length];
     lemb.indice = ((lemb.indice || 0) + 1) % msgs.length;
     adiarLembrete();
@@ -715,8 +811,7 @@
       aoClicar: openDonate
     });
   }
-  setInterval(conferirLembrete, 10000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(conferirLembrete, 5000); });
+  salvarLemb();
 
   /* ---------- sino (histórico de notificações) ---------- */
   if (NOTIF) {
@@ -814,12 +909,26 @@
     L.push({ t: 'Manual do Nebulosa Workspace', s: 'Como usar o Workspace e cada programa', kw: 'manual ajuda guia como usar tutorial', icon: plainRic(ICONS.manual), run: () => { closePops(); window.open(manualUrl(), '_blank', 'noopener'); } });
     APPS.filter(a => !a.soon).forEach(a => L.push({ t: 'Manual de ' + a.name, s: a.funcao || a.tag, kw: 'manual ajuda guia como usar ' + a.name + ' ' + a.keywords + (idioma() === 'pt-BR' ? '' : ' manual help guide ' + T(a.keywords)), icon: ric(a), run: () => { closePops(); window.open(manualUrl(a.id), '_blank', 'noopener'); } }));
     L.push({ t: 'Acessos', s: 'Estatística do site: acessos ao domínio e a cada programa', kw: 'acessos visitas contador estatisticas', icon: plainRic(ICONS.chart), run: () => { closePops(); setTimeout(openAcessos, 180); } });
+    // (0.8) tarefas (js/tarefas.js): a busca leva direto ao que a pessoa quer fazer
+    TAREFAS.forEach(x => {
+      const a = x.app ? byId[x.app] : x.ferramenta ? UTIL : null;
+      if ((x.app && !a) || (x.ferramenta && !UTIL)) return;
+      if (x.acao === 'mandar' && !(active && ST[active].envia)) return;
+      const ic = x.acao ? plainRic(ICONS[{ backup: 'archive', restaurar: 'archive', relatar: 'bug', novidades: 'spark', mandar: 'send' }[x.acao]] || ICONS.info)
+        : x.ferramenta ? `<span class="ric" style="background:${grad(UTIL)}">${ICONS[((UTIL.ferramentas || []).find(f => f.id === x.ferramenta.split('/')[0]) || {}).icon] || ICONS.tools}</span>` : ric(a);
+      L.push({ t: x.t, s: x.s || '', kw: (x.kw || '') + ' tarefa', icon: ic, tarefa: true, run: () => executarTarefa(x) });
+    });
     return L;
   }
   function renderPalette() {
     const q = norm($('#pq').value.trim()), all = actions();
     // (0.6) a busca vale para o texto em português e para o texto traduzido
-    pItems = q ? all.filter(x => { const alvo = norm(x.t + ' ' + x.s + ' ' + x.kw + (idioma() === 'pt-BR' ? '' : ' ' + T(x.t) + ' ' + T(x.s) + ' ' + T(x.kw))); return q.split(/\s+/).every(w => alvo.includes(w)); }) : all.slice(0, 9);
+    pItems = q ? all.filter(x => { const alvo = norm(x.t + ' ' + x.s + ' ' + x.kw + (idioma() === 'pt-BR' ? '' : ' ' + T(x.t) + ' ' + T(x.s) + ' ' + T(x.kw))); return q.split(/\s+/).every(w => alvo.includes(w)); }) : all.filter(x => !x.tarefa).slice(0, 9);
+    // (0.8) o que tem as palavras no título vem primeiro ("qr code" → "Gerar um QR Code" antes de "Abrir Utilidades")
+    if (q) {
+      const ws = q.split(/\s+/), nota = x => { const t = norm(x.t + (idioma() === 'pt-BR' ? '' : ' ' + T(x.t))); const n = ws.filter(w => t.includes(w)).length; return n === ws.length ? 0 : n ? 1 : 2; };
+      pItems = pItems.map((x, i) => [nota(x), i, x]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(z => z[2]);
+    }
     pSel = Math.min(pSel, Math.max(0, pItems.length - 1));
     $('#plist').innerHTML = pItems.length
       ? pItems.map((x, i) => `<button class="pit ${i === pSel ? 'on' : ''}" data-i="${i}">${x.icon}<span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span>${x.k ? `<span class="k">${x.k}</span>` : ''}</button>`).join('')
@@ -848,11 +957,322 @@
     if (b && +b.dataset.i !== pSel) { pSel = +b.dataset.i; $$('.pit').forEach((x, i) => x.classList.toggle('on', i === pSel)); }
   });
 
+  /* ======================================================================
+     (0.8) Conversa com pedido e resposta, "Mandar para…", entregas, tarefas,
+     arquivos recentes, programas descansando, relatar, backup e novidades
+     ====================================================================== */
+  const esperando = {};
+  let pedidoN = 0;
+  /** Manda uma mensagem ao programa e espera a resposta com o mesmo "pedido" (ou null no tempo-limite). */
+  function pedir(id, msg, ms) {
+    return new Promise(res => {
+      const f = ST[id] && ST[id].iframe;
+      if (!f || !f.contentWindow) { res(null); return; }
+      const pedido = 'p' + (++pedidoN) + '.' + Date.now().toString(36);
+      esperando[pedido] = { res, to: setTimeout(() => { delete esperando[pedido]; res(null); }, ms || 5000) };
+      try { f.contentWindow.postMessage(Object.assign({}, msg, { pedido }), '*'); } catch (e) { clearTimeout(esperando[pedido].to); delete esperando[pedido]; res(null); }
+    });
+  }
+  /** Abre o programa (se preciso) e espera ele ficar pronto para conversar. */
+  async function esperarPronto(id, ms) {
+    if (!ST[id]) return false;
+    if (!ST[id].open) openApp(id); else if (active !== id) showApp(id);
+    const fim = Date.now() + (ms || 25000);
+    while (Date.now() < fim) {
+      const s = ST[id];
+      if (!s.open) return false;
+      if (s.iframe && s.ready && s.hello) { await new Promise(r => setTimeout(r, 350)); return true; }
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return false;
+  }
+  const extDe = n => { const m = /\.([a-z0-9]+)$/i.exec(String(n || '')); return m ? '.' + m[1].toLowerCase() : ''; };
+  const IMG_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg', '.avif'];
+  /** O programa aceita este conteúdo? (campo "aceita" de js/apps.js) */
+  function aceita(a, tipo, nome, mime) {
+    const L = a.aceita || [];
+    if (!L.length) return false;
+    const ext = extDe(nome);
+    if (tipo && L.includes(tipo)) return true;
+    if (ext && L.includes(ext)) return true;
+    if (L.includes('imagem') && (tipo === 'imagem' || /^image\//.test(mime || '') || IMG_EXT.includes(ext))) return true;
+    if (L.includes('video') && /^video\//.test(mime || '')) return true;
+    if (L.includes('audio') && /^audio\//.test(mime || '')) return true;
+    if (L.includes('texto') && (tipo === 'texto' || ext === '.txt')) return true;
+    if (L.includes('tabela') && (tipo === 'tabela' || ext === '.csv')) return true;
+    return false;
+  }
+  /** Entrega um arquivo ao programa: abre, espera ficar pronto e manda. */
+  async function entregar(id, arquivo, op) {
+    op = op || {};
+    const a = byId[id];
+    if (!a || !arquivo) return false;
+    const pronto = await esperarPronto(id);
+    if (!pronto) { toast(T('O {1} não ficou pronto a tempo. Tente de novo.', a.name)); return false; }
+    const r = await pedir(id, { nebulosa: 'receber', arquivo, nome: op.nome || arquivo.name || 'arquivo', tipo: op.tipo || '', acao: op.acao || 'abrir', origem: op.origem || '' }, 30000);
+    if (!r || r.ok === false) { toast(T('O {1} não conseguiu receber “{2}”.', a.name, op.nome || arquivo.name || '')); return false; }
+    return true;
+  }
+  /** Ação dentro de um programa (ex.: abrir uma ferramenta de Utilidades). */
+  async function executarNoApp(id, nome, dados) {
+    if (!(await esperarPronto(id))) return false;
+    const r = await pedir(id, { nebulosa: 'acao', nome, dados }, 8000);
+    return !!(r && r.ok);
+  }
+  /** Abre uma ferramenta de Utilidades ("qr", "pdf/juntar"…). */
+  function abrirFerramenta(fid, fromEl) {
+    if (!UTIL) return;
+    const s = ST[UTIL.id];
+    if (!s.open) openApp(UTIL.id, fromEl, '#' + fid);
+    else executarNoApp(UTIL.id, 'ferramenta', fid);
+  }
+  /** Janela de escolher arquivo do próprio Workspace (precisa de um clique ou tecla da pessoa). */
+  function escolherArquivo(accept, multiplo) {
+    return new Promise(res => {
+      const i = document.createElement('input');
+      i.type = 'file'; if (accept) i.accept = accept; if (multiplo) i.multiple = true;
+      i.style.cssText = 'position:fixed;left:-9999px;opacity:0';
+      i.addEventListener('change', () => { res(i.files && i.files.length ? [...i.files] : []); i.remove(); }, { once: true });
+      document.body.appendChild(i);
+      i.click();
+      // sem "change" (janela cancelada): limpa depois de um tempo
+      setTimeout(() => { if (i.isConnected) i.remove(); }, 600000);
+    });
+  }
+  function executarTarefa(x) {
+    closePops();
+    if (x.arquivo && x.app) {
+      escolherArquivo(x.arquivo).then(fs => { if (fs[0]) entregar(x.app, fs[0], { acao: 'abrir' }); });
+      return;
+    }
+    if (x.ferramenta) { abrirFerramenta(x.ferramenta); return; }
+    const acoesWs = { backup: () => openBackup(), restaurar: () => openBackup(true), relatar: () => openRelato(active), novidades: () => openNovidades(), mandar: () => openMandar(active) };
+    if (acoesWs[x.acao]) setTimeout(acoesWs[x.acao], 180);
+  }
+
+  /* ---------- (0.8) arquivos recentes ---------- */
+  function arquivoDoPrograma(a, d) {
+    if (!d.nome) return;
+    if (RECENTES) RECENTES.registrar({ app: a.id, nome: d.nome, acao: d.acao, handle: d.handle || null });
+    if (d.acao === 'salvou') momentoUtil();
+  }
+  async function abrirRecente(rid, fromEl) {
+    if (!RECENTES) return;
+    const x = RECENTES.lista().find(y => y.id === rid);
+    if (!x || !byId[x.app]) return;
+    const f = x.atalho ? await RECENTES.reabrir(x) : null;
+    if (f) { entregar(x.app, f, { acao: 'abrir' }); RECENTES.registrar({ app: x.app, nome: x.nome, acao: 'abriu' }); return; }
+    openApp(x.app, fromEl);
+    toast(T('Para continuar em “{1}”, abra o arquivo pelo botão Abrir do {2}.', x.nome, byId[x.app].name));
+  }
+  if (RECENTES) RECENTES.aoMudar(() => { if (active === null && document.body.dataset.view === 'home') renderHome(); });
+
+  /* ---------- (0.8) "Mandar para…" ---------- */
+  function atualizarMandar() {
+    const b = $('#btnSend');
+    if (b) b.hidden = !(active && ST[active] && ST[active].envia && !ST[active].dormindo);
+  }
+  let mandarDe = null, mandarItens = [], mandarSel = null;
+  async function openMandar(id, item) {
+    id = id || active;
+    if (!id || !ST[id] || !ST[id].iframe) { toast(T('Abra um programa para mandar conteúdo dele a outro.')); return; }
+    mandarDe = id; mandarSel = null;
+    const p = $('#sendPanel');
+    p.innerHTML = `<h3>Mandar para…</h3><p class="stxt">${esc(T('Buscando o que o {1} pode mandar…', byId[id].name))}</p>`;
+    closeOthers('sendPanel'); if (!p.classList.contains('show')) openPop(p);
+    if (item) mandarItens = [item];
+    else { const r = await pedir(id, { nebulosa: 'conteudos?' }, 5000); mandarItens = (r && Array.isArray(r.itens)) ? r.itens : []; }
+    if (mandarItens.length === 1) mandarSel = mandarItens[0];
+    renderMandar();
+  }
+  function renderMandar() {
+    const p = $('#sendPanel'), a = byId[mandarDe];
+    if (!a) return;
+    let h = `<h3>Mandar para…</h3>`;
+    if (!mandarItens.length) {
+      h += `<p class="stxt">${esc(T('O {1} não tem nada para mandar agora. Abra ou crie algo nele e tente de novo.', a.name))}</p>`;
+    } else {
+      h += `<p class="stit">O que mandar</p><div class="sopts">` + mandarItens.map((x, i) => `<button class="sopt" data-si="${i}" aria-pressed="${mandarSel === x}">${ric(a)}<span><b>${esc(x.rotulo)}</b><small>${esc(x.detalhe || x.nome || '')}</small></span>${mandarSel === x ? '<span class="ck">✓</span>' : ''}</button>`).join('') + `</div>`;
+      if (mandarSel) {
+        const dest = APPS.filter(b => b.id !== mandarDe && !b.soon && aceita(b, mandarSel.tipo, mandarSel.nome, ''));
+        h += `<p class="stit">Para onde</p>` + (dest.length
+          ? `<div class="sdest">${dest.map(b => `<button class="sd" data-sd="${b.id}">${ric(b)}<span>${esc(b.nomeCartao || b.name)}</span></button>`).join('')}</div>`
+          : `<p class="svazio">Nenhum programa recebe esse tipo de conteúdo ainda.</p>`);
+      } else h += `<p class="svazio">Escolha o que mandar para ver os programas que recebem.</p>`;
+    }
+    p.innerHTML = h;
+  }
+  $('#sendPanel').addEventListener('click', async e => {
+    const si = e.target.closest('[data-si]');
+    if (si) { mandarSel = mandarItens[+si.dataset.si]; renderMandar(); return; }
+    const sd = e.target.closest('[data-sd]');
+    if (!sd || !mandarSel) return;
+    const de = mandarDe, item = mandarSel, para = sd.dataset.sd;
+    $('#sendPanel').innerHTML = `<h3>Mandar para…</h3><p class="stxt">${esc(T('Preparando “{1}”…', item.rotulo))}</p>`;
+    const r = await pedir(de, { nebulosa: 'conteudo', id: item.id }, 60000);
+    if (!r || !r.ok || !r.arquivo) { closePops(); toast(T('Não foi possível pegar o conteúdo do {1}.', byId[de].name)); return; }
+    closePops();
+    const nome = r.nome || item.nome || 'arquivo';
+    const arq = (typeof File !== 'undefined' && r.arquivo instanceof File) ? r.arquivo : new File([r.arquivo], nome, { type: r.arquivo.type || '' });
+    const ok = await entregar(para, arq, { nome, tipo: r.tipo || item.tipo, acao: 'inserir', origem: de });
+    if (ok && NOTIF) NOTIF.mostrar({ titulo: T('Mandado para o {1}', byId[para].name), texto: nome, tipo: 'sucesso', app: para, origem: byId[de].name, naTela: true, duracao: 5000, aoClicar: () => openApp(para) });
+  });
+  $('#btnSend').addEventListener('click', () => { if ($('#sendPanel').classList.contains('show')) closePops(); else openMandar(active); });
+
+  /* ---------- (0.8) programas parados descansam para poupar memória ----------
+     Só os marcados com "dorme" em js/apps.js (eles reabrem do ponto em que estavam salvos),
+     depois de 30 minutos escondidos, e só se o programa disser que pode (nada pendente nem tocando). */
+  const DESCANSO_MIN = 30;
+  async function verificarDescanso(forcar) {
+    const agora = Date.now();
+    for (const a of APPS) {
+      const s = ST[a.id];
+      if (!a.dorme || !s.open || s.dormindo || active === a.id || !s.escondido || !s.iframe || !s.hello) continue;
+      if (!forcar && agora - s.escondido < DESCANSO_MIN * 60000) continue;
+      const r = await pedir(a.id, { nebulosa: 'pode-dormir' }, 1500);
+      if (r && r.pode && ST[a.id].open && active !== a.id) dormir(a.id);
+    }
+  }
+  function dormir(id) {
+    const s = ST[id], a = byId[id];
+    if (!s || !s.view) return;
+    if (s.iframe) { try { s.iframe.src = 'about:blank'; } catch (e) { /* ignora */ } s.iframe.remove(); }
+    Object.assign(s, { iframe: null, ready: false, hello: false, envia: false, dormindo: true });
+    s.view.innerHTML = `<div class="soonview" style="height:100%"><div class="box">${ric(a)}<span class="badge zz">${esc(T('descansando'))}</span><h2>${esc(T('{1} está descansando', a.name))}</h2><p>${esc(T('Ele ficou um tempo sem uso e foi fechado para poupar a memória do computador. Nada se perdeu: ao acordar, ele abre do ponto em que estava salvo.'))}</p><div class="ra"><button class="chip prim" data-acordar="${id}">${esc(T('Acordar'))}</button></div></div></div>`;
+    renderRail(); renderTabs();
+  }
+  function acordar(id) {
+    const s = ST[id], a = byId[id];
+    if (!s || !s.dormindo || !s.view) return;
+    s.dormindo = false;
+    s.view.innerHTML = `<div class="loading"><div class="lb">${ric(a)}<b>Abrindo ${esc(a.name)}…</b><small>só um instante</small><div class="bar"></div></div></div>`;
+    montarIframe(a, s.view, appUrl(a));
+  }
+  appsEl.addEventListener('click', e => { const b = e.target.closest('[data-acordar]'); if (b) { acordar(b.dataset.acordar); renderRail(); renderTabs(); } });
+  setInterval(verificarDescanso, 60000);
+
+  /* ---------- (0.8) relatar um problema ---------- */
+  function infoTecnica(id) {
+    const ua = navigator.userAgent || '';
+    const nav = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'outro';
+    const v = (ua.match(/(?:Edg|OPR|Firefox|Chrome|Version)\/(\d+)/) || [])[1] || '';
+    const so = /Windows/.test(ua) ? 'Windows' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Mac OS X/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : 'outro';
+    return [
+      'Nebulosa Workspace ' + VERSION,
+      'Programa: ' + (id && byId[id] ? byId[id].name : 'página inicial'),
+      'Idioma: ' + idioma(),
+      'Navegador: ' + nav + ' ' + v + ' · ' + so,
+      'Tela: ' + screen.width + '×' + screen.height + ' (janela ' + innerWidth + '×' + innerHeight + ')',
+      'Internet: ' + (navigator.onLine === false ? 'sem conexão' : 'conectado')
+    ].join('\n');
+  }
+  function openRelato(id) {
+    const p = $('#mailPanel');
+    const info = infoTecnica(id);
+    const assunto = T('Problema no {1}', id && byId[id] ? byId[id].name : 'Nebulosa Workspace') + ' (Nebulosa Workspace ' + VERSION + ')';
+    const corpo = T('O que aconteceu:') + '\n\n\n' + T('O que você esperava que acontecesse:') + '\n\n\n' + T('Passos para repetir o problema:') + '\n1.\n2.\n\n---\n' + info;
+    const su = encodeURIComponent(assunto), bo = encodeURIComponent(corpo), to = encodeURIComponent(CONTATO_EMAIL);
+    p.innerHTML = `<h3>Relatar um problema</h3><p class="mtxt">Conte o que aconteceu. As informações técnicas abaixo já vão no e-mail; nenhum arquivo seu é enviado.</p>
+<pre class="minfo" translate="no">${esc(info)}</pre>
+<div class="mopts">
+<a class="mopt" href="https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}&body=${bo}" target="_blank" rel="noopener"><b>Gmail</b><small>abre no navegador</small></a>
+<a class="mopt" href="https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}&body=${bo}" target="_blank" rel="noopener"><b>Outlook / Hotmail</b><small>abre no navegador</small></a>
+<a class="mopt" href="mailto:${CONTATO_EMAIL}?subject=${su}&body=${bo}"><b>Programa de e-mail</b><small>do computador ou celular</small></a>
+</div><div class="skrow" style="margin-top:10px"><button class="chip" id="mCopInfo">${ICONS.copy}<span>Copiar as informações</span></button></div>`;
+    closeOthers('mailPanel'); if (!p.classList.contains('show')) openPop(p);
+    p.querySelectorAll('a.mopt').forEach(a => a.addEventListener('click', () => setTimeout(closePops, 150)));
+    $('#mCopInfo').onclick = async () => {
+      let ok = false;
+      try { await navigator.clipboard.writeText(info); ok = true; } catch (e) { /* sem permissão */ }
+      const b = $('#mCopInfo span'); if (b) b.textContent = ok ? T('Copiado!') : T('Selecione e copie');
+    };
+  }
+
+  /* ---------- (0.8) backup ---------- */
+  const fmtMB = n => (n / 1048576).toLocaleString(localNum(), { maximumFractionDigits: n < 10485760 ? 1 : 0 }) + ' MB';
+  async function openBackup(restaurar) {
+    const el = $('#backup');
+    if (!BACKUP) return;
+    const uso = await BACKUP.estimativa();
+    el.innerHTML = `<div class="mk bak">${ICONS.archive}</div><h3>Backup</h3>
+      <p>Guarde num arquivo tudo o que o Nebulosa Workspace e os programas deixam neste navegador: preferências, textos e cópias de recuperação. Depois é só restaurar em outro computador ou navegador.</p>
+      <div class="bopts">
+        <section><h4>Fazer backup</h4>
+          ${BACKUP.temBancos() ? `<label class="chk"><input type="checkbox" id="bkMidias" checked> <span>Incluir os arquivos guardados pelos programas (livros, áudios, projetos de vídeo…)</span></label>` : ''}
+          <p class="bnota">${uso ? esc(T('Este navegador guarda cerca de {1} do Nebulosa.', fmtMB(uso))) + ' ' : ''}Os arquivos que você já salvou no computador (Word, Excel, PDF…) não entram: eles já estão com você.</p>
+          <button class="chip prim" id="bkFazer">${ICONS.archive}<span>Fazer backup</span></button>
+        </section>
+        <section><h4>Restaurar</h4>
+          <p class="bnota">Substitui o que está neste navegador pelo conteúdo do backup. Os programas abertos são fechados antes.</p>
+          <button class="chip" id="bkRest">Escolher arquivo de backup…</button>
+        </section>
+      </div>
+      <p class="bstat" id="bkStat" role="status"></p>
+      <div class="ra"><button class="chip" id="bkOk">Fechar</button></div>`;
+    closeOthers('backup'); if (!el.classList.contains('show')) openPop(el);
+    $('#bkOk').onclick = closePops;
+    const stat = m => { const s = $('#bkStat'); if (s) s.textContent = m; };
+    $('#bkFazer').onclick = async () => {
+      const b = $('#bkFazer'); b.disabled = true;
+      stat(T('Preparando o backup…'));
+      try {
+        const r = await BACKUP.exportar({ midias: !!($('#bkMidias') && $('#bkMidias').checked) });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(r.blob); a.download = r.nome; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+        stat(T('Pronto: {1} ({2}).', r.nome, fmtMB(r.blob.size)));
+      } catch (e) { stat(T('Não foi possível fazer o backup: {1}', e.message || String(e))); }
+      b.disabled = false;
+    };
+    $('#bkRest').onclick = async () => {
+      const fs = await escolherArquivo('.zip');
+      if (!fs[0]) return;
+      let lido;
+      try { lido = await BACKUP.ler(fs[0]); } catch (e) { stat(T(e.message || String(e))); return; }
+      const quando = lido.resumo.criado ? new Date(lido.resumo.criado).toLocaleString(localNum()) : '';
+      const ok = await askConfirm(T('Restaurar o backup?'), T('Backup da versão {1}, feito em {2}. O que está neste navegador agora será substituído, e a página vai recarregar.', lido.resumo.versao || '?', quando), T('Restaurar'), T('Cancelar'));
+      if (!ok) { openBackup(); return; }
+      for (const id of order.slice()) { await closeApp(id); if (ST[id].open) { toast(T('Feche os programas com alterações não salvas e tente de novo.')); return; } }
+      await openBackup(); stat(T('Restaurando…'));
+      try { await BACKUP.restaurar(lido); stat(T('Pronto. Recarregando…')); setTimeout(() => location.reload(), 900); }
+      catch (e) { stat(T('Não foi possível restaurar: {1}', e.message || String(e))); }
+    };
+    if (restaurar) setTimeout(() => { const b = $('#bkRest'); if (b) b.focus(); }, 300);
+  }
+
+  /* ---------- (0.8) novidades da versão ---------- */
+  const NOV_KEY = 'nebulosa.versaoVista';
+  function openNovidades() {
+    const el = $('#novidades');
+    const [atual, ...antigas] = NOVIDADES;
+    if (!atual) return;
+    const lista = v => `<ul>${v.itens.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+    el.innerHTML = `<div class="mk nov">${ICONS.spark}</div><h3>${esc(T('O que há de novo na {1}', atual.versao))}</h3>${lista(atual)}` +
+      (antigas.length ? `<details><summary>Versões anteriores</summary>${antigas.map(v => `<h4>${esc(T('Versão {1}', v.versao))}</h4>${lista(v)}`).join('')}</details>` : '') +
+      `<div class="ra"><button class="chip prim" id="novOk">Entendi</button></div>`;
+    closeOthers('novidades'); if (!el.classList.contains('show')) openPop(el);
+    $('#novOk').onclick = closePops;
+    try { localStorage.setItem(NOV_KEY, VERSION); } catch (e) { /* sem armazenamento */ }
+  }
+  function novidadesNaAbertura() {
+    let vista = null;
+    try { vista = localStorage.getItem(NOV_KEY); } catch (e) { return; }
+    const jaUsava = !!(H.recent && Object.keys(H.recent).length) || vista !== null;
+    if (!jaUsava) { try { localStorage.setItem(NOV_KEY, VERSION); } catch (e) { /* sem armazenamento */ } return; }
+    if (vista !== VERSION && NOVIDADES[0] && NOVIDADES[0].versao === VERSION) setTimeout(() => { if (!POPS.some(id => document.getElementById(id).classList.contains('show'))) openNovidades(); }, 1200);
+  }
+
+  /* ---------- (0.8) sem internet ---------- */
+  addEventListener('offline', () => toast(T('Sem internet: o que você já abriu continua funcionando.')));
+  addEventListener('online', () => toast(T('A internet voltou.')));
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* sem cópia offline */ }); });
+  }
+
   /* ---------- atalhos ---------- */
   function handleKeyCode(code) {
     if (code === 'Digit0') goHome();
     else if (code === 'KeyK') openPalette();
-    else if (/^Digit[1-9]$/.test(code)) { const a = APPS[+code.slice(5) - 1]; if (a) openApp(a.id); }
+    else if (/^Digit[1-9]$/.test(code)) { const a = PRINC[+code.slice(5) - 1]; if (a) openApp(a.id); }
   }
   addEventListener('keydown', e => {
     if (e.key === 'Escape') { if (confirmRes) { confirmRes(false); confirmRes = null; } closePops(); return; }
@@ -863,6 +1283,7 @@
   /* ---------- partida ---------- */
   renderRail(); renderTabs(); renderHome(); atualizarSino();
   avisoTermos();
+  novidadesNaAbertura(); // (0.8)
   if (ACESSOS) ACESSOS.registrar('inicio'); // contador de acessos: domínio + página inicial
   // Link direto para um programa: index.html#app=typee  (h=... vira o #... do programa)
   (function bootHash() {
@@ -877,7 +1298,9 @@
   // acesso para depuração no console
   window.__nebulosa = {
     APPS, ST, openApp, goHome, closeApp, showApp, applyAll, trocarIdioma, openDonate, openNotifs, notificar, openAcessos, openAbout,
-    lembrete: { conferir: conferirLembrete, get estado() { return lemb; } },
-    get active() { return active; }, get order() { return order; }
+    lembrete: { conferir: conferirLembrete, momentoUtil, get estado() { return lemb; } },
+    get active() { return active; }, get order() { return order; },
+    // (0.8)
+    entregar, executarNoApp, abrirFerramenta, openMandar, openBackup, openNovidades, openRelato, dormir, acordar, verificarDescanso, pedir, aceita
   };
 })();

@@ -143,5 +143,13 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 
+  // [Nebulosa] 0.8: recebe arquivos e textos pelo "Mandar para…" e pela busca do Workspace,
+  // e avisa quando está ocupado (lendo, tocando ou gerando audiolivro) para não ser posto para descansar
+  if (window.NebulosaSkin && window.NebulosaSkin.aoReceber) {
+    window.NebulosaSkin.aoReceber(({ arquivo }) => LPM.biblioteca.importar([arquivo]).then(() => true));
+  }
+  window.__nebulosaOcupado = () => !!((LPM.leitor && LPM.leitor.tocando) || (LPM.audio && LPM.audio.tocando && LPM.audio.tocando()) ||
+    (LPM.gerador && LPM.gerador.gravando) || (LPM.voz && LPM.voz.falando));
+
   LPM.app = { iniciar };
 })();

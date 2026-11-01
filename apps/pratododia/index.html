@@ -4052,7 +4052,11 @@ PD.telas.inicio = {
         <img src="${R.mascote}" alt="" width="417" height="640">
       </figure>
 
+<<<<<<< HEAD
       <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR} · ${PD.EQUIPE}. Funciona sem internet: seus dados ficam somente neste dispositivo.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${(window.NebulosaSkin && NebulosaSkin.versao) || '0.7'}</span></p><!-- [Nebulosa] rodapé -->
+=======
+      <p class="inicio-pe">${PD.NOME} versão ${PD.APP_VERSAO}, por ${PD.AUTOR} · ${PD.EQUIPE}. Funciona sem internet: seus dados ficam somente neste dispositivo.<br><span class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${(window.NebulosaSkin && NebulosaSkin.versao) || '0.8'}</span></p><!-- [Nebulosa] rodapé -->
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
     </div>`;
   },
   depois(raiz) {
@@ -5546,6 +5550,28 @@ PD.eventos = (function () {
   return { evento, validas };
 })();
 
+
+/* [Nebulosa] 0.8: "Mandar para…" — as listas de compras viram tabela (CSV) para abrir no Stardust */
+(function () {
+  const N = window.NebulosaSkin;
+  if (!N || !N.conteudos) return;
+  const T = (s) => (N.t ? N.t(s) : s);
+  N.conteudos(() => {
+    const D = PD.dados, U = PD.unid;
+    if (!D || !D.estado || !Array.isArray(D.estado.listas) || !D.estado.listas.length) return [];
+    return D.estado.listas.slice().reverse().slice(0, 3).map((l) => ({
+      id: 'lista-' + l.id, rotulo: 'Lista de compras (tabela)', detalhe: l.nome + ' · ' + l.itens.length,
+      tipo: 'tabela', nome: String(l.nome || 'lista-de-compras').replace(/[\\/:*?"<>|]+/g, '_') + '.csv',
+      obter: () => {
+        const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        const linhas = [[T('Setor'), T('Item'), T('Quantidade'), T('Comprado')].map(q).join(';')];
+        U.SETORES.forEach((s) => l.itens.filter((i) => (i.setor || 'Outros') === s).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+          .forEach((i) => linhas.push([T(s), i.nome, i.aGosto ? T('a gosto') : U.textoPartes(i), i.comprado ? T('sim') : T('não')].map(q).join(';'))));
+        return new Blob(['﻿' + linhas.join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' });
+      }
+    }));
+  });
+})();
 
 /* ==========================================================================
    16 · LISTA DE COMPRAS INTELIGENTE

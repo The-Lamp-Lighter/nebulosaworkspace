@@ -363,3 +363,15 @@
     'Quando terminar, salve em .docx para abrir no Word, ou em .txt ou .md.': ['When you are done, save as .docx to open in Word, or as .txt or .md.', 'Cuando termines, guarda en .docx para abrir en Word, o en .txt o .md.']
   });
 })();
+
+/* [Nebulosa] 0.8: "Mandar para…" */
+(function () {
+  var I = window.NebulosaIdiomas; if (!I) return;
+  I.registrar({
+    "Texto do documento": ["Document text", "Texto del documento"],
+    "{1} palavras": ["{1} words", "{1} palabras"],
+    "Documento do Word (.docx)": ["Word document (.docx)", "Documento de Word (.docx)"],
+    "Texto recebido no fim do documento.": ["Text received at the end of the document.", "Texto recibido al final del documento."],
+    "Tabela recebida no fim do documento.": ["Table received at the end of the document.", "Tabla recibida al final del documento."]
+  });
+})();

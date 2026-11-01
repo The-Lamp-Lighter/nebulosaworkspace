@@ -5,7 +5,7 @@
    e sem internet. Só atende arquivos da própria pasta do app;
    nenhum dado do usuário passa por aqui.
    ============================================================ */
-const CACHE = 'lepramim-v7'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js · v7: nebulosa-idiomas.js
+const CACHE = 'lepramim-v8'; // [Nebulosa] v5: js/bibliotecas-web.js · v6: js/nebulosa-vozes.js · v7: nebulosa-idiomas.js · v8: Mammoth incluído (0.8)
 const ESSENCIAIS = [
   './', 'index.html', 'nebulosa-idiomas.js', 'manifest.webmanifest', 'favicon.ico', 'css/estilo.css', 'css/aparencia-nebulosa.css',
   'assets/icone-96.png', 'assets/icone-192.png', 'assets/icone-512.png', 'assets/favicon.png', 'assets/logo-vertical.png',
@@ -46,8 +46,11 @@ self.addEventListener('install', evento => {
 
 self.addEventListener('activate', evento => {
   evento.waitUntil((async () => {
+    // [Nebulosa] 0.8: apaga só as versões antigas DESTE cache ("lepramim-v…"). Antes apagava todos os
+    // caches do site — inclusive as vozes Piper e os componentes baixados (lepramim-piper-v1,
+    // lepramim-libs-v1) e a cópia do Workspace para uso sem internet (nebulosa-site-…).
     const nomes = await caches.keys();
-    await Promise.all(nomes.filter(n => n !== CACHE).map(n => caches.delete(n)));
+    await Promise.all(nomes.filter(n => /^lepramim-v\d+$/.test(n) && n !== CACHE).map(n => caches.delete(n)));
     await self.clients.claim();
   })());
 });

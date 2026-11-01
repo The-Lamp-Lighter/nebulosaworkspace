@@ -502,7 +502,14 @@
     'Equipe de produção': ['Production team', 'Equipo de producción'],
     'Equipe de produção:': ['Production team:', 'Equipo de producción:'],
     'Equipe de Produção Lamp Lighter': ['Lamp Lighter Production Team', 'Equipo de Producción Lamp Lighter'],
-    'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade': ['Márcio Willians Barreto de Andrade and Raul Goulart de Andrade', 'Márcio Willians Barreto de Andrade y Raul Goulart de Andrade']
+    'Márcio Willians Barreto de Andrade e Raul Goulart de Andrade': ['Márcio Willians Barreto de Andrade and Raul Goulart de Andrade', 'Márcio Willians Barreto de Andrade y Raul Goulart de Andrade'],
+    // (0.8)
+    'Relatar um problema': ['Report a problem', 'Informar un problema'],
+    'O que aconteceu:': ['What happened:', 'Qué pasó:'],
+    'O que você esperava que acontecesse:': ['What you expected to happen:', 'Qué esperabas que pasara:'],
+    'Passos para repetir o problema:': ['Steps to reproduce the problem:', 'Pasos para repetir el problema:'],
+    'Problema no {1}': ['Problem in {1}', 'Problema en {1}'],
+    'Mandar para…': ['Send to…', 'Enviar a…']
   });
 
   // datas por extenso em português: "27 de outubro de 2026", "terça, 27 de outubro", "outubro de 2026"
@@ -550,7 +557,11 @@
   if (me && me.hasAttribute('data-host')) return; // (0.6) no Workspace a ponte só fornece os idiomas
   if (window.NebulosaSkin) return; // carregada duas vezes: mantém a primeira
 
+<<<<<<< HEAD
   var VERSAO = '0.7';
+=======
+  var VERSAO = '0.8';
+>>>>>>> b96f402 (Adição das Utilidades ao workspace)
   var I = window.NebulosaIdiomas;
   function T(s) { var a = arguments; return I ? I.t.apply(null, a) : String(s).replace(/\{(\d+)\}/g, function (x, n) { return a[+n] != null ? a[+n] : x; }); }
   function attr(n, d) { var v = me && me.getAttribute('data-' + n); return v === null || v === undefined || v === '' ? d : v; }
@@ -626,6 +637,7 @@
     '#nbAjudaOv .nbAt button{background:transparent;color:#c9c6ee;border:1px solid transparent;border-radius:9px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}' +
     '#nbAjudaOv .nbAt button:hover{border-color:rgba(190,185,255,.3);color:#fff}#nbAjudaOv .nbAt button.on{background:#A778FF;color:#1b1d38;font-weight:700}' +
     '#nbAjudaOv .nbAx{background:#A778FF;color:#1b1d38;border:0;border-radius:9px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}' +
+    '#nbAjudaOv .nbAr{background:transparent;color:#c9c6ee;border:1px solid rgba(190,185,255,.3);border-radius:9px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}#nbAjudaOv .nbAr:hover{color:#fff;border-color:#A778FF}' +
     '#nbAjudaOv iframe{flex:1;width:100%;border:0;background:#f4f1fc}' +
     '#nbAjudaOv button:focus-visible{outline:2px solid #FEFF36;outline-offset:2px}' +
     '@media (max-width:700px){#nbAjudaOv{padding:0}#nbAjudaOv .nbA{height:100%;border-radius:0}#nbAjudaOv .nbAh{flex-wrap:wrap}}';
@@ -648,7 +660,7 @@
     var o = document.createElement('div'); o.id = 'nbAjudaOv';
     o.innerHTML = '<div class="nbA" role="dialog" aria-modal="true" aria-label="' + T('Ajuda') + '"><div class="nbAh"><b></b><div class="nbAt">' +
       ['manual', 'termos', 'privacidade', 'creditos'].map(function (k) { return '<button type="button" data-k="' + k + '">' + T(TITULOS[k]) + '</button>'; }).join('') +
-      '</div><button type="button" class="nbAx">' + T('Fechar') + '</button></div><iframe title="' + T('Ajuda') + '"></iframe></div>';
+      '</div><button type="button" class="nbAr">' + T('Relatar um problema') + '</button><button type="button" class="nbAx">' + T('Fechar') + '</button></div><iframe title="' + T('Ajuda') + '"></iframe></div>';
     var fr = o.querySelector('iframe');
     var mostrar = function (k) {
       tipo = k; o.querySelector('b').textContent = T(TITULOS[k]) + (k === 'manual' ? ' — ' + NAME : '');
@@ -659,6 +671,7 @@
     o.addEventListener('click', function (e) {
       var b = e.target.closest('[data-k]'); if (b) { mostrar(b.getAttribute('data-k')); return; }
       if (e.target.closest('.nbAx')) fecharAjuda();
+      if (e.target.closest('.nbAr')) { fecharAjuda(); relatar(); }
     });
     (document.body || document.documentElement).appendChild(o);
     document.addEventListener('keydown', teclaAjuda, true);
@@ -676,7 +689,7 @@
     if (!inFrame) return;
     if (PROVIDER && !provider) return; // ainda esperando o programa chamar provide()
     try {
-      var o = { nebulosa: type, app: APP, skins: publicList(), skin: current() };
+      var o = { nebulosa: type, app: APP, skins: publicList(), skin: current(), envia: provedores.length > 0 || !!avulso };
       if (extra) for (var k in extra) o[k] = extra[k];
       window.parent.postMessage(o, '*');
     } catch (e) { /* ignora */ }
@@ -743,6 +756,159 @@
   if (!window.Nebulosa) window.Nebulosa = api;
   function tradu(s) { s = String(s || ''); return I ? I.traduzir(s) : s; }
 
+  /* ---------- (0.8) troca de conteúdo entre os programas ("Mandar para…") ----------
+     O programa diz o que tem para mandar:
+       NebulosaSkin.conteudos(() => [{ id, rotulo, tipo, nome, obter: () => Blob | Promise<Blob> }])
+         tipo: 'imagem' | 'texto' | 'tabela' | 'video' | 'audio' | '.ext' (o que o destino precisa aceitar)
+     e, se quiser, como recebe:
+       NebulosaSkin.aoReceber(({ arquivo, nome, tipo, acao, origem }) => true | Promise<true>)
+         acao: 'abrir' (abrir como documento) ou 'inserir' (colocar no que está aberto)
+       Sem aoReceber, a ponte "solta" o arquivo no programa, como se ele tivesse sido arrastado.
+     Botão próprio do programa: NebulosaSkin.mandar({ rotulo, tipo, nome, obter }) abre o "Mandar para…".
+     Ações da busca: NebulosaSkin.aoAcao('nome', dados => …). */
+  var provedores = [], receptor = null, acoes = {}, avulso = null, ultimaLista = [], recebendo = false;
+  function responder(type, extra) {
+    if (!inFrame) return;
+    var o = { nebulosa: type, app: APP };
+    if (extra) for (var k in extra) o[k] = extra[k];
+    try { window.parent.postMessage(o, '*'); } catch (e) {
+      // algo que não dá para copiar entre janelas (ex.: atalho de arquivo): manda sem ele
+      try { delete o.handle; window.parent.postMessage(o, '*'); } catch (x) { /* ignora */ }
+    }
+  }
+  function listar() {
+    var itens = [];
+    provedores.forEach(function (fn) {
+      try { (fn() || []).forEach(function (x) { if (x && x.id && typeof x.obter === 'function') itens.push(x); }); } catch (e) { /* ignora */ }
+    });
+    if (avulso) itens.unshift(avulso);
+    return itens;
+  }
+  function meta(x) { return { id: x.id, rotulo: tradu(x.rotulo || x.nome || x.id), tipo: x.tipo || '', nome: x.nome || '', detalhe: tradu(x.detalhe || '') }; }
+  function listarConteudos(pedido) { ultimaLista = listar(); responder('conteudos', { pedido: pedido, itens: ultimaLista.map(meta) }); }
+  function entregarConteudo(d) {
+    var x = (ultimaLista.length ? ultimaLista : listar()).filter(function (y) { return y.id === d.id; })[0];
+    if (!x) { responder('conteudo', { pedido: d.pedido, ok: false, erro: 'indisponível' }); return; }
+    Promise.resolve().then(function () { return x.obter(); }).then(function (b) {
+      if (b && typeof b === 'string') b = new Blob([b], { type: 'text/plain;charset=utf-8' });
+      if (!b) throw new Error('vazio');
+      responder('conteudo', { pedido: d.pedido, ok: true, arquivo: b, nome: x.nome || 'arquivo', tipo: x.tipo || '' });
+    }).catch(function (e) { responder('conteudo', { pedido: d.pedido, ok: false, erro: String((e && e.message) || e) }); });
+  }
+  function soltar(f) {
+    // como se o arquivo tivesse sido arrastado para o meio da janela do programa
+    if (!f || typeof DataTransfer === 'undefined') return false;
+    var dt = new DataTransfer(); dt.items.add(f);
+    var alvo = document.elementFromPoint(Math.round(innerWidth / 2), Math.round(innerHeight / 2)) || document.body;
+    ['dragenter', 'dragover', 'drop'].forEach(function (tipo) {
+      try { alvo.dispatchEvent(new DragEvent(tipo, { bubbles: true, cancelable: true, composed: true, dataTransfer: dt })); } catch (e) { /* ignora */ }
+    });
+    return true;
+  }
+  function receber(d) {
+    var f = d.arquivo;
+    if (f && !(typeof File !== 'undefined' && f instanceof File)) { try { f = new File([f], d.nome || 'arquivo', { type: f.type || '' }); } catch (e) { /* segue com o Blob */ } }
+    var info = { arquivo: f, nome: d.nome || (f && f.name) || 'arquivo', tipo: d.tipo || '', acao: d.acao || 'abrir', origem: d.origem || '' };
+    var r;
+    recebendo = true;
+    try { r = receptor ? receptor(info) : soltar(f); } catch (e) { r = Promise.reject(e); }
+    setTimeout(function () { recebendo = false; }, 300);
+    Promise.resolve(r).then(function (ok) { responder('recebido', { pedido: d.pedido, ok: ok !== false }); },
+      function (e) { responder('recebido', { pedido: d.pedido, ok: false, erro: String((e && e.message) || e) }); });
+  }
+  function executarAcao(d) {
+    var fn = acoes[d.nome], r;
+    try { r = fn ? fn(d.dados) : false; } catch (e) { r = false; }
+    Promise.resolve(r).then(function (ok) { responder('acao-feita', { pedido: d.pedido, ok: !!fn && ok !== false }); }, function () { responder('acao-feita', { pedido: d.pedido, ok: false }); });
+  }
+  function podeDormir() {
+    if (isDirty()) return false;
+    try { if (window.__nebulosaOcupado && window.__nebulosaOcupado()) return false; } catch (e) { return false; }
+    var m = document.querySelectorAll('audio,video');
+    for (var i = 0; i < m.length; i++) if (!m[i].paused && !m[i].ended) return false;
+    try { if (window.speechSynthesis && window.speechSynthesis.speaking) return false; } catch (e) { /* ignora */ }
+    return true;
+  }
+  api.conteudos = function (fn) { if (typeof fn === 'function') { provedores.push(fn); post('envia'); } };
+  api.aoReceber = function (fn) { receptor = typeof fn === 'function' ? fn : null; };
+  api.aoAcao = function (nome, fn) { if (nome && typeof fn === 'function') acoes[nome] = fn; };
+  api.mandar = function (item) {
+    if (!inFrame || !item || typeof item.obter !== 'function') return false;
+    avulso = { id: 'avulso', rotulo: item.rotulo, tipo: item.tipo, nome: item.nome, detalhe: item.detalhe, obter: item.obter };
+    ultimaLista = [avulso];
+    responder('mandar', { item: meta(avulso) });
+    return true;
+  };
+  api.soltar = soltar;
+
+  /* ---------- (0.8) arquivos recentes: avisa o Workspace quando um arquivo é aberto ou salvo ----------
+     Nada muda no programa: a ponte observa a escolha de arquivo, o arrastar, as janelas
+     "Abrir"/"Salvar como" do sistema e os downloads. Só o NOME do arquivo vai para o Workspace
+     (na mesma página); com a janela do sistema vai também o "atalho" para reabrir. */
+  var ultimoAviso = '';
+  function avisarArquivo(acao, nome, handle) {
+    if (!inFrame || !nome || recebendo) return;
+    var chave = acao + '|' + nome;
+    if (chave === ultimoAviso) return;
+    ultimoAviso = chave; setTimeout(function () { if (ultimoAviso === chave) ultimoAviso = ''; }, 1500);
+    responder('arquivo', { acao: acao, nome: String(nome).slice(0, 160), handle: handle || null });
+  }
+  if (inFrame) {
+    document.addEventListener('change', function (e) {
+      var i = e.target;
+      if (i && i.tagName === 'INPUT' && i.type === 'file' && i.files && i.files.length) avisarArquivo('abriu', i.files[0].name);
+    }, true);
+    document.addEventListener('drop', function (e) {
+      var f = e.dataTransfer && e.dataTransfer.files;
+      if (f && f.length) avisarArquivo('abriu', f[0].name);
+    }, true);
+    var baixando = function (a) {
+      try { if (a && a.hasAttribute && a.hasAttribute('download') && /^(blob:|data:)/.test(a.href || '')) avisarArquivo('salvou', a.getAttribute('download') || 'arquivo'); } catch (e) { /* ignora */ }
+    };
+    try {
+      var clicar = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () { baixando(this); return clicar.apply(this, arguments); };
+    } catch (e) { /* ignora */ }
+    document.addEventListener('click', function (e) { var a = e.target && e.target.closest && e.target.closest('a[download]'); if (a) baixando(a); }, true);
+    ['showOpenFilePicker', 'showSaveFilePicker'].forEach(function (n) {
+      var orig = window[n];
+      if (typeof orig !== 'function') return;
+      window[n] = function () {
+        return orig.apply(this, arguments).then(function (r) {
+          var h = Array.isArray(r) ? r[0] : r;
+          if (h && h.name) avisarArquivo(n === 'showOpenFilePicker' ? 'abriu' : 'salvou', h.name, h);
+          return r;
+        });
+      };
+    });
+  }
+
+  /* ---------- (0.8) relatar um problema ---------- */
+  function infoTecnica() {
+    var ua = navigator.userAgent || '';
+    var nav = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'outro';
+    var v = (ua.match(/(?:Edg|OPR|Firefox|Chrome|Version)\/(\d+)/) || [])[1] || '';
+    var so = /Windows/.test(ua) ? 'Windows' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Mac OS X/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : 'outro';
+    return 'Versão: ' + VERSAO + '\nPrograma: ' + NAME + '\nIdioma: ' + (I ? I.atual() : 'pt-BR') + '\nNavegador: ' + nav + ' ' + v + ' · ' + so +
+      '\nTela: ' + screen.width + '×' + screen.height + '\nInternet: ' + (navigator.onLine === false ? 'sem conexão' : 'conectado');
+  }
+  function relatar() {
+    if (inFrame) { responder('relatar'); return true; }
+    var corpo = T('O que aconteceu:') + '\n\n\n' + T('O que você esperava que acontecesse:') + '\n\n\n' + T('Passos para repetir o problema:') + '\n1.\n2.\n\n---\n' + infoTecnica();
+    location.href = 'mailto:nebulosaworkspace@gmail.com?subject=' + encodeURIComponent(T('Problema no {1}', NAME) + ' (Nebulosa Workspace ' + VERSAO + ')') + '&body=' + encodeURIComponent(corpo);
+    return true;
+  }
+  api.relatar = relatar;
+  api.infoTecnica = infoTecnica;
+
+  /* ---------- (0.8) cópia para uso sem internet (sw.js), também para quem abre o programa sozinho ---------- */
+  (function () {
+    var src = me && me.src;
+    if (inFrame || !src || !/^https?:/.test(src) || !/shared\/nebulosa-bridge\.js(\?|#|$)/.test(src) || !('serviceWorker' in navigator)) return;
+    var base = src.replace(/shared\/nebulosa-bridge\.js.*$/, '');
+    window.addEventListener('load', function () { try { navigator.serviceWorker.register(base + 'sw.js', { scope: base }).catch(function () { /* ignora */ }); } catch (e) { /* ignora */ } });
+  })();
+
   /* ---------- (0.6) idioma ---------- */
   // A escolha vale para o Workspace e todos os programas (localStorage "nebulosa.idioma").
   // Escolhido dentro de um programa (Ajuda › Idioma), o programa avisa o Workspace.
@@ -762,6 +928,12 @@
     else if (d.nebulosa === 'open-skin') api.openDialog();
     else if (d.nebulosa === 'query-dirty') post('dirty', { dirty: isDirty() });
     else if (d.nebulosa === 'set-lang' && I) I.definir(d.idioma);
+    // (0.8) "Mandar para…", arquivos entregues pelo Workspace, ações da busca e descanso
+    else if (d.nebulosa === 'conteudos?') listarConteudos(d.pedido);
+    else if (d.nebulosa === 'conteudo') entregarConteudo(d);
+    else if (d.nebulosa === 'receber') receber(d);
+    else if (d.nebulosa === 'acao') executarAcao(d);
+    else if (d.nebulosa === 'pode-dormir') responder('pode-dormir', { pedido: d.pedido, pode: podeDormir() });
   });
   // Alt+0…9 e Alt+K são atalhos do Workspace
   window.addEventListener('keydown', function (e) {

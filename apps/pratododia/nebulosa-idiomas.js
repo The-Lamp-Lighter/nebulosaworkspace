@@ -822,3 +822,16 @@
     'por Márcio Willians Barreto de Andrade e Raul Goulart de Andrade': ['by Márcio Willians Barreto de Andrade and Raul Goulart de Andrade', 'por Márcio Willians Barreto de Andrade y Raul Goulart de Andrade']
   });
 })();
+
+/* [Nebulosa] 0.8: "Mandar para…" */
+(function () {
+  var I = window.NebulosaIdiomas; if (!I) return;
+  I.registrar({
+    "Lista de compras (tabela)": ["Shopping list (table)", "Lista de compras (tabla)"],
+    "Setor": ["Aisle", "Sección"],
+    "Comprado": ["Bought", "Comprado"],
+    "a gosto": ["to taste", "al gusto"],
+    "sim": ["yes", "sí"],
+    "não": ["no", "no"]
+  });
+})();
