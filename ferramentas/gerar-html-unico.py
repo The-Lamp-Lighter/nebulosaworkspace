@@ -45,9 +45,11 @@ SOB_DEMANDA = {
     'typee': ['libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],
     'flyde': ['libs/pptxgen.bundle.js'],
     'lepramim': ['libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],
-    'imaginarium': ['help/manual.html', 'help/credits.html'],
+    'imaginarium': ['help/manual.html', 'help/credits.html', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],   # (1.0) + PDF.js (abrir PDF só de imagens)
     # (0.8) Utilidades: bibliotecas do PDF e do .zip (js/base.js usa window.__nbArq)
-    'utilidades': ['libs/pdf-lib.min.js', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js', 'libs/jszip.min.js'],
+    # (1.0) + Conversor de arquivos: leitores/gravadores de documentos e planilhas e as fontes do PDF gerado.
+    #       FFmpeg e ImageMagick (dezenas de MB) NÃO entram: são baixados na hora, com consentimento.
+    'utilidades': ['libs/pdf-lib.min.js', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js', 'libs/jszip.min.js', 'libs/sheetjs/xlsx.full.min.js', 'libs/mammoth/mammoth.browser.min.js', 'libs/docx/docx.min.js', 'libs/marked/marked.min.js', 'libs/turndown/turndown.min.js', 'libs/fontkit/fontkit.umd.min.js', 'libs/fontes/dejavu-mono/DejaVuSansMono-Bold.js', 'libs/fontes/dejavu-mono/DejaVuSansMono.js', 'libs/fontes/noto-sans/NotoSans_400Regular.js', 'libs/fontes/noto-sans/NotoSans_400Regular_Italic.js', 'libs/fontes/noto-sans/NotoSans_700Bold.js', 'libs/fontes/noto-sans/NotoSans_700Bold_Italic.js', 'libs/fontes/noto-serif/NotoSerif_400Regular.js', 'libs/fontes/noto-serif/NotoSerif_400Regular_Italic.js', 'libs/fontes/noto-serif/NotoSerif_700Bold.js', 'libs/fontes/noto-serif/NotoSerif_700Bold_Italic.js'],
 }
 # ajustes no código de cada programa (texto exato -> substituto)
 TROCAS = {
@@ -185,7 +187,7 @@ def bloco_inicial(app, app_dir):
         js.append('Object.defineProperty(window,%s,{configurable:true,get:function(){return window.__nbArq(%s)}});'
                   % (json.dumps(g), json.dumps(rel)))
     js.append('})();')
-    return '<script>/* [Nebulosa] HTML único 0.9: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
+    return '<script>/* [Nebulosa] HTML único 1.0: arquivos embutidos */\n' + ''.join(js) + '</script>\n'
 
 
 def pagina_programa(p, app_dir):

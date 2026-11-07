@@ -11,7 +11,8 @@
   const IMG = window.IMG, U = IMG.U, bus = IMG.bus, el = U.el, F = IMG.Formats;
   const Files = IMG.Files, Layers = IMG.Layers;
   const extOf = (n) => { const m = /\.([a-z0-9]+)$/i.exec(n || ''); return m ? m[1].toLowerCase() : ''; };
-  const OPEN_ACCEPT = '.png,.jpg,.jpeg,.jfif,.webp,.svg,.gif,.bmp,.avif,.ico,.psd,.psb,.tif,.tiff,.tga,.edt,image/*';
+  const OPEN_ACCEPT = '.png,.jpg,.jpeg,.jfif,.webp,.svg,.gif,.bmp,.avif,.ico,.psd,.psb,.tif,.tiff,.tga,.pdf,.edt,image/*';
+  const IMG_ACCEPT = OPEN_ACCEPT.replace(',.edt', '').replace(',.pdf', ''); // (1.0) lote e folha de contatos só com imagens
 
   /* ==================================================================
      ARQUIVOS RECENTES (identificadores guardados no IndexedDB)
@@ -112,7 +113,7 @@
   Files.openDialog = async function () {
     if (typeof window.showOpenFilePicker === 'function') {
       try {
-        const hs = await window.showOpenFilePicker({ multiple: true, types: [{ description: 'Imagens e projetos', accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg', '.avif', '.ico', '.tif', '.tiff', '.tga'], 'application/octet-stream': ['.psd', '.psb', '.edt'] } }] });
+        const hs = await window.showOpenFilePicker({ multiple: true, types: [{ description: 'Imagens e projetos', accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg', '.avif', '.ico', '.tif', '.tiff', '.tga'], 'application/octet-stream': ['.psd', '.psb', '.edt'], 'application/pdf': ['.pdf'] } }] });
         const files = await Promise.all(hs.map((h) => h.getFile()));
         return this.openFiles(files, hs);
       } catch (err) { if (err && err.name === 'AbortError') return; }
@@ -407,7 +408,7 @@
     let act = acts[0][0], fmt = 'same', files = [], quality = 92, suffix = '';
     const info = el('p.dialog-note', { text: 'Nenhum arquivo escolhido.' });
     const sufIn = el('input.inp', { type: 'text', value: '' });
-    UI.dialog({ title: 'Lote', width: 460, body: [UI.row('Ação', UI.select(acts, act, (v) => { act = v; }, { width: 260, keepFocus: true }).el), UI.row('Origem', UI.btn('Escolher arquivos…', async () => { files = await Files.pick(OPEN_ACCEPT.replace(',.edt', ''), true); info.textContent = files.length + ' arquivo(s): ' + files.slice(0, 4).map((f) => f.name).join(', ') + (files.length > 4 ? '…' : ''); }, { small: true })), info,
+    UI.dialog({ title: 'Lote', width: 460, body: [UI.row('Ação', UI.select(acts, act, (v) => { act = v; }, { width: 260, keepFocus: true }).el), UI.row('Origem', UI.btn('Escolher arquivos…', async () => { files = await Files.pick(IMG_ACCEPT, true); info.textContent = files.length + ' arquivo(s): ' + files.slice(0, 4).map((f) => f.name).join(', ') + (files.length > 4 ? '…' : ''); }, { small: true })), info,
       UI.row('Salvar como', UI.select([['same', 'Mesmo formato (PNG/JPG/WEBP)'], ['png', 'PNG'], ['jpg', 'JPG'], ['webp', 'WEBP'], ['psd', 'PSD']], fmt, (v) => { fmt = v; }, { width: 220, keepFocus: true }).el), UI.row('Sufixo do nome', sufIn), UI.slider({ label: 'Qualidade', value: 92, min: 1, max: 100, unit: '%', onInput: (v) => { quality = v; } }).el],
       buttons: [{ label: 'Cancelar' }, { label: 'Executar', primary: true, onClick: () => {
         if (!files.length) { UI.toast('Escolha os arquivos de origem.'); return false; }
@@ -437,7 +438,7 @@
   /* ---------- automatizar: folha de contatos ---------- */
   async function contactSheet() {
     const UI = IMG.UI;
-    const files = await Files.pick(OPEN_ACCEPT.replace(',.edt', ''), true);
+    const files = await Files.pick(IMG_ACCEPT, true);
     if (!files.length) return;
     let W = 2480, H = 3508, cols = 4, rows = 5, gap = 40, captions = true, bg = '#ffffff', fsize = 28;
     UI.dialog({ title: 'Folha de contatos', width: 400, body: [el('p.dialog-note', { text: files.length + ' imagem(ns) escolhida(s).' }), UI.row('Largura', UI.num({ value: W, min: 100, max: 20000, unit: 'px', width: 100, onInput: (v) => { W = v; } }).el), UI.row('Altura', UI.num({ value: H, min: 100, max: 20000, unit: 'px', width: 100, onInput: (v) => { H = v; } }).el), UI.row('Colunas', UI.num({ value: cols, min: 1, max: 30, width: 70, onInput: (v) => { cols = v; } }).el), UI.row('Linhas', UI.num({ value: rows, min: 1, max: 30, width: 70, onInput: (v) => { rows = v; } }).el), UI.row('Espaçamento', UI.num({ value: gap, min: 0, max: 1000, unit: 'px', width: 90, onInput: (v) => { gap = v; } }).el), UI.row('', UI.check('Nome do arquivo como legenda', true, (v) => { captions = v; }).el), UI.row('Tamanho da legenda', UI.num({ value: fsize, min: 6, max: 200, unit: 'px', width: 80, onInput: (v) => { fsize = v; } }).el), UI.row('Fundo', UI.colorBtn(bg, (h) => { if (h) bg = h; }).el)],

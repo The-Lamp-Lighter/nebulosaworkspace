@@ -237,6 +237,7 @@
     info.tipoUtil = tipoDe(info);
     // a ferramenta aberta recebe, se aceitar; senão vai para a ferramenta certa
     let id = atual && FERR[atual].aceita && FERR[atual].aceita(info) ? atual : ({ imagem: 'imagem', pdf: 'pdf', texto: 'contador' }[info.tipoUtil]);
+    if (!id && FERR.conversor && FERR.conversor.aceita && FERR.conversor.aceita(info)) id = 'conversor';   // 1.0: outros formatos vão para o Conversor
     if (!id || !FERR[id] || !FERR[id].receber) { aviso(T('As Utilidades não sabem o que fazer com “{1}”.', info.nome), true); return false; }
     if (atual !== id) ir(id);
     return FERR[id].receber(info);

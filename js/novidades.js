@@ -7,6 +7,15 @@
    ========================================================================== */
 window.NEBULOSA_NOVIDADES = [
   {
+    versao: '1.0',
+    itens: [
+      'Utilidades: novo Conversor de arquivos. Converte documentos (Word, ODT, RTF, EPUB, FB2, HTML, Markdown, TXT e PDF), planilhas (Excel, ODS, CSV…), imagens (PNG, JPG, WebP, AVIF, TIFF, PSD…), áudio, vídeo e arquivos compactados, tudo no seu computador. Os limites estão no manual das Utilidades.',
+      'Typee: PDFs feitos só de imagens (digitalizados) agora abrem, com as páginas como figuras.',
+      'Imaginarium: PDFs feitos só de imagens também abrem, cada página como uma camada de imagem.',
+      'Versão 1.0 em todos os programas, manuais e páginas do Workspace.'
+    ]
+  },
+  {
     versao: '0.9',
     itens: [
       'Sem internet: abrir PDF no Typee, o PDF e o .zip das Utilidades, o backup, a exportação para PowerPoint do Flyde e a Ajuda do Imaginarium funcionam também sem conexão, depois de abertos uma vez com internet.',

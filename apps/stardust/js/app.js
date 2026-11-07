@@ -1720,7 +1720,7 @@
     window.open('https://nebulosaworkspace.com.br/' + (P[k] || P.manual), '_blank');
   }
   function dlgSobre() {
-    const v = (NS && NS.versao) || '0.9';
+    const v = (NS && NS.versao) || '1.0';
     dialogo({ titulo: 'Sobre', corpo: `<div class="sobre"><img src="assets/icone.svg" alt=""><h3>Stardust</h3><p><b>Stardust by Nebulosa Workspace</b> — Planilhas de Cálculo e Gráficos. Versão ${VERSAO}.</p><p>Fórmulas em português (SOMA, SE, PROCV…), gráficos, filtros e classificação, formatação condicional, listas suspensas (validação de dados) e comentários. Abre e salva XLSX, XLSM, XLSB, XLS, ODS e CSV, e exporta PDF e JPG. Tudo no seu computador: nenhum dado sai do navegador.</p><p style="font-size:12px">Bibliotecas: SheetJS Community (Apache 2.0), JSZip (MIT) e pdf-lib (MIT).</p><p style="font-size:12px">Autores e idealizadores: Márcio Willians Barreto de Andrade e Raul Goulart de Andrade<br>Equipe de Produção Lamp Lighter</p><p class="nb-rodape">Nebulosa Workspace - um pacote de programas simples, bonitos e que funcionam direto no navegador. Versão ${esc(v)}</p></div>`, botoes: [{ t: 'Manual do usuário', acao: () => nbAjuda('manual') }, { t: 'Créditos e licenças', acao: () => nbAjuda('creditos') }, { t: 'Fechar', pri: true }] });
   }
 

@@ -1,0 +1,8 @@
+Fontes incorporadas aos PDFs gerados pelo Conversor de arquivos (só são lidas quando o destino é PDF):
+- noto-sans/   Noto Sans 400, 400 itálico, 700, 700 itálico (SIL Open Font License 1.1) - Copyright The Noto Project Authors
+- noto-serif/  Noto Serif (idem)
+- dejavu-mono/ DejaVu Sans Mono Regular e Bold (licença Bitstream Vera/DejaVu, livre) - usada para código e como reserva de símbolos
+Fonte dos arquivos Noto: pacotes npm @expo-google-fonts/noto-sans e @expo-google-fonts/noto-serif (TTF estáticos).
+
+Formato: cada fonte é um arquivo .js que guarda o TTF original em base64 (window.__nbFontes). Assim o PDF sai com as letras certas também quando a pasta é aberta direto do disco (file://), onde o navegador não deixa ler arquivos por fetch.
+Para refazer um .js a partir de um .ttf: base64 do arquivo e a linha  (window.__nbFontes=window.__nbFontes||{})['pasta/Arquivo.ttf']='…';

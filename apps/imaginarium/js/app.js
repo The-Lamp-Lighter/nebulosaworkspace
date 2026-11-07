@@ -346,7 +346,7 @@
       const files = Array.from(e.dataTransfer.files || []);
       const doc = app.doc;
       const onCanvas = doc && e.target.closest && e.target.closest('#viewport');
-      const isDoc = (f) => /\.(edt|psd|psb)$/i.test(f.name);
+      const isDoc = (f) => /\.(edt|psd|psb|pdf)$/i.test(f.name) || f.type === 'application/pdf';
       const images = files.filter((f) => !isDoc(f)), projects = files.filter(isDoc);
       if (onCanvas && !e.shiftKey) { for (const f of images) await Files.placeFile(doc, f); }
       else await Files.openFiles(images);

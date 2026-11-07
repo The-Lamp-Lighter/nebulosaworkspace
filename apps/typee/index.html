@@ -1037,15 +1037,43 @@ async function getPdfJs(){
   pdfjsLib.GlobalWorkerOptions.workerSrc=new URL(wk,document.baseURI).href;
   return pdfjsLib;
 }
+/* (1.0) PDF só de imagens: páginas sem texto (escaneadas, fotos, capturas) entram no documento como figuras,
+   na ordem original; as páginas com texto continuam virando texto editável. Tudo por página, então PDFs
+   mistos (texto + páginas escaneadas) também abrem. */
+const PDF_MIN_LETRAS=15; // menos letras que isto na página = página de imagem
+let pdfOpsPintam=null;
+function opsQuePintam(lib){
+  if(!pdfOpsPintam){ const O=lib.OPS||{}; pdfOpsPintam=new Set(['paintImageXObject','paintInlineImageXObject','paintImageMaskXObject','paintJpegXObject','paintSolidColorImageMask','paintImageXObjectRepeat','paintImageMaskXObjectGroup','paintImageMaskXObjectRepeat','paintXObject','fill','eoFill','fillStroke','eoFillStroke','stroke','closeStroke','closeFillStroke','closeEOFillStroke','shadingFill','showText','showSpacedText'].map(k=>O[k]).filter(x=>x!==undefined)); }
+  return pdfOpsPintam;
+}
+async function paginaComoImagem(lib,pg,vp,nPag){
+  // página em que nada é desenhado (folha em branco) fica de fora
+  try{ const ops=await pg.getOperatorList(), pinta=opsQuePintam(lib); if(!ops.fnArray.some(f=>pinta.has(f))) return ''; }catch(e){ /* na dúvida, desenha */ }
+  const larg=nPag>60?900:nPag>30?1100:nPag>12?1400:1700;   // largura em pixels (menos páginas = mais nitidez)
+  const k=Math.min(3,Math.max(.4,larg/vp.width));
+  const v=pg.getViewport({scale:k});
+  const c=document.createElement('canvas'); c.width=Math.max(1,Math.ceil(v.width)); c.height=Math.max(1,Math.ceil(v.height));
+  const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height);
+  await pg.render({canvasContext:g,viewport:v}).promise;
+  const url=c.toDataURL('image/jpeg',nPag>60?.7:nPag>30?.78:.86);
+  c.width=c.height=0; pg.cleanup&&pg.cleanup();
+  return url;
+}
 async function openPdf(file){
   toast('Lendo o PDF…');
   const lib=await getPdfJs();
   const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,verbosity:0}).promise;
-  const linhas=[]; let total=0;
-  for(let n=1;n<=pdf.numPages;n++){
+  const nPag=pdf.numPages, linhas=[], pgImg={}; let nImg=0, nVazias=0;
+  for(let n=1;n<=nPag;n++){
+    if(nPag>3&&n%4===0){ toast('Lendo a página {1} de {2}…'.replace('{1}',n).replace('{2}',nPag)); await new Promise(r=>setTimeout(r,0)); }
     const pg=await pdf.getPage(n), tc=await pg.getTextContent(), vp=pg.getViewport({scale:1});
     const its=tc.items.filter(i=>i.str!==undefined).map(i=>({s:i.str,x:i.transform[4],y:i.transform[5],h:Math.hypot(i.transform[2],i.transform[3])||i.height||10,w:i.width,eol:i.hasEOL}));
-    total+=its.reduce((t,i)=>t+i.s.trim().length,0);
+    const letras=its.reduce((t,i)=>t+i.s.trim().length,0);
+    if(letras<PDF_MIN_LETRAS){ // sem texto: a página inteira entra como imagem
+      const u=await paginaComoImagem(lib,pg,vp,nPag);
+      if(u){ pgImg[n]=u; nImg++; } else nVazias++;
+      continue;
+    }
     // agrupa em linhas pela altura (y), de cima para baixo
     its.sort((a,b)=>b.y-a.y||a.x-b.x);
     let cur=null;
@@ -1055,34 +1083,46 @@ async function openPdf(file){
       else { cur={t:it.s,x:it.x,xf:it.x+it.w,y:it.y,h:it.h,pg:n,pw:vp.width}; linhas.push(cur); }
     }
   }
-  if(total<20){ toast('Este PDF parece ser só imagem (páginas escaneadas), sem texto para editar. Para ouvir com reconhecimento de texto (OCR), use o LêPraMim.'); return; }
+  if(!linhas.length&&!nImg){ toast('Este PDF não tem texto nem imagens que o Typee consiga abrir (as páginas estão em branco).'); return; }
   // tamanho do texto comum = o mais frequente
   const freq={}; linhas.forEach(l=>{const k=Math.round(l.h);freq[k]=(freq[k]||0)+l.t.length}); const base=+Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0]||11;
   // tira cabeçalhos/rodapés repetidos e números de página soltos
   const rep={}; linhas.forEach(l=>{const k=l.t.trim().replace(/\d+/g,'#'); rep[k]=(rep[k]||new Set()).add(l.pg)});
-  const nPag=Math.max(...linhas.map(l=>l.pg));
-  const util=linhas.filter(l=>{const t=l.t.trim(); if(!t) return false; if(/^(p[áa]gina\s*)?\d+(\s*(de|\/)\s*\d+)?$/i.test(t)) return false; const k=t.replace(/\d+/g,'#'); return !(nPag>=3&&rep[k].size>=Math.max(3,nPag*.6)&&t.length<90); });
-  // monta blocos: títulos, itens de lista e parágrafos
-  const out=[]; let par=null, lista=null;
-  const fechaPar=()=>{ if(par){ out.push('<p>'+esc(par.t)+'</p>'); par=null; } };
-  const fechaLista=()=>{ if(lista){ out.push('<'+lista.tag+'>'+lista.itens.map(i=>'<li>'+esc(i)+'</li>').join('')+'</'+lista.tag+'>'); lista=null; } };
-  util.forEach((l,i)=>{
-    const t=l.t.replace(/\s+/g,' ').trim(), prev=util[i-1];
-    const gap=prev&&prev.pg===l.pg?prev.y-l.y:999;
-    const titulo=l.h>=base*1.25&&t.length<=120;
-    const marc=/^([•●▪◦·\-–—*]|\d{1,3}[.)]|[a-z][.)])\s+/.exec(t);
-    if(titulo){ fechaPar(); fechaLista(); const tag=l.h>=base*1.7?'h1':l.h>=base*1.4?'h2':'h3'; const ult=out[out.length-1]; if(ult&&ult.startsWith('<'+tag+'>')&&gap<l.h*1.6) out[out.length-1]=ult.replace('</'+tag+'>',' '+esc(t)+'</'+tag+'>'); else out.push('<'+tag+'>'+esc(t)+'</'+tag+'>'); return; }
-    if(marc){ fechaPar(); const tag=/^\d/.test(marc[1])||/^[a-z]/.test(marc[1])?'ol':'ul'; if(!lista||lista.tag!==tag){ fechaLista(); lista={tag,itens:[]}; } lista.itens.push(t.slice(marc[0].length)); return; }
-    const novo=!par||gap>l.h*1.75||gap<0||(l.x-prev.x>l.h*1.2&&prev.xf<prev.pw*.8)||/[.:!?…]$/.test(par.t)&&prev.xf<prev.pw*.62;
-    if(lista&&!novo&&gap<l.h*1.75&&l.x>(prev?prev.x:0)){ lista.itens[lista.itens.length-1]+=' '+t; return; }
-    fechaLista();
-    if(novo){ fechaPar(); par={t}; }
-    else par.t=/[A-Za-zÀ-ú]-$/.test(par.t)&&/^[a-zà-ú]/.test(t)?par.t.slice(0,-1)+t:par.t+' '+t;
-  });
-  fechaPar(); fechaLista();
+  const nTexto=nPag-nImg-nVazias;
+  const util=linhas.filter(l=>{const t=l.t.trim(); if(!t) return false; if(/^(p[áa]gina\s*)?\d+(\s*(de|\/)\s*\d+)?$/i.test(t)) return false; const k=t.replace(/\d+/g,'#'); return !(nTexto>=3&&rep[k].size>=Math.max(3,nTexto*.6)&&t.length<90); });
+  // monta blocos: títulos, itens de lista e parágrafos (um trecho de páginas com texto de cada vez)
+  const montar=ls=>{
+    const out=[]; let par=null, lista=null;
+    const fechaPar=()=>{ if(par){ out.push('<p>'+esc(par.t)+'</p>'); par=null; } };
+    const fechaLista=()=>{ if(lista){ out.push('<'+lista.tag+'>'+lista.itens.map(i=>'<li>'+esc(i)+'</li>').join('')+'</'+lista.tag+'>'); lista=null; } };
+    ls.forEach((l,i)=>{
+      const t=l.t.replace(/\s+/g,' ').trim(), prev=ls[i-1];
+      const gap=prev&&prev.pg===l.pg?prev.y-l.y:999;
+      const titulo=l.h>=base*1.25&&t.length<=120;
+      const marc=/^([•●▪◦·\-–—*]|\d{1,3}[.)]|[a-z][.)])\s+/.exec(t);
+      if(titulo){ fechaPar(); fechaLista(); const tag=l.h>=base*1.7?'h1':l.h>=base*1.4?'h2':'h3'; const ult=out[out.length-1]; if(ult&&ult.startsWith('<'+tag+'>')&&gap<l.h*1.6) out[out.length-1]=ult.replace('</'+tag+'>',' '+esc(t)+'</'+tag+'>'); else out.push('<'+tag+'>'+esc(t)+'</'+tag+'>'); return; }
+      if(marc){ fechaPar(); const tag=/^\d/.test(marc[1])||/^[a-z]/.test(marc[1])?'ol':'ul'; if(!lista||lista.tag!==tag){ fechaLista(); lista={tag,itens:[]}; } lista.itens.push(t.slice(marc[0].length)); return; }
+      const novo=!par||gap>l.h*1.75||gap<0||(l.x-prev.x>l.h*1.2&&prev.xf<prev.pw*.8)||/[.:!?…]$/.test(par.t)&&prev.xf<prev.pw*.62;
+      if(lista&&!novo&&gap<l.h*1.75&&l.x>(prev?prev.x:0)){ lista.itens[lista.itens.length-1]+=' '+t; return; }
+      fechaLista();
+      if(novo){ fechaPar(); par={t}; }
+      else par.t=/[A-Za-zÀ-ú]-$/.test(par.t)&&/^[a-zà-ú]/.test(t)?par.t.slice(0,-1)+t:par.t+' '+t;
+    });
+    fechaPar(); fechaLista();
+    return out;
+  };
+  const partes=[]; let trecho=[];
+  const fechaTrecho=()=>{ if(trecho.length){ partes.push(...montar(trecho)); trecho=[]; } };
+  for(let n=1;n<=nPag;n++){
+    if(pgImg[n]){ fechaTrecho(); partes.push('<p><img src="'+pgImg[n]+'" alt="'+esc(nbT('Página {1}',n))+'"></p>'); }
+    else trecho.push(...util.filter(l=>l.pg===n));
+  }
+  fechaTrecho();
   imgStore=[];
-  setDoc(file.name.replace(/\.pdf$/i,''),out.join(''));
-  toast('PDF aberto como documento editável ('+pdf.numPages+(pdf.numPages>1?' páginas':' página')+'). Imagens e colunas lado a lado podem precisar de ajuste.');
+  setDoc(file.name.replace(/\.pdf$/i,''),partes.join(''));
+  if(!nImg) toast('PDF aberto como documento editável ('+nPag+(nPag>1?' páginas':' página')+'). Imagens e colunas lado a lado podem precisar de ajuste.');
+  else if(!nTexto) toast(nImg>1?'PDF só de imagens: as {1} páginas entraram no documento como figuras, sem texto para editar. Para ouvir com reconhecimento de texto (OCR), use o LêPraMim.'.replace('{1}',nImg):'PDF só de imagem: a página entrou no documento como figura, sem texto para editar. Para ouvir com reconhecimento de texto (OCR), use o LêPraMim.');
+  else toast('PDF aberto ({1} de {2} páginas são só imagem e entraram como figuras; as demais viraram texto editável).'.replace('{1}',nImg).replace('{2}',nPag));
 }
 
 /* ---------- paginação ---------- */

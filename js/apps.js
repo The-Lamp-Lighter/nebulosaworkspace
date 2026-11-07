@@ -33,7 +33,7 @@
 
 /* Versão do Nebulosa Workspace (aparece no rodapé e na janela "Sobre").
    Ao mudar, mude também VERSAO em shared/nebulosa-bridge.js. */
-window.NEBULOSA_VERSAO = '0.9';
+window.NEBULOSA_VERSAO = '1.0';
 
 /* Temáticas da página inicial, na ordem em que aparecem. */
 window.NEBULOSA_TEMAS = ['Produtividade & Dados', 'Mídia & Criatividade', 'Arte & Estilo de Vida'];
@@ -153,13 +153,13 @@ window.NEBULOSA_APPS = [
     group: 'Imagens e vídeo',
     tag: 'Imagens',
     desc: 'Editor gráfico completo: camadas, filtros, arquivos PSD e muito mais.',
-    keywords: 'imagem foto editar photoshop photopea camadas filtro design desenho arte',
+    keywords: 'imagem foto editar photoshop photopea camadas filtro design desenho arte pdf escaneado digitalizado',
     icon: 'brush',
     colors: ['#A778FF', '#FF9C54'],
     defaultSkin: 'imaginarium',
     tema: 'Mídia & Criatividade',
     funcao: 'Editor Multifuncional de Imagens',
-    aceita: ['imagem', '.psd', '.psb']
+    aceita: ['imagem', '.psd', '.psb', '.pdf']
   },
   {
     id: 'fluxo',
@@ -184,15 +184,15 @@ window.NEBULOSA_APPS = [
     path: 'apps/utilidades/',
     group: 'Utilidades',
     tag: 'Utilidades',
-    desc: 'Mini-ferramentas do dia a dia: QR Code, unidades, imagens, senhas, palavras, cores, PDF, tarefas e quadro branco.',
-    keywords: 'utilidades ferramentas qr code unidades converter imagem comprimir senha contador palavras cores pdf juntar dividir assinar tarefas notas quadro branco',
+    desc: 'Mini-ferramentas do dia a dia: QR Code, unidades, imagens, conversor de arquivos, senhas, palavras, cores, PDF, tarefas e quadro branco.',
+    keywords: 'utilidades ferramentas qr code unidades converter conversor arquivos convertio docx xlsx mp3 mp4 imagem comprimir senha contador palavras cores pdf juntar dividir assinar tarefas notas quadro branco',
     icon: 'tools',
     colors: ['#FEFF36', '#A778FF'],
     defaultSkin: 'default',
     tema: '',
     funcao: 'Mini-ferramentas do dia a dia',
     principal: false,
-    aceita: ['imagem', 'texto', '.pdf'],
+    aceita: ['imagem', 'texto', '.pdf', '.docx', '.odt', '.rtf', '.epub', '.fb2', '.html', '.xlsx', '.xls', '.ods', '.csv', '.tsv', '.json', '.zip', '.tar', '.gz', '.mp3', '.wav', '.ogg', '.flac', '.m4a', '.mp4', '.mov', '.mkv', '.webm', '.avi', '.tiff', '.heic', '.psd'],
     dorme: true,
     ferramentas: [
       { id: 'qr', nome: 'QR Code', desc: 'Links, textos, Wi-Fi e contatos.', icon: 'qr' },
@@ -202,6 +202,7 @@ window.NEBULOSA_APPS = [
       { id: 'contador', nome: 'Contador de palavras', desc: 'Palavras, caracteres e tempo de leitura.', icon: 'count' },
       { id: 'cores', nome: 'Cores', desc: 'Conversões, paletas e contraste.', icon: 'paint' },
       { id: 'pdf', nome: 'PDF', desc: 'Juntar, dividir, girar e assinar.', icon: 'pdf' },
+      { id: 'conversor', nome: 'Conversor de arquivos', desc: 'Documentos, planilhas, imagens, áudio e vídeo.', icon: 'convert' },
       { id: 'tarefas', nome: 'Tarefas e notas', desc: 'A fazer, fazendo e feito.', icon: 'kanban' },
       { id: 'quadro', nome: 'Quadro branco', desc: 'Esboços, setas e fluxogramas.', icon: 'board' }
     ]

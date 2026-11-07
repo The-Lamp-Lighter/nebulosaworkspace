@@ -8,7 +8,7 @@ servidor, sem instalação e sem internet. A versão 2.0 segue o modelo de
 trabalho do Photopea/Photoshop: mesmas ferramentas, mesmos atalhos, mesmos
 menus (com os nomes oficiais em português), camadas de ajuste, objetos
 inteligentes, estilos de camada e leitura/gravação de arquivos **PSD**.
-Tudo foi escrito em HTML5, CSS3 e JavaScript puro, sem bibliotecas externas.
+Tudo foi escrito em HTML5, CSS3 e JavaScript puro, sem bibliotecas externas (a única exceção, desde a 1.0, é o PDF.js, usado só para abrir PDFs).
 
 ## Como abrir
 
@@ -26,7 +26,7 @@ extras: salvar sempre no mesmo arquivo e listar todas as fontes instaladas.
 
 | Área | Recursos |
 |---|---|
-| Arquivos | Abre PSD/PSB (camadas, grupos, máscaras, textos editáveis, formas, estilos, ajustes, pranchetas), PNG, JPG, WEBP, GIF (com quadros), BMP, TIFF, TGA, ICO, SVG, AVIF e o projeto `.edt`. Salva PSD e `.edt`. Exporta PNG, JPG, WEBP, GIF, SVG, PDF, BMP, TIFF, ICO, TGA e PSD; **Exportar como** com prévia, escala e qualidade; exportar camadas, pranchetas e fatias; abrir recentes; imprimir; informações do arquivo; lote, folha de contatos, script, variáveis (CSV) |
+| Arquivos | Abre PDF (qualquer PDF como imagem, em especial os só de imagens/digitalizados: páginas escolhidas, resolução, um documento por página ou uma camada por página; PDF.js), PSD/PSB (camadas, grupos, máscaras, textos editáveis, formas, estilos, ajustes, pranchetas), PNG, JPG, WEBP, GIF (com quadros), BMP, TIFF, TGA, ICO, SVG, AVIF e o projeto `.edt`. Salva PSD e `.edt`. Exporta PNG, JPG, WEBP, GIF, SVG, PDF, BMP, TIFF, ICO, TGA e PSD; **Exportar como** com prévia, escala e qualidade; exportar camadas, pranchetas e fatias; abrir recentes; imprimir; informações do arquivo; lote, folha de contatos, script, variáveis (CSV) |
 | Ferramentas | 66 ferramentas em 20 grupos, com as letras do Photoshop e `Shift`+letra para alternar no grupo (lista abaixo) |
 | Camadas | Pixels, texto, forma, grupo, ajuste, preenchimento (cor, gradiente, padrão), objeto inteligente e prancheta; 27 modos de mesclagem; opacidade e preenchimento; máscaras de camada e vetoriais; máscaras de recorte; bloqueios; vincular; alinhar/distribuir; Alinhar e Mesclar automaticamente; composições de camadas |
 | Estilos de camada | Chanfro e entalhe, Traçado, Sombra interna, Brilho interno, Cetim, Sobreposição de cores/gradiente/padrão, Brilho externo, Sombra projetada, opções de mesclagem e "Mesclar se"; painel Estilos com predefinições |
@@ -192,6 +192,7 @@ imaginarium/
   cabeçalho JSON e bitmaps em PNG; guarda também objetos inteligentes, fatias,
   composições de camadas, canais e informações do arquivo.
 - **PDF, GIF, TIFF, ZIP:** gerados por código próprio, sem bibliotecas.
+- **Abrir PDF (1.0):** a leitura usa o PDF.js (Mozilla, Apache 2.0) da pasta `libs/pdfjs`, carregado só quando um PDF é aberto (`js/core/pdf-open.js`). É a única biblioteca de terceiros do Imaginarium; o texto do PDF não é extraído, a página vira imagem.
 - **Privacidade:** nenhuma requisição de rede. Preferências, amostras e layout
   dos painéis ficam no `localStorage`; a biblioteca pessoal e os arquivos
   recentes, no `IndexedDB`.

@@ -30,7 +30,7 @@
    Isto NÃO torna o site instalável: não há manifest nem botão de instalar.
    Ao mudar a versão (ferramentas/versao.py), a cópia antiga é apagada sozinha.
    ========================================================================== */
-const VERSAO = '0.9';
+const VERSAO = '1.0';
 const CACHE = 'nebulosa-site-' + VERSAO;
 const FONTES = 'nebulosa-fontes';
 const BASICO = [
@@ -49,8 +49,29 @@ const BASICO = [
 const EXTRAS = {
   typee: ['libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],
   flyde: ['libs/pptxgen.bundle.js'],
-  imaginarium: ['help/manual.html', 'help/credits.html'],
-  utilidades: ['libs/pdf-lib.min.js', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js', 'libs/jszip.min.js']
+  imaginarium: ['help/manual.html', 'help/credits.html', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],   // (1.0) + PDF.js: abrir PDF só de imagens
+  utilidades: [
+    'libs/pdf-lib.min.js',
+    'libs/pdfjs/pdf.js',
+    'libs/pdfjs/pdf.worker.js',
+    'libs/jszip.min.js',
+    'libs/sheetjs/xlsx.full.min.js',
+    'libs/mammoth/mammoth.browser.min.js',
+    'libs/docx/docx.min.js',
+    'libs/marked/marked.min.js',
+    'libs/turndown/turndown.min.js',
+    'libs/fontkit/fontkit.umd.min.js',
+    'libs/fontes/dejavu-mono/DejaVuSansMono-Bold.js',
+    'libs/fontes/dejavu-mono/DejaVuSansMono.js',
+    'libs/fontes/noto-sans/NotoSans_400Regular.js',
+    'libs/fontes/noto-sans/NotoSans_400Regular_Italic.js',
+    'libs/fontes/noto-sans/NotoSans_700Bold.js',
+    'libs/fontes/noto-sans/NotoSans_700Bold_Italic.js',
+    'libs/fontes/noto-serif/NotoSerif_400Regular.js',
+    'libs/fontes/noto-serif/NotoSerif_400Regular_Italic.js',
+    'libs/fontes/noto-serif/NotoSerif_700Bold.js',
+    'libs/fontes/noto-serif/NotoSerif_700Bold_Italic.js'
+  ]   // (1.0) + Conversor de arquivos (FFmpeg e ImageMagick ficam à parte, no cache do próprio Conversor)
 };
 const ESPERA_PAGINA = 3000, ESPERA_ARQUIVO = 3000; // ms até usar a cópia quando a rede está lenta
 

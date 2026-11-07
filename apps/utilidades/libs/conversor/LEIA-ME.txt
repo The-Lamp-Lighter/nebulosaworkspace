@@ -1,0 +1,33 @@
+Componentes pesados do Conversor de arquivos (Utilidades) - OPCIONAIS
+=====================================================================
+
+O Conversor de arquivos funciona sem nada desta pasta para documentos, planilhas,
+arquivos compactados, fontes e as imagens comuns (PNG, JPG, WebP, GIF, BMP, ICO, SVG).
+
+Dois componentes grandes ficam FORA do pacote e só são necessarios para:
+  - ffmpeg\   (~32 MB)  audio e video (MP3, WAV, MP4, WebM, MKV...)
+  - magick\   (~16 MB)  imagens raras: TIFF, TGA, PSD, HEIC (so leitura), JPEG XL, JPEG 2000,
+                        DDS, PCX, PPM, QOI, OpenEXR, HDR; e GIF/AVIF de saida
+
+Na primeira vez em que voce pedir uma conversao que precisa deles, o Conversor pergunta se
+pode baixa-los (de cdn.jsdelivr.net), guarda uma copia no navegador e depois funciona sem internet.
+Se preferir deixar tudo instalado antes (por exemplo, para usar sem internet desde o inicio),
+rode o script desta pasta:
+  Windows ....  Baixar-Bibliotecas.bat   (duplo clique)
+  Linux/Mac ..  sh baixar-bibliotecas.sh
+
+Arquivos que o script cria (o Conversor usa esta pasta automaticamente, sem perguntar):
+  libs/conversor/ffmpeg/ffmpeg-core.js        <- @ffmpeg/core 0.12.10  (dist/umd/ffmpeg-core.js)
+  libs/conversor/ffmpeg/ffmpeg-core.wasm      <- @ffmpeg/core 0.12.10  (dist/umd/ffmpeg-core.wasm)
+  libs/conversor/magick/magick.umd.js         <- @imagemagick/magick-wasm 0.0.45 (dist/index.umd.cjs)
+  libs/conversor/magick/magick.wasm           <- @imagemagick/magick-wasm 0.0.45 (dist/x86/magick.wasm)
+
+Importante sobre licencas:
+  - FFmpeg (ffmpeg.wasm / @ffmpeg/core) e software livre sob a GPL 2.0 ou posterior (inclui x264, libvpx,
+    LAME, Opus, Vorbis...). Ele NAO vem dentro do Nebulosa Workspace. Se voce redistribuir uma copia do
+    pacote com estes arquivos dentro, cumpra a GPL (inclua o codigo-fonte ou a oferta dele).
+  - ImageMagick / magick-wasm: Apache 2.0 e Licenca do ImageMagick.
+Veja legal/creditos.html.
+
+Limites conhecidos: o FFmpeg roda em um unico nucleo, sem placa de video, e o VP9 e o Opus em estereo com
+nivel alto de compressao nao sao estaveis nesta versao do componente (o Conversor ja usa VP8 e um nivel seguro).
