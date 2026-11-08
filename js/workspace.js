@@ -52,7 +52,7 @@
   /* ---------- utilidades ---------- */
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
-  const VERSION = window.NEBULOSA_VERSAO || '1.0';
+  const VERSION = window.NEBULOSA_VERSAO || '1.1';
   const TEMAS = window.NEBULOSA_TEMAS || [];
   const ACESSOS = window.NebulosaAcessos;
   // (0.5) créditos: os mesmos em todos os programas (a ponte tem a mesma informação)

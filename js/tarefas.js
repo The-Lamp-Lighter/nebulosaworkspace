@@ -23,6 +23,7 @@ window.NEBULOSA_TAREFAS = [
   { t: 'Abrir uma partitura', s: 'PDF, imagem, MusicXML ou Guitar Pro no EmCanto', kw: 'partitura musica coral musicxml pdf ouvir cantar', app: 'emcanto', arquivo: '.pdf,.png,.jpg,.jpeg,.tif,.tiff,.musicxml,.mxl,.xml,.gp3,.gp4,.gp5,.emcanto' },
   { t: 'Editar uma foto', s: 'Abre a imagem ou o PSD no Imaginarium', kw: 'editar foto imagem psd recortar ajustar photoshop', app: 'imaginarium', arquivo: 'image/*,.psd,.psb' },
   { t: 'Editar um vídeo', s: 'Abre o Fluxo já com o vídeo na linha do tempo', kw: 'editar video cortar reels tiktok youtube', app: 'fluxo', arquivo: 'video/*' },
+  { t: 'Fazer um vídeo de ondas de uma música', s: 'Abre o Fluxo com a música; use a aba Ondas para criar o vídeo', kw: 'ondas audio musica visualizador equalizador barras espectro vibracao particulas video clipe vizzy', app: 'fluxo', arquivo: 'audio/*' },
   { t: 'Converter um arquivo', s: 'Utilidades › Conversor: documentos, planilhas, imagens, áudio e vídeo', kw: 'converter conversor arquivo formato convertio docx pdf xlsx mp3 mp4 png jpg webp epub odt', ferramenta: 'conversor' },
   { t: 'Converter áudio ou vídeo', s: 'Utilidades › Conversor: MP3, WAV, MP4, WebM e outros', kw: 'converter audio video mp3 mp4 wav flac ogg webm mov mkv gif extrair som', ferramenta: 'conversor' },
   { t: 'Abrir um PDF só de imagens para editar', s: 'PDF digitalizado: abre as páginas como imagens no Imaginarium', kw: 'pdf escaneado digitalizado imagens editar paginas imaginarium', app: 'imaginarium', arquivo: '.pdf' },

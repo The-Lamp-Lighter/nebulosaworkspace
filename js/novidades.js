@@ -7,6 +7,15 @@
    ========================================================================== */
 window.NEBULOSA_NOVIDADES = [
   {
+    versao: '1.1',
+    itens: [
+      'Fluxo: nova aba Ondas, um estúdio para transformar uma música em vídeo. Barras, linhas de onda, círculos, equalizador de pontos, anéis de batida, partículas, textos e imagens que reagem a graves, médios, agudos e batidas, com 8 modelos prontos.',
+      'Fluxo: efeitos de tela cheia para o estúdio de ondas (vibração, pulso de zoom, divisão de cores RGB, glitch, brilho, vinheta, granulado e flash) e formatos 16:9, 9:16, 1:1, 4:5, 21:9 e 4:3.',
+      'Fluxo: o vídeo de ondas sai em WebM com som, mais rápido que o tempo real na maioria dos navegadores, e entra direto na linha do tempo. Dá para gerar só um trecho e salvar a cena para continuar depois.',
+      'Versão 1.1 em todos os programas, manuais e páginas do Workspace.'
+    ]
+  },
+  {
     versao: '1.0',
     itens: [
       'Utilidades: novo Conversor de arquivos. Converte documentos (Word, ODT, RTF, EPUB, FB2, HTML, Markdown, TXT e PDF), planilhas (Excel, ODS, CSV…), imagens (PNG, JPG, WebP, AVIF, TIFF, PSD…), áudio, vídeo e arquivos compactados, tudo no seu computador. Os limites estão no manual das Utilidades.',

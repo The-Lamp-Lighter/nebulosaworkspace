@@ -16,6 +16,7 @@ window.NEBULOSA_DICAS = [
   { app: 'lepramim', texto: 'Clique em qualquer frase no LêPraMim e a leitura em voz alta começa dali.' },
   { app: 'pratododia', texto: 'No #pratododia, informe quantas vezes vai fazer a receita e as quantidades são recalculadas.' },
   { app: 'imaginarium', texto: 'O Imaginarium usa os mesmos atalhos do Photoshop: V mover, B pincel, T texto e Ctrl+T para transformar.' },
+  { app: 'fluxo', texto: 'No Fluxo, a aba Ondas transforma uma música em vídeo, com barras, círculos e partículas que dançam no ritmo.' },
   { app: 'fluxo', texto: 'No Fluxo, a tecla Tab alterna entre os modos Simples e Pro sem perder nada do projeto.' },
   { app: 'fluxo', texto: 'No Fluxo, as batidas da régua da linha do tempo se arrastam: acerte o ritmo à mão, e dois cliques na régua põem ou tiram uma batida.' },
   { app: 'emcanto', texto: 'No EmCanto, a tecla G abre a criação de vozes: dá para completar um coral SATB a partir de uma melodia.' },

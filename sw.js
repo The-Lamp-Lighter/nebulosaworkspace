@@ -30,7 +30,7 @@
    Isto NÃO torna o site instalável: não há manifest nem botão de instalar.
    Ao mudar a versão (ferramentas/versao.py), a cópia antiga é apagada sozinha.
    ========================================================================== */
-const VERSAO = '1.0';
+const VERSAO = '1.1';
 const CACHE = 'nebulosa-site-' + VERSAO;
 const FONTES = 'nebulosa-fontes';
 const BASICO = [
@@ -49,6 +49,7 @@ const BASICO = [
 const EXTRAS = {
   typee: ['libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],
   flyde: ['libs/pptxgen.bundle.js'],
+  fluxo: ['ondas/ondas.css', 'ondas/motor.js', 'ondas/exportar.js', 'ondas/modelos.js', 'ondas/ui.js', 'ondas/ondas-idiomas.js'],   // (1.1) estúdio de ondas
   imaginarium: ['help/manual.html', 'help/credits.html', 'libs/pdfjs/pdf.js', 'libs/pdfjs/pdf.worker.js'],   // (1.0) + PDF.js: abrir PDF só de imagens
   utilidades: [
     'libs/pdf-lib.min.js',
